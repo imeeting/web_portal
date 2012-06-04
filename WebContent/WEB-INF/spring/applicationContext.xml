@@ -9,12 +9,12 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>/WEB-INF/config/configuration.properties</value>
+				<value>/WEB-INF/config/Configuration.properties</value>
 			</list>
 		</property>
 	</bean>			
 	
-	<bean id="dataSource_mssql_c3p0" 
+	<bean id="dataSource_mysql_c3p0" 
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 		
