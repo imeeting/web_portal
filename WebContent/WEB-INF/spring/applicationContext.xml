@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+			
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/config/configuration.properties</value>
+			</list>
+		</property>
+	</bean>			
+	
+	<bean id="dataSource_mssql_c3p0" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		
+		<property name="driverClass">
+			<value>${jdbc.driverClassName.mysql}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.url.mysql}</value>
+		</property>
+		<property name="user">
+			<value>${jdbc.username.mysql}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.password.mysql}</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>1</value>
+		</property>			
+		<property name="checkoutTimeout">
+			<value>30000</value>
+		</property>	
+		<property name="preferredTestQuery">
+			<value>SELECT 1</value>
+		</property>
+		<property name="testConnectionOnCheckin">
+			<value>true</value>
+		</property>	
+		<property name="idleConnectionTestPeriod">
+			<value>300</value>
+		</property>
+		<property name="maxIdleTimeExcessConnections">
+			<value>600</value>
+		</property>
+		<property name="unreturnedConnectionTimeout">
+			<value>30</value>
+		</property>	
+		<property name="debugUnreturnedConnectionStackTraces">
+			<value>true</value>
+		</property>			
+		<property name="maxStatementsPerConnection">
+			<value>10</value>
+		</property>	
+		<property name="maxStatements">
+			<value>100</value>
+		</property>				 		
+	</bean>		
+
+</beans>
