@@ -12,7 +12,31 @@
 				<value>/WEB-INF/config/Configuration.properties</value>
 			</list>
 		</property>
-	</bean>			
+	</bean>	
+	
+	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
+		<property name="baseUri">
+			<value>${textMessageUrl}</value>
+		</property>
+		<property name="userName">
+			<value>${textMessageUserName}</value>
+		</property>
+		<property name="password">
+			<value>${textMessagePwd}</value>
+		</property>
+	</bean>	
+	
+	<bean id="donkey_client" class="com.richitec.donkey.client.DonkeyClient">
+		<property name="baseUri">
+			<value>${donkey_base_uri}</value>
+		</property>
+		<property name="appId">
+			<value>${donkey_app_id}</value>
+		</property>
+		<property name="appKey">
+			<value>${donkey_app_key}</value>
+		</property>		
+	</bean>
 	
 	<bean id="dataSource_mysql_c3p0" 
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"

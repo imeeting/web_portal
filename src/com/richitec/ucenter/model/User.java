@@ -10,10 +10,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
+import com.imeeting.framework.ContextLoader;
 import com.richitec.db.DBHelper;
+import com.richitec.sms.client.SMSClient;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
-import com.richitec.util.SMSClient;
 import com.richitec.util.ValidatePattern;
 
 public class User {
@@ -22,7 +23,7 @@ public class User {
 	public static final String PASSWORD_STR = "huuguanghui";
 
 	/**
-	 * 获得手机验证�?
+	 * 获得手机验证码
 	 * 
 	 * @param session
 	 * @param phone
@@ -36,12 +37,9 @@ public class User {
 		try {
 			session.setAttribute("phonenumber", phone);
 			session.setAttribute("phonecode", phoneCode);
-			SMSClient.getInstance().sendValidateCode(phone, phoneCode);
+			String content = "验证码：" + phoneCode + " [联通飞影]";
+			ContextLoader.getSMSClient().sendTextMessage(phone, content);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
 			e.printStackTrace();
 		}
 		return result;

@@ -10,13 +10,16 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.richitec.db.DBHelper;
+import com.richitec.donkey.client.DonkeyClient;
+import com.richitec.sms.client.SMSClient;
 import com.richitec.util.ConfigManager;
 
 
-public class ContextLoaderServlet extends ContextLoaderListener {
+public class ContextLoader extends ContextLoaderListener {
+	
+	public static ApplicationContext appContext;
 
 	public void contextDestroyed(ServletContextEvent event) {
-		//
 		DBHelper.getInstance().closeAll();
 	}
 
@@ -30,10 +33,17 @@ public class ContextLoaderServlet extends ContextLoaderListener {
 				.getResourceAsStream("/WEB-INF/config/Configuration.properties");
 		ConfigManager.getInstance().loadConfig(configStream);
 
-		ApplicationContext appContext = WebApplicationContextUtils
-				.getRequiredWebApplicationContext(context);
+		appContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 		
 		DBHelper.getInstance().setAppContext(appContext);
+	}
+	
+	public static SMSClient getSMSClient(){
+		return (SMSClient)appContext.getBean("sms_client");
+	}
+	
+	public static DonkeyClient getDonkeyClient(){
+		return (DonkeyClient)appContext.getBean("donkey_client");
 	}
 
 }
