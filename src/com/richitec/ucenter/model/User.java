@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 import com.imeeting.framework.ContextLoader;
 import com.richitec.db.DBHelper;
 import com.richitec.sms.client.SMSClient;
+import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
@@ -37,8 +38,10 @@ public class User {
 		try {
 			session.setAttribute("phonenumber", phone);
 			session.setAttribute("phonecode", phoneCode);
-			String content = "验证码：" + phoneCode + " [联通飞影]";
-			ContextLoader.getSMSClient().sendTextMessage(phone, content);
+			String content = "验证码：" + phoneCode + " [iMeeting]";
+			SMSHttpResponse response = ContextLoader.getSMSClient()
+					.sendTextMessage(phone, content);
+			log.info("sms return: " + response.getCode());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,18 +165,22 @@ public class User {
 	 */
 	public static String checkRegisterUser(String phone, String password,
 			String password1) {
-		if (phone.equals("")) {
-			return "1"; // 手机号码必填
-		} else if (!ValidatePattern.isValidMobilePhone(phone)) {
-			return "2"; // 手机号码格式错误
-		} else if (!isExistsLoginName(phone).equals("0")) {
-			return "3"; // 手机号码已存�?
-		} else if (password.equals("")) {
-			return "4"; // 密码必填
-		} else if (!password.equals(password1)) {
-			return "5"; // 两次密码输入不一�?
-		} else {
-			return "0";
+		try {
+			if (phone.equals("")) {
+				return "1"; // 手机号码必填
+			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
+				return "2"; // 手机号码格式错误
+			} else if (!isExistsLoginName(phone).equals("0")) {
+				return "3"; // 手机号码已存�?
+			} else if (password.equals("")) {
+				return "4"; // 密码必填
+			} else if (!password.equals(password1)) {
+				return "5"; // 两次密码输入不一�?
+			} else {
+				return "0";
+			}
+		} catch (Exception e) {
+			return "-1";
 		}
 
 	}
@@ -185,14 +192,18 @@ public class User {
 	 * @return
 	 */
 	public static String checkRegisterPhone(String phone) {
-		if (phone.equals("")) {
-			return "1"; // 手机号码必填
-		} else if (!ValidatePattern.isValidMobilePhone(phone)) {
-			return "2"; // 手机号码格式错误
-		} else if (!isExistsLoginName(phone).equals("0")) {
-			return "3"; // 手机号码已存�?
-		} else {
-			return "0";
+		try {
+			if (phone.equals("")) {
+				return "1"; // 手机号码必填
+			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
+				return "2"; // 手机号码格式错误
+			} else if (!isExistsLoginName(phone).equals("0")) {
+				return "3"; // 手机号码已存�?
+			} else {
+				return "0";
+			}
+		} catch (Exception e) {
+			return "-1";
 		}
 	}
 
@@ -201,16 +212,14 @@ public class User {
 	 * 
 	 * @param loginName
 	 * @return
+	 * @throws SQLException
 	 */
-	private static String isExistsLoginName(String loginName) {
+	private static String isExistsLoginName(String loginName)
+			throws SQLException {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
 		int count = 0;
-		try {
-			count = DBHelper.getInstance().count(sql, params);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		count = DBHelper.getInstance().count(sql, params);
 		return count == 0 ? "0" : "1"; // 0:不存�?1：存�?
 	}
 
@@ -232,5 +241,5 @@ public class User {
 		}
 		return userkey;
 	}
-	
+
 }

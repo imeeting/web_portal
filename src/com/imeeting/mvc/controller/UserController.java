@@ -36,10 +36,10 @@ public class UserController {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = User.login(session, loginName, loginPwd);
-			if (result.equals("0")) {
-				User.recodeDeviceInfo(loginName, brand, model, release, sdk,
-						width, height);
-			}
+//			if (result.equals("0")) {
+//				User.recodeDeviceInfo(loginName, brand, model, release, sdk,
+//						width, height);
+//			}
 			jsonUser.put("result", result);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -54,7 +54,11 @@ public class UserController {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
-			result = User.getPhoneCode(session, phone);
+			result = User.checkRegisterPhone(phone);
+			log.info("check register phone return: " + result);
+			if (result.equals("0")) {
+				result = User.getPhoneCode(session, phone);
+			}
 			jsonUser.put("result", result);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -84,6 +88,7 @@ public class UserController {
 	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
 			HttpServletResponse response, HttpSession session) throws Exception {
+		log.info("regUser");
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "";
