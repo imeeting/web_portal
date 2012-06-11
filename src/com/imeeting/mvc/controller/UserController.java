@@ -35,14 +35,17 @@ public class UserController {
 		log.info("login loginname: " + loginName + " pwd: " + loginPwd);
 		JSONObject jsonUser = new JSONObject();
 		try {
-			String result = User.login(session, loginName, loginPwd);
+			JSONObject jsonResult = User.login(session, loginName, loginPwd);
+		//	String result = jsonResult.getString("result");
+			
 //			if (result.equals("0")) {
 //				User.recodeDeviceInfo(loginName, brand, model, release, sdk,
 //						width, height);
 //			}
-			jsonUser.put("result", result);
+			jsonUser = jsonResult;
 		} catch (JSONException e) {
 			e.printStackTrace();
+			jsonUser.put("result", "1001");
 		}
 		log.info("result: " + jsonUser.toString());
 		response.getWriter().print(jsonUser.toString());

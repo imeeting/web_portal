@@ -2,12 +2,16 @@ package com.richitec.ucenter.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 import com.imeeting.framework.ContextLoader;
@@ -17,6 +21,7 @@ import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
+import com.sun.xml.rpc.processor.modeler.j2ee.xml.string;
 
 public class User {
 	private static Log log = LogFactory.getLog(User.class);
@@ -83,24 +88,37 @@ public class User {
 	 * @param loginName
 	 * @param loginPwd
 	 * @return
+	 * @throws JSONException
 	 */
-	public static String login(HttpSession session, String loginName,
-			String loginPwd) {
+	public static JSONObject login(HttpSession session, String loginName,
+			String loginPwd) throws JSONException {
+		JSONObject ret = new JSONObject();
 		String result = "";
-		String sql = "SELECT password FROM im_user WHERE username = ?";
+		String sql = "SELECT password, userkey FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
 		try {
-			String password = DBHelper.getInstance().scalar(sql, params);
-			if (loginPwd.equals(password)) {
-				result = "0";
+			List<Map<String, Object>> resultList = DBHelper.getInstance()
+					.query(sql, params);
+		
+			if (resultList.size() > 0) {
+				Map<String, Object> resultMap = resultList.get(0);
+				String password = (String) resultMap.get("password");
+				String userkey = (String) resultMap.get("userkey");
+				if (loginPwd.equals(password)) {
+					result = "0";
+					ret.put("userkey", userkey);
+				} else {
+					result = "1";
+				}
 			} else {
-				result = "1";
+				result = "2";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			result = "1001";
 		}
-		return result;
+		ret.put("result", result);
+		return ret;
 	}
 
 	/**
@@ -180,7 +198,7 @@ public class User {
 				return "0";
 			}
 		} catch (Exception e) {
-			return "-1";
+			return "1001";
 		}
 
 	}
@@ -203,7 +221,7 @@ public class User {
 				return "0";
 			}
 		} catch (Exception e) {
-			return "-1";
+			return "1001";
 		}
 	}
 
