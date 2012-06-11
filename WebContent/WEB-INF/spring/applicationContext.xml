@@ -38,6 +38,9 @@
 		</property>		
 	</bean>
 	
+	<bean id="conference_manager" class="com.imeeting.mvc.model.conference.ConferenceManager">
+	</bean>
+	
 	<bean id="dataSource_mysql_c3p0" 
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">

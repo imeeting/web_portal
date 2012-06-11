@@ -1,12 +1,25 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.mvc.model.conference.ConferenceManager;
+import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.conference.message.CreateAudioConferenceMsg;
+import com.imeeting.mvc.model.conference.message.DestroyConferenceMsg;
+import com.richitec.util.RandomString;
 
 /**
  * 
@@ -23,21 +36,71 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(value="/conference")
 public class ConferenceController {
+	
+	private static Log log = LogFactory.getLog(ConferenceController.class);
 
 	/**
 	 * create a new conference and response with the id of the conference.
 	 * @param String moderator - Moderator's userId.
 	 * @param String attendeeList - An JSON Array that contains all attendees' userId.
 	 * @throws IOException 
+	 * @throws SQLException 
+	 * @throws JSONException 
 	 */
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="/create", method=RequestMethod.GET)
 	public void create(
 			HttpServletResponse response,
-			@RequestParam String moderator,
-			@RequestParam String attendeeList) throws IOException{
-		String confId = "123456";
-		//TODO: create conference and generate confId. create MSML conference in media server.
+			@RequestParam(value="userName") String userName,
+			@RequestParam(value="moderator", required=false) String moderator,
+			@RequestParam(value="attendeeList", required=false) String attendeeList) throws IOException, SQLException {
+		///
+		log.debug("create");
+		String confId = RandomString.genRandomNum(8);
+		int r = ConferenceDB.insert(confId, userName);
+		if (r != 1){
+			log.error("Database operation error: cannot insert (" + confId + "," + userName+")");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+		
+		ConferenceManager confManager = ContextLoader.getConferenceManager();
+		ConferenceModel model = confManager.createConference(confId, userName);
+		model.tell(new CreateAudioConferenceMsg());
+		
+		response.setStatus(HttpServletResponse.SC_ACCEPTED);
 		response.getWriter().print(confId);
+	}
+	
+	/**
+	 * Destroy conference
+	 * 
+	 * @param response
+	 * @param userName
+	 * @param confId
+	 * @throws IOException
+	 * @throws SQLException 
+	 */
+	@RequestMapping(value="/destroy", method=RequestMethod.GET)
+	public void destroy(
+			HttpServletResponse response,
+			@RequestParam String userName,
+			@RequestParam String confId) throws IOException, SQLException{
+		///
+		log.debug("destroy");
+		ConferenceManager confManager = ContextLoader.getConferenceManager();
+		ConferenceModel conference = confManager.getConference(confId);
+		if (null == conference){
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot find conference with ID:" + confId);
+			return;
+		}
+		
+		if (userName != conference.getOwner()){
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "userName and confId are not match");
+			return;
+		}
+		
+		conference.tell(new DestroyConferenceMsg());
+		response.setStatus(HttpServletResponse.SC_ACCEPTED);
 	}
 	
 	/**
@@ -55,8 +118,15 @@ public class ConferenceController {
 				"{confId:123456, moderator:13382794516, attendeeList:[18652970325, 13813005146]}, " +
 				"{}, " +
 				"{}" + "]";
-		//TODO: create conference and generate confId.
 		response.getWriter().print(confList);
+	}
+	
+	/**
+	 * get attendee list of the conference
+	 */
+	@RequestMapping(value="/attendeelist", method=RequestMethod.GET)
+	public void attendeeList(){
+		
 	}
 	
 	/**
@@ -72,7 +142,9 @@ public class ConferenceController {
 			HttpServletResponse response,
 			@RequestParam String confId,
 			@RequestParam String attendeeList) throws IOException {
-		
+		//TODO: insert MySQL
+		//TODO: send message to ConferenceModel
+		//TODO: create actor for attendees
 	}
 	
 	/**

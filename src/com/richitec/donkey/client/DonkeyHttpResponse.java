@@ -7,6 +7,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 
 public class DonkeyHttpResponse {
+	
+	public static final String CONFERENCE = "conference";
 
 	private HttpResponse httpResponse;
 	private byte [] entityBytes;

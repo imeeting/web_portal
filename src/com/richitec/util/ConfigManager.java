@@ -67,33 +67,6 @@ public class ConfigManager {
 	}
 
 	/**
-	 * get the property by textMessageUrl
-	 * 
-	 * @return
-	 */
-	public String getTextMessageUrl() {
-		return prop.getProperty("textMessageUrl");
-	}
-
-	/**
-	 * get the property by textMessageUserName
-	 * 
-	 * @return
-	 */
-	public String getTextMessageUserName() {
-		return prop.getProperty("textMessageUserName");
-	}
-
-	/**
-	 * get the property by textMessagePwd
-	 * 
-	 * @return
-	 */
-	public String getTextMessagePwd() {
-		return prop.getProperty("textMessagePwd");
-	}
-
-	/**
 	 * get the property by url
 	 * 
 	 * @return

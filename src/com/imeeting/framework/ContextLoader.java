@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.richitec.db.DBHelper;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.sms.client.SMSClient;
@@ -44,6 +45,10 @@ public class ContextLoader extends ContextLoaderListener {
 	
 	public static DonkeyClient getDonkeyClient(){
 		return (DonkeyClient)appContext.getBean("donkey_client");
+	}
+	
+	public static ConferenceManager getConferenceManager(){
+		return (ConferenceManager)appContext.getBean("conference_manager");
 	}
 
 }
