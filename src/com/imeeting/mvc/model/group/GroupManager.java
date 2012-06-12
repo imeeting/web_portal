@@ -1,4 +1,4 @@
-package com.imeeting.mvc.model.conference;
+package com.imeeting.mvc.model.group;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -13,38 +13,39 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 
-public class ConferenceManager {
+public class GroupManager {
 	
-	private static Log log = LogFactory.getLog(ConferenceManager.class);
+	private static Log log = LogFactory.getLog(GroupManager.class);
 	
 	private ActorSystem actorSystem = null;
 	
-	private Map<String, ConferenceModel> conferenceMap = null;
+	private Map<String, GroupModel> conferenceMap = null;
 
-	public ConferenceManager(){
+	public GroupManager(){
 		actorSystem = ActorSystem.create("imeeting");
-		conferenceMap = new ConcurrentHashMap<String, ConferenceModel>();
+		conferenceMap = new ConcurrentHashMap<String, GroupModel>();
 	}
 	
-	public ConferenceModel getConference(String confId){
+	public GroupModel getGroup(String confId){
 		return conferenceMap.get(confId);
 	}
 	
-	public ConferenceModel removeConference(String confId){
+	public GroupModel removeConference(String confId){
 		return conferenceMap.remove(confId);
 	}
 	
-	public ConferenceModel createConference(final String confId, final String userName) throws SQLException{
+	public ActorRef createGroup(final String confId, final String userName) throws SQLException{
 		ActorRef actor = actorSystem.actorOf(new Props(new UntypedActorFactory(){
 			@Override
 			public Actor create() {
-				ConferenceModel model = new ConferenceModel(confId, userName);
+				GroupModel model = new GroupModel(confId, userName);
 				conferenceMap.put(confId, model);
+				log.info("create conference model: " + confId + " username: " + userName);
 				return model;
 			}
 		}), confId);
 		
-		return getConference(confId);
+		return actor;
 	} 
 	
 }

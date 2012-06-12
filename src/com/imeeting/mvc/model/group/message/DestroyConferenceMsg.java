@@ -1,13 +1,13 @@
-package com.imeeting.mvc.model.conference.message;
+package com.imeeting.mvc.model.group.message;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.group.GroupModel;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 
-public class DestroyConferenceMsg implements IConferenceMessage {
+public class DestroyConferenceMsg implements IGroupMessage {
 
 	@Override
-	public void onReceive(ConferenceModel model) throws Exception {
+	public void onReceive(GroupModel model) throws Exception {
 		DonkeyHttpResponse donkeyResponse = 
 			ContextLoader.getDonkeyClient().destroyConference(model.getAudioConfId(), model.getConfId());
 		if (donkeyResponse.isAccepted()){

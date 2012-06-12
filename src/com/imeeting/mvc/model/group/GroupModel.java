@@ -1,20 +1,22 @@
-package com.imeeting.mvc.model.conference;
+package com.imeeting.mvc.model.group;
 
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.conference.message.IConferenceMessage;
+import com.imeeting.mvc.model.group.message.IGroupMessage;
 
 import akka.actor.UntypedActor;
 
-public class ConferenceModel extends UntypedActor {
+public class GroupModel extends UntypedActor {
 
 	private String confId;
 	private String owner;
 	private String audioConfId;
+	private List<String> attendees;
 	
-	public ConferenceModel(String confId, String owner){
+	public GroupModel(String confId, String owner){
 		this.confId = confId;
 		this.owner = owner;
 	}
@@ -35,14 +37,22 @@ public class ConferenceModel extends UntypedActor {
 		return this.audioConfId;
 	}
 	
-	public void tell(IConferenceMessage msg){
+	public List<String> getAttendees() {
+		return attendees;
+	}
+
+	public void setAttendees(List<String> attendees) {
+		this.attendees = attendees;
+	}
+
+	public void tell(IGroupMessage msg){
 		getSelf().tell(msg);
 	}
 	
 	public void stop() throws SQLException{
-		ConferenceDB.close(confId);
+		GroupDB.close(confId);
 		
-		ConferenceManager confManager = ContextLoader.getConferenceManager();
+		GroupManager confManager = ContextLoader.getGroupManager();
 		confManager.removeConference(this.confId);
 
 		getContext().stop(getSelf());
@@ -50,8 +60,8 @@ public class ConferenceModel extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if (message instanceof IConferenceMessage){
-			IConferenceMessage confMsg = (IConferenceMessage)message;
+		if (message instanceof IGroupMessage){
+			IGroupMessage confMsg = (IGroupMessage)message;
 			confMsg.onReceive(this);
 		} else {
 			unhandled(message);

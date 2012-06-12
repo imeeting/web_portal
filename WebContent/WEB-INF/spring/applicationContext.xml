@@ -38,7 +38,7 @@
 		</property>		
 	</bean>
 	
-	<bean id="conference_manager" class="com.imeeting.mvc.model.conference.ConferenceManager">
+	<bean id="group_manager" class="com.imeeting.mvc.model.group.GroupManager">
 	</bean>
 	
 	<bean id="dataSource_mysql_c3p0" 

@@ -1,20 +1,20 @@
-package com.imeeting.mvc.model.conference.message;
+package com.imeeting.mvc.model.group.message;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.group.GroupModel;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 
-public class CreateAudioConferenceMsg implements IConferenceMessage {
+public class CreateAudioConferenceMsg implements IGroupMessage {
 	
 	private static Log log = LogFactory.getLog(CreateAudioConferenceMsg.class);
 
 	@Override
-	public void onReceive(ConferenceModel model) throws Exception {
+	public void onReceive(GroupModel model) throws Exception {
 		DonkeyClient donkeyClient = ContextLoader.getDonkeyClient();
 		//using confId ad request ID.
 		DonkeyHttpResponse donkeyResponse = donkeyClient.createConference(model.getConfId());
