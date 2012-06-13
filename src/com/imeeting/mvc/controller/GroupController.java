@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.glassfish.api.Param;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,9 +32,9 @@ import com.richitec.util.RandomString;
 
 /**
  * 
- * client --- create group request --> Server client <-- response with
- * confId --- Server client --- attendee list --> Server client <-- response
- * from server --- Server client send short message to attendees.
+ * client --- create group request --> Server client <-- response with confId
+ * --- Server client --- attendee list --> Server client <-- response from
+ * server --- Server client send short message to attendees.
  * 
  * @author huuguanghui
  * 
@@ -76,14 +77,13 @@ public class GroupController {
 			return;
 		}
 		GroupDB.insertAttendee(groupId, userName);
-		
 
 		GroupManager groupManager = ContextLoader.getGroupManager();
 		ActorRef actor = groupManager.createGroup(groupId, userName);
 		if (actor == null) {
 			log.info("Conference model is null");
 		}
-	//	actor.tell(new CreateAudioConferenceMsg());
+		// actor.tell(new CreateAudioConferenceMsg());
 
 		response.setStatus(HttpServletResponse.SC_ACCEPTED);
 		response.getWriter().print(groupId);
@@ -140,8 +140,7 @@ public class GroupController {
 			throws IOException, SQLException, JSONException {
 
 		int count = GroupDB.getGroupTotalCount(username);
-		JSONArray confs = GroupDB.geGroupList(username, offset,
-				PageSize);
+		JSONArray confs = GroupDB.geGroupList(username, offset, PageSize);
 
 		String url = "/conference/list" + "?";
 		Pager pager = new Pager(offset, PageSize, count, url);
@@ -184,8 +183,7 @@ public class GroupController {
 	public void invite(HttpServletResponse response,
 			@RequestParam String groupId, @RequestParam String attendeeList)
 			throws IOException, SQLException {
-		GroupModel model = ContextLoader.getGroupManager()
-				.getGroup(groupId);
+		GroupModel model = ContextLoader.getGroupManager().getGroup(groupId);
 		if (model == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
 					"group doesn't exist, may be closed.");
@@ -209,7 +207,7 @@ public class GroupController {
 				e.printStackTrace();
 			}
 		}
-		
+
 		model.setAttendees(attendeesArrayList);
 		// TODO: create actor for attendees
 	}
@@ -220,7 +218,7 @@ public class GroupController {
 	 */
 	@RequestMapping(value = "/kickout")
 	public void kickout(HttpServletResponse response,
-			@RequestParam String confId, @RequestParam String attendeeId) {
+			@RequestParam String groupId, @RequestParam String attendeeId) {
 
 	}
 
@@ -232,7 +230,7 @@ public class GroupController {
 	 * @param userId
 	 */
 	@RequestMapping(value = "/join")
-	public void join(HttpServletResponse response, @RequestParam String confId,
+	public void join(HttpServletResponse response, @RequestParam String groupId,
 			@RequestParam String userId) {
 		//
 	}
@@ -246,7 +244,7 @@ public class GroupController {
 	 */
 	@RequestMapping(value = "/unjoin")
 	public void unjoin(HttpServletResponse response,
-			@RequestParam String confId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String userId) {
 
 	}
 
@@ -258,7 +256,7 @@ public class GroupController {
 	 * @param userId
 	 */
 	@RequestMapping(value = "/call")
-	public void call(HttpServletResponse response, @RequestParam String confId,
+	public void call(HttpServletResponse response, @RequestParam String groupId,
 			@RequestParam String userId) {
 
 	}
@@ -272,7 +270,7 @@ public class GroupController {
 	 */
 	@RequestMapping(value = "/hangup", method = RequestMethod.POST)
 	public void hangup(HttpServletResponse response,
-			@RequestParam String confId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String userId) {
 
 	}
 
@@ -284,7 +282,7 @@ public class GroupController {
 	 * @param userId
 	 */
 	@RequestMapping(value = "/mute", method = RequestMethod.POST)
-	public void mute(HttpServletResponse response, @RequestParam String confId,
+	public void mute(HttpServletResponse response, @RequestParam String groupId,
 			@RequestParam String userId) {
 
 	}
@@ -298,8 +296,16 @@ public class GroupController {
 	 */
 	@RequestMapping(value = "/unmute", method = RequestMethod.POST)
 	public void unmute(HttpServletResponse response,
-			@RequestParam String confId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String userId) {
 
+	}
+
+	@RequestMapping("/editTitle")
+	public void editTitle(
+			@RequestParam(value = "groupId", required = true) String groupId,
+			@RequestParam(value = "title", required = true) String title,
+			HttpServletResponse response) throws SQLException {
+		GroupDB.editGroupTitle(groupId, title);
 	}
 
 }

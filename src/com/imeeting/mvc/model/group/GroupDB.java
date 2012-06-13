@@ -54,7 +54,7 @@ public class GroupDB {
 	public static JSONArray geGroupList(String userName, int offset,
 			int pageSize) throws SQLException {
 		// query conference list related to username
-		String sql = "SELECT c.groupId AS id, c.owner, UNIX_TIMESTAMP(c.created) AS created, c.status "
+		String sql = "SELECT c.groupId AS id, c.owner, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
 				+ "ORDER BY c.created DESC";
@@ -78,12 +78,12 @@ public class GroupDB {
 			String owner = (String) groupMap.get("owner");
 			Long createdTime = (Long) groupMap.get("created");
 			String status = (String) groupMap.get("status");
-
+			String title = (String) groupMap.get("title");
 			log.info("groupId: " + groupId);
 			log.info("owner: " + owner);
 			log.info("created time: " + createdTime.longValue());
 			log.info("status: " + status);
-			
+			log.info("title: " + title);
 			
 			JSONObject group = new JSONObject();
 			try {
@@ -91,6 +91,7 @@ public class GroupDB {
 				group.put("owner", owner);
 				group.put("created_time", createdTime);
 				group.put("status", status);
+				group.put("title", title);
 				JSONArray attendees = new JSONArray();
 				group.put("attendees", attendees);
 			} catch (JSONException e) {
@@ -165,6 +166,12 @@ public class GroupDB {
 			throws SQLException {
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		Object[] params = new Object[] { groupId, userName };
+		DBHelper.getInstance().update(sql, params);
+	}
+	
+	public static void editGroupTitle(String groupId, String title) throws SQLException {
+		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
+		Object[] params = new Object[] {title, groupId};
 		DBHelper.getInstance().update(sql, params);
 	}
 }
