@@ -21,12 +21,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import akka.actor.ActorRef;
 
+import com.imeeting.beans.AttendeeBean;
+import com.imeeting.beans.AttendeeBean.OnlineStatus;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.imeeting.mvc.model.group.GroupModel;
+import com.imeeting.mvc.model.group.GroupDB.GroupStatus;
 import com.imeeting.mvc.model.group.message.CreateAudioConferenceMsg;
 import com.imeeting.mvc.model.group.message.DestroyConferenceMsg;
+import com.imeeting.mvc.model.group.message.LoadGroupAttendeesMsg;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
 
@@ -66,7 +70,6 @@ public class GroupController {
 			@RequestParam(value = "moderator", required = false) String moderator,
 			@RequestParam(value = "attendeelist", required = false) String attendeeList)
 			throws IOException, SQLException {
-		// /
 		log.debug("create");
 		String groupId = RandomString.genRandomNum(8);
 		int r = GroupDB.insert(groupId, userName);
@@ -80,12 +83,9 @@ public class GroupController {
 
 		GroupManager groupManager = ContextLoader.getGroupManager();
 		ActorRef actor = groupManager.createGroup(groupId, userName);
-		if (actor == null) {
-			log.info("Conference model is null");
-		}
 		// actor.tell(new CreateAudioConferenceMsg());
 
-		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(groupId);
 	}
 
@@ -93,27 +93,27 @@ public class GroupController {
 	 * destroy group
 	 * 
 	 * @param response
-	 * @param userName
-	 * @param confId
+	 * @param username
+	 * @param groupId
 	 * @throws IOException
 	 * @throws SQLException
 	 */
 	@Deprecated
 	@RequestMapping(value = "/destroy")
 	public void destroy(HttpServletResponse response,
-			@RequestParam String userName, @RequestParam String confId)
+			@RequestParam String username, @RequestParam String groupId)
 			throws IOException, SQLException {
 		// /
 		log.debug("destroy");
 		GroupManager confManager = ContextLoader.getGroupManager();
-		GroupModel conference = confManager.getGroup(confId);
+		GroupModel conference = confManager.getGroup(groupId);
 		if (null == conference) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND,
-					"Cannot find conference with ID:" + confId);
+					"Cannot find conference with ID:" + groupId);
 			return;
 		}
 
-		if (userName != conference.getOwner()) {
+		if (username != conference.getOwner()) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
 					"userName and confId are not match");
 			return;
@@ -199,16 +199,16 @@ public class GroupController {
 		}
 		GroupDB.insertAttendees(groupId, attendees);
 
-		List<String> attendeesArrayList = new ArrayList<String>();
+		List<AttendeeBean> attendeesArrayList = new ArrayList<AttendeeBean>();
 		for (int i = 0; i < attendees.length(); i++) {
 			try {
-				attendeesArrayList.add(attendees.getString(i));
+				attendeesArrayList.add(new AttendeeBean(attendees.getString(i), OnlineStatus.offline));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
 
-		model.setAttendees(attendeesArrayList);
+		model.addAttendees(attendeesArrayList);
 		// TODO: create actor for attendees
 	}
 
@@ -223,16 +223,55 @@ public class GroupController {
 	}
 
 	/**
-	 * Attendee join conference
+	 * Attendee join group
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
+	 * @throws SQLException 
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "/join")
-	public void join(HttpServletResponse response, @RequestParam String groupId,
-			@RequestParam String userId) {
-		//
+	public void join(HttpServletResponse response,
+			@RequestParam String groupId, @RequestParam String username) throws SQLException, IOException {
+		GroupManager groupManager = ContextLoader.getGroupManager();
+		GroupModel group = groupManager.getGroup(groupId);
+		if (group == null) {
+			// currently there is no existing group in the memory
+			// the first one joining the group will be the owner
+			
+			// update the group in db
+			int rows = GroupDB.updateOwnerAndStatus(groupId, username, GroupStatus.OPEN);
+			if (rows <= 0) {
+				// no group exists in the db, return error
+				log.error("no existed group found in db");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "No Existed Group Found!");
+				return;
+			}
+			
+			// create in memory
+			ActorRef actor = groupManager.createGroup(groupId, username);
+			actor.tell(new LoadGroupAttendeesMsg());
+			// actor.tell(new CreateAudioConferenceMsg());
+
+			response.setStatus(HttpServletResponse.SC_OK);
+			
+		} else {
+			// other people join the group
+			AttendeeBean attendee = group.findAttendee(username);
+			if (attendee == null) {
+				// user are prohibited to join the group for he isn't in the group
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
+				return;
+			}
+			
+			// update the status 
+			attendee.setOnlineStatus(OnlineStatus.online);
+			//TODO: notify other people that User has joined
+			
+			
+			response.setStatus(HttpServletResponse.SC_OK);
+		}
 	}
 
 	/**
@@ -240,11 +279,11 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
 	 */
 	@RequestMapping(value = "/unjoin")
 	public void unjoin(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String username) {
 
 	}
 
@@ -253,11 +292,11 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
 	 */
 	@RequestMapping(value = "/call")
-	public void call(HttpServletResponse response, @RequestParam String groupId,
-			@RequestParam String userId) {
+	public void call(HttpServletResponse response,
+			@RequestParam String groupId, @RequestParam String username) {
 
 	}
 
@@ -266,11 +305,11 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
 	 */
 	@RequestMapping(value = "/hangup", method = RequestMethod.POST)
 	public void hangup(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String username) {
 
 	}
 
@@ -279,11 +318,11 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
 	 */
 	@RequestMapping(value = "/mute", method = RequestMethod.POST)
-	public void mute(HttpServletResponse response, @RequestParam String groupId,
-			@RequestParam String userId) {
+	public void mute(HttpServletResponse response,
+			@RequestParam String groupId, @RequestParam String username) {
 
 	}
 
@@ -292,11 +331,11 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param confId
-	 * @param userId
+	 * @param username
 	 */
 	@RequestMapping(value = "/unmute", method = RequestMethod.POST)
 	public void unmute(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String userId) {
+			@RequestParam String groupId, @RequestParam String username) {
 
 	}
 
@@ -308,4 +347,9 @@ public class GroupController {
 		GroupDB.editGroupTitle(groupId, title);
 	}
 
+	@RequestMapping("/hide")
+	public void hideGroup(@RequestParam String groupId,
+			@RequestParam String username, HttpServletResponse response) throws SQLException {
+		GroupDB.hideGroup(groupId, username);
+	}
 }

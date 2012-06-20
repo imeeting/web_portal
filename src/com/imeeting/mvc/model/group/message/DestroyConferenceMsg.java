@@ -9,7 +9,7 @@ public class DestroyConferenceMsg implements IGroupMessage {
 	@Override
 	public void onReceive(GroupModel model) throws Exception {
 		DonkeyHttpResponse donkeyResponse = 
-			ContextLoader.getDonkeyClient().destroyConference(model.getAudioConfId(), model.getConfId());
+			ContextLoader.getDonkeyClient().destroyConference(model.getAudioConfId(), model.getGroupId());
 		if (donkeyResponse.isAccepted()){
 			//
 		} else {

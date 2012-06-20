@@ -2,7 +2,6 @@ package com.imeeting.mvc.model.group;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,19 +12,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import sun.util.logging.resources.logging;
-
-import com.imeeting.mvc.model.group.message.CreateAudioConferenceMsg;
+import com.imeeting.beans.AttendeeBean;
 import com.richitec.db.DBHelper;
 
 public class GroupDB {
 	private static Log log = LogFactory.getLog(GroupDB.class);
 	
-	public enum ConfStatus {
+	public enum GroupStatus {
 		OPEN, CLOSE
 	};
 
-	public enum UserConfStatus {
+	public enum UserGroupStatus {
 		VISIABLE, HIDDEN
 	};
 
@@ -36,8 +33,17 @@ public class GroupDB {
 	}
 
 	public static int close(String groupId) throws SQLException {
+		return setStatus(groupId, GroupStatus.CLOSE);
+	}
+	
+	@Deprecated
+	public static int open(String groupId) throws SQLException {
+		return setStatus(groupId, GroupStatus.OPEN);
+	}
+	
+	private static int setStatus(String groupId, GroupStatus status) throws SQLException {
 		String sql = "UPDATE im_group set status = ? WHERE groupId = ?";
-		Object[] params = new Object[] { ConfStatus.CLOSE, groupId };
+		Object[] params = new Object[] { status.name(), groupId };
 		return DBHelper.getInstance().update(sql, params);
 	}
 
@@ -47,7 +53,7 @@ public class GroupDB {
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
 				+ "ORDER BY c.created DESC";
-		Object[] params = new Object[] { username, UserConfStatus.VISIABLE.name() };
+		Object[] params = new Object[] { username, UserGroupStatus.VISIABLE.name() };
 		return DBHelper.getInstance().count(sql, params);
 	}
 
@@ -58,7 +64,7 @@ public class GroupDB {
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
 				+ "ORDER BY c.created DESC";
-		Object[] params = new Object[] { userName, UserConfStatus.VISIABLE.name() };
+		Object[] params = new Object[] { userName, UserGroupStatus.VISIABLE.name() };
 
 		List<Map<String, Object>> groupResultList = DBHelper.getInstance()
 				.queryPager(sql, params, offset, pageSize);
@@ -142,7 +148,7 @@ public class GroupDB {
 	public static int hideGroup(String groupId, String userName)
 			throws SQLException {
 		String sql = "UPDATE im_attendee set status = ? WHERE groupId = ? AND username = ?";
-		Object[] params = new Object[] { UserConfStatus.HIDDEN, groupId,
+		Object[] params = new Object[] { UserGroupStatus.HIDDEN.name(), groupId,
 				userName };
 		return DBHelper.getInstance().update(sql, params);
 	}
@@ -169,9 +175,54 @@ public class GroupDB {
 		DBHelper.getInstance().update(sql, params);
 	}
 	
+	/**
+	 * get attendees from group
+	 * @param groupId
+	 * @return List<Map<String, Object>>
+	 * @throws SQLException 
+	 */
+	public static List<Map<String, Object>> getGroupAttendees(String groupId) throws SQLException {
+		String sql = "SELECT username FROM im_attendee WHERE groupId = ?";
+		Object[] params = new Object[] {groupId};
+		List<Map<String, Object>> result = DBHelper.getInstance().query(sql, params);
+		return result;
+	}
+	
 	public static void editGroupTitle(String groupId, String title) throws SQLException {
 		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
 		Object[] params = new Object[] {title, groupId};
 		DBHelper.getInstance().update(sql, params);
+	}
+	
+	/**
+	 * check if the group exists in the db
+	 * @param groupId
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isGroupExisted(String groupId) throws SQLException {
+		String sql = "SELECT count(groupId) FROM im_group WHERE groupId = ?";
+		Object[] params = new Object[] {groupId};
+		int count = DBHelper.getInstance().count(sql, params);
+		boolean ret = false;
+		if (count > 0) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * update the owner and status of specified group
+	 * @param groupId
+	 * @param owner
+	 * @param status
+	 * @return rows
+	 * @throws SQLException 
+	 */
+	public static int updateOwnerAndStatus(String groupId, String owner, GroupStatus status) throws SQLException {
+		String sql = "UPDATE im_group SET owner = ? AND status = ? WHERE groupId = ?";
+		Object[] params = new Object[] {owner, status.name(), groupId};
+		int rows = DBHelper.getInstance().update(sql, params);
+		return rows;
 	}
 }

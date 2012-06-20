@@ -17,7 +17,7 @@ public class CreateAudioConferenceMsg implements IGroupMessage {
 	public void onReceive(GroupModel model) throws Exception {
 		DonkeyClient donkeyClient = ContextLoader.getDonkeyClient();
 		//using confId ad request ID.
-		DonkeyHttpResponse donkeyResponse = donkeyClient.createConference(model.getConfId());
+		DonkeyHttpResponse donkeyResponse = donkeyClient.createConference(model.getGroupId());
 		if (donkeyResponse.isAccepted()){
 			JSONObject json = new JSONObject(donkeyResponse.getEntityAsString());
 			String audioConfId = json.getString(DonkeyHttpResponse.CONFERENCE);

@@ -19,31 +19,31 @@ public class GroupManager {
 	
 	private ActorSystem actorSystem = null;
 	
-	private Map<String, GroupModel> conferenceMap = null;
+	private Map<String, GroupModel> groupMap = null;
 
 	public GroupManager(){
 		actorSystem = ActorSystem.create("imeeting");
-		conferenceMap = new ConcurrentHashMap<String, GroupModel>();
+		groupMap = new ConcurrentHashMap<String, GroupModel>();
 	}
 	
 	public GroupModel getGroup(String confId){
-		return conferenceMap.get(confId);
+		return groupMap.get(confId);
 	}
 	
 	public GroupModel removeConference(String confId){
-		return conferenceMap.remove(confId);
+		return groupMap.remove(confId);
 	}
 	
-	public ActorRef createGroup(final String confId, final String userName) throws SQLException{
+	public ActorRef createGroup(final String groupId, final String userName) throws SQLException{
 		ActorRef actor = actorSystem.actorOf(new Props(new UntypedActorFactory(){
 			@Override
 			public Actor create() {
-				GroupModel model = new GroupModel(confId, userName);
-				conferenceMap.put(confId, model);
-				log.info("create conference model: " + confId + " username: " + userName);
+				GroupModel model = new GroupModel(groupId, userName);
+				groupMap.put(groupId, model);
+				log.info("create group model: " + groupId + " username: " + userName);
 				return model;
 			}
-		}), confId);
+		}), groupId);
 		
 		return actor;
 	} 
