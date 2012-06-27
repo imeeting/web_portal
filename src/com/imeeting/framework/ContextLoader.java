@@ -12,6 +12,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.richitec.db.DBHelper;
 import com.richitec.donkey.client.DonkeyClient;
+import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.util.ConfigManager;
 
@@ -51,4 +52,7 @@ public class ContextLoader extends ContextLoaderListener {
 		return (GroupManager)appContext.getBean("group_manager");
 	}
 
+	public static Notifier getNotifier() {
+		return (Notifier)appContext.getBean("notifier");
+	}
 }

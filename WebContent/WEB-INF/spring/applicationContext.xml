@@ -41,6 +41,12 @@
 	<bean id="group_manager" class="com.imeeting.mvc.model.group.GroupManager">
 	</bean>
 	
+	<bean id="notifier" class="com.richitec.notify.Notifier">
+		<property name="notifyUrl">
+			<value>${notify_url}</value>
+		</property>
+	</bean>
+	
 	<bean id="dataSource_mysql_c3p0" 
 		class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">

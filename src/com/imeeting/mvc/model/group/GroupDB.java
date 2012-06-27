@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.imeeting.beans.AttendeeBean;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.richitec.db.DBHelper;
 
 public class GroupDB {
@@ -139,8 +139,8 @@ public class GroupDB {
 		JSONArray groupJSONArray = new JSONArray();
 		for (Map<String, Object> groupInfo : groupResultList) {
 			String groupId = (String) groupInfo.get("id");
-			JSONObject conf = groupInfoMap.get(groupId);
-			groupJSONArray.put(conf);
+			JSONObject group = groupInfoMap.get(groupId);
+			groupJSONArray.put(group);
 		}
 		return groupJSONArray;
 	}
@@ -200,6 +200,7 @@ public class GroupDB {
 	 * @return
 	 * @throws SQLException
 	 */
+	@Deprecated
 	public static boolean isGroupExisted(String groupId) throws SQLException {
 		String sql = "SELECT count(groupId) FROM im_group WHERE groupId = ?";
 		Object[] params = new Object[] {groupId};

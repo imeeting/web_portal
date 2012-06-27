@@ -21,13 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import akka.actor.ActorRef;
 
-import com.imeeting.beans.AttendeeBean;
-import com.imeeting.beans.AttendeeBean.OnlineStatus;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.imeeting.mvc.model.group.GroupModel;
 import com.imeeting.mvc.model.group.GroupDB.GroupStatus;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean.TelephoneStatus;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
 import com.imeeting.mvc.model.group.message.CreateAudioConferenceMsg;
 import com.imeeting.mvc.model.group.message.DestroyConferenceMsg;
 import com.imeeting.mvc.model.group.message.LoadGroupAttendeesMsg;
@@ -161,12 +163,31 @@ public class GroupController {
 	}
 
 	/**
-	 * get attendee list of the conference
+	 * get attendee list of the group which has been opened already
+	 * 
+	 * @param groupId
+	 * @param response
+	 * 
+	 * @throws IOException
 	 */
-	@Deprecated
-	@RequestMapping(value = "/attendeelist")
-	public void attendeeList() {
+	@RequestMapping(value = "/attendeeList")
+	public void attendeeList(@RequestParam String groupId,
+			HttpServletResponse response) throws IOException {
+		GroupModel model = ContextLoader.getGroupManager().getGroup(groupId);
+		if (model == null) {
+			response.sendError(HttpServletResponse.SC_GONE,
+					"group doesn't exist, may be closed.");
+			return;
+		}
 
+		List<AttendeeBean> attendees = model.getAttendees();
+		JSONArray ret = new JSONArray();
+		if (attendees != null) {
+			for (AttendeeBean att : attendees) {
+				ret.put(att.toJson());
+			}
+		}
+		response.getWriter().print(ret.toString());
 	}
 
 	/**
@@ -202,14 +223,15 @@ public class GroupController {
 		List<AttendeeBean> attendeesArrayList = new ArrayList<AttendeeBean>();
 		for (int i = 0; i < attendees.length(); i++) {
 			try {
-				attendeesArrayList.add(new AttendeeBean(attendees.getString(i), OnlineStatus.offline));
+				attendeesArrayList.add(new AttendeeBean(attendees.getString(i),
+						OnlineStatus.offline));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
 
 		model.addAttendees(attendeesArrayList);
-		// TODO: create actor for attendees
+
 	}
 
 	/**
@@ -228,48 +250,53 @@ public class GroupController {
 	 * @param response
 	 * @param confId
 	 * @param username
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "/join")
 	public void join(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String username) throws SQLException, IOException {
+			@RequestParam String groupId, @RequestParam String username)
+			throws SQLException, IOException {
 		GroupManager groupManager = ContextLoader.getGroupManager();
-		GroupModel group = groupManager.getGroup(groupId);
-		if (group == null) {
+		GroupModel groupModel = groupManager.getGroup(groupId);
+		if (groupModel == null) {
 			// currently there is no existing group in the memory
 			// the first one joining the group will be the owner
-			
+
 			// update the group in db
-			int rows = GroupDB.updateOwnerAndStatus(groupId, username, GroupStatus.OPEN);
+			int rows = GroupDB.updateOwnerAndStatus(groupId, username,
+					GroupStatus.OPEN);
 			if (rows <= 0) {
 				// no group exists in the db, return error
 				log.error("no existed group found in db");
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "No Existed Group Found!");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"No Existed Group Found!");
 				return;
 			}
-			
+
 			// create in memory
 			ActorRef actor = groupManager.createGroup(groupId, username);
 			actor.tell(new LoadGroupAttendeesMsg());
 			// actor.tell(new CreateAudioConferenceMsg());
 
 			response.setStatus(HttpServletResponse.SC_OK);
-			
+
 		} else {
 			// other people join the group
-			AttendeeBean attendee = group.findAttendee(username);
+			AttendeeBean attendee = groupModel.findAttendee(username);
 			if (attendee == null) {
-				// user are prohibited to join the group for he isn't in the group
-				response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
+				// user are prohibited to join the group for he isn't in the
+				// group
+				response.sendError(HttpServletResponse.SC_FORBIDDEN,
+						"Not Invited!");
 				return;
 			}
-			
-			// update the status 
+
+			// update the status
 			attendee.setOnlineStatus(OnlineStatus.online);
-			//TODO: notify other people that User has joined
-			
-			
+			// notify other people that User has joined
+			groupModel.broadcastAttendeeStatus(attendee);
+
 			response.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
@@ -280,11 +307,51 @@ public class GroupController {
 	 * @param response
 	 * @param confId
 	 * @param username
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "/unjoin")
 	public void unjoin(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String username) {
+			@RequestParam String groupId, @RequestParam String username)
+			throws IOException {
+		log.debug("unjoin group - username: " + username + "groupId: "
+				+ groupId);
+		GroupManager groupManager = ContextLoader.getGroupManager();
+		GroupModel groupModel = groupManager.getGroup(groupId);
+		if (groupModel == null) {
+			response.sendError(HttpServletResponse.SC_GONE,
+					"group doesn't exist, may be closed.");
+			return;
+		}
+		AttendeeBean attendee = groupModel.findAttendee(username);
+		if (attendee == null) {
+			// user are prohibited to join the group for he isn't in the group
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
+			return;
+		}
+		// update the status
+		attendee.setOnlineStatus(OnlineStatus.offline);
+		attendee.setTelephoneStatus(TelephoneStatus.idle);
+		attendee.setVideoStatus(VideoStatus.off);
+		// notify other people that User has unjoined
+		groupModel.broadcastAttendeeStatus(attendee);
 
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	@RequestMapping(value = "/updateAttendeeStatus")
+	public void updateAttendeeStatus(HttpServletResponse response,
+			@RequestParam String groupId, @RequestParam String username,
+			@RequestParam(value = "online_status", required = false) String onlineStatus,
+			@RequestParam(value = "video_status", required = false) String videoStatus,
+			@RequestParam(value = "telephone_status", required = false) String telephoneStatus) throws IOException {
+		GroupManager groupManager = ContextLoader.getGroupManager();
+		GroupModel groupModel = groupManager.getGroup(groupId);
+		if (groupModel == null) {
+			response.sendError(HttpServletResponse.SC_GONE,
+					"group doesn't exist, may be closed.");
+			return;
+		}
+		groupModel.updateAttendeeStatus(username, onlineStatus, videoStatus, telephoneStatus);
 	}
 
 	/**
@@ -349,7 +416,8 @@ public class GroupController {
 
 	@RequestMapping("/hide")
 	public void hideGroup(@RequestParam String groupId,
-			@RequestParam String username, HttpServletResponse response) throws SQLException {
+			@RequestParam String username, HttpServletResponse response)
+			throws SQLException {
 		GroupDB.hideGroup(groupId, username);
 	}
 }

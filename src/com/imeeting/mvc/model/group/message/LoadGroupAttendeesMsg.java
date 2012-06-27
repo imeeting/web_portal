@@ -6,9 +6,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.imeeting.beans.AttendeeBean;
 import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupModel;
+import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 
 public class LoadGroupAttendeesMsg implements IGroupMessage {
 	private static Log log = LogFactory.getLog(LoadGroupAttendeesMsg.class);

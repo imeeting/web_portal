@@ -1,4 +1,4 @@
-package com.imeeting.beans;
+package com.imeeting.mvc.model.group.attendee;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +17,7 @@ public class AttendeeBean {
 		on, off
 	}
 
-	private String name;
+	private String username;
 	private OnlineStatus onlineStatus;
 	private VideoStatus videoStatus;
 	private TelephoneStatus telephoneStatus;
@@ -26,19 +26,19 @@ public class AttendeeBean {
 		this(name, OnlineStatus.offline);
 	}
 	
-	public AttendeeBean(String name, OnlineStatus status) {
-		this.setName(name);
+	public AttendeeBean(String username, OnlineStatus status) {
+		this.setUsername(username);
 		this.setOnlineStatus(status);
 		this.setVideoStatus(VideoStatus.off);
 		this.setTelephoneStatus(TelephoneStatus.idle);
 	}
 	
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String name) {
+		this.username = name;
 	}
 
 	public OnlineStatus getOnlineStatus() {
@@ -68,7 +68,7 @@ public class AttendeeBean {
 	public JSONObject toJson() {
 		JSONObject obj = new JSONObject();
 		try {
-			obj.put("name", name);
+			obj.put("username", username);
 			obj.put("online_status", onlineStatus.name());
 			obj.put("video_status", videoStatus.name());
 			obj.put("telephone_status", telephoneStatus.name());
