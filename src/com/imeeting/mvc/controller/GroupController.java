@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
-import org.glassfish.api.Param;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,16 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import akka.actor.ActorRef;
 
+import com.imeeting.constants.GroupConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupDB;
+import com.imeeting.mvc.model.group.GroupDB.GroupStatus;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.imeeting.mvc.model.group.GroupModel;
-import com.imeeting.mvc.model.group.GroupDB.GroupStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.TelephoneStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
-import com.imeeting.mvc.model.group.message.CreateAudioConferenceMsg;
 import com.imeeting.mvc.model.group.message.DestroyConferenceMsg;
 import com.imeeting.mvc.model.group.message.LoadGroupAttendeesMsg;
 import com.richitec.util.Pager;
@@ -71,7 +69,7 @@ public class GroupController {
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "moderator", required = false) String moderator,
 			@RequestParam(value = "attendeelist", required = false) String attendeeList)
-			throws IOException, SQLException {
+			throws IOException, SQLException, JSONException {
 		log.debug("create");
 		String groupId = RandomString.genRandomNum(8);
 		int r = GroupDB.insert(groupId, userName);
@@ -88,7 +86,9 @@ public class GroupController {
 		// actor.tell(new CreateAudioConferenceMsg());
 
 		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.getWriter().print(groupId);
+		JSONObject ret = new JSONObject();
+		ret.put(GroupConstants.groupId.name(), groupId);
+		response.getWriter().print(ret.toString());
 	}
 
 	/**
@@ -195,15 +195,16 @@ public class GroupController {
 	 * 
 	 * @param response
 	 * @param groupId
-	 * @param attendeeList
+	 * @param attendees
 	 *            - json array string
 	 * @throws IOException
 	 * @throws SQLException
 	 */
 	@RequestMapping(value = "/invite")
 	public void invite(HttpServletResponse response,
-			@RequestParam String groupId, @RequestParam String attendeeList)
+			@RequestParam String groupId, @RequestParam String attendees)
 			throws IOException, SQLException {
+		log.info("invite attendees");
 		GroupModel model = ContextLoader.getGroupManager().getGroup(groupId);
 		if (model == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
@@ -212,18 +213,19 @@ public class GroupController {
 		}
 
 		// insert MySQL
-		JSONArray attendees = new JSONArray();
+		JSONArray attendeesJsonArray = new JSONArray();
 		try {
-			attendees = new JSONArray(attendeeList);
+			attendeesJsonArray = new JSONArray(attendees);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		GroupDB.insertAttendees(groupId, attendees);
+		log.info("attendees size: " + attendeesJsonArray.length());
+		GroupDB.insertAttendees(groupId, attendeesJsonArray);
 
 		List<AttendeeBean> attendeesArrayList = new ArrayList<AttendeeBean>();
-		for (int i = 0; i < attendees.length(); i++) {
+		for (int i = 0; i < attendeesJsonArray.length(); i++) {
 			try {
-				attendeesArrayList.add(new AttendeeBean(attendees.getString(i),
+				attendeesArrayList.add(new AttendeeBean(attendeesJsonArray.getString(i),
 						OnlineStatus.offline));
 			} catch (JSONException e) {
 				e.printStackTrace();

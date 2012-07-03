@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.imeeting.constants.AttendeeConstants;
+import com.imeeting.constants.GroupConstants;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.richitec.db.DBHelper;
 
@@ -93,13 +95,13 @@ public class GroupDB {
 			
 			JSONObject group = new JSONObject();
 			try {
-				group.put("groupId", groupId);
-				group.put("owner", owner);
-				group.put("created_time", createdTime);
-				group.put("status", status);
-				group.put("title", title);
+				group.put(GroupConstants.groupId.name(), groupId);
+				group.put(GroupConstants.owner.name(), owner);
+				group.put(GroupConstants.created_time.name(), createdTime);
+				group.put(GroupConstants.status.name(), status);
+				group.put(GroupConstants.title.name(), title);
 				JSONArray attendees = new JSONArray();
-				group.put("attendees", attendees);
+				group.put(GroupConstants.attendees.name(), attendees);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -121,14 +123,14 @@ public class GroupDB {
 
 		for (Map<String, Object> attendeeMap : attendeeList) {
 			String groupId = (String) attendeeMap.get("id");
-			String attendee = (String) attendeeMap.get("username");
+			String attendee = (String) attendeeMap.get(AttendeeConstants.username.name());
 
 			log.info("groupId: " + groupId);
 			log.info("attendee: " + attendee);
 			
 			JSONObject group = groupInfoMap.get(groupId);
 			try {
-				JSONArray attendees = group.getJSONArray("attendees");
+				JSONArray attendees = group.getJSONArray(GroupConstants.attendees.name());
 				attendees.put(attendee);
 			} catch (JSONException e) {
 				e.printStackTrace();
