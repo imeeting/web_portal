@@ -1,6 +1,5 @@
 package com.imeeting.mvc.model.group;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,12 +25,12 @@ public class GroupManager {
 		groupMap = new ConcurrentHashMap<String, GroupModel>();
 	}
 	
-	public GroupModel getGroup(String confId){
-		return groupMap.get(confId);
+	public GroupModel getGroup(String groupId){
+		return groupMap.get(groupId);
 	}
 	
-	public GroupModel removeConference(String confId){
-		return groupMap.remove(confId);
+	public GroupModel removeConference(String groupId){
+		return groupMap.remove(groupId);
 	}
 	
 	@SuppressWarnings("serial")

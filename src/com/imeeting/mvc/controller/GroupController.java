@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -51,6 +52,13 @@ public class GroupController {
 	public static final int PageSize = 20;
 
 	private static Log log = LogFactory.getLog(GroupController.class);
+	
+	private GroupManager groupManager;
+	
+	@PostConstruct
+	public void init(){
+		groupManager = ContextLoader.getGroupManager();
+	}
 
 	/**
 	 * create a new group and response with the id of the conference.
@@ -82,7 +90,6 @@ public class GroupController {
 		}
 		GroupDB.insertAttendee(groupId, userName);
 		
-		GroupManager groupManager = ContextLoader.getGroupManager();
 		ActorRef actor = groupManager.createGroup(groupId, userName);
 		// actor.tell(new CreateAudioConferenceMsg());
 
@@ -114,8 +121,7 @@ public class GroupController {
 			throws IOException, SQLException {
 		// /
 		log.debug("destroy");
-		GroupManager confManager = ContextLoader.getGroupManager();
-		GroupModel conference = confManager.getGroup(groupId);
+		GroupModel conference = groupManager.getGroup(groupId);
 		if (null == conference) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND,
 					"Cannot find conference with ID:" + groupId);
@@ -180,7 +186,7 @@ public class GroupController {
 	@RequestMapping(value = "/attendeeList")
 	public void attendeeList(@RequestParam String groupId,
 			HttpServletResponse response) throws IOException {
-		GroupModel model = ContextLoader.getGroupManager().getGroup(groupId);
+		GroupModel model = groupManager.getGroup(groupId);
 		if (model == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
 					"group doesn't exist, may be closed.");
@@ -212,7 +218,7 @@ public class GroupController {
 			@RequestParam String groupId, @RequestParam String attendees)
 			throws IOException, SQLException {
 		log.info("invite attendees");
-		GroupModel model = ContextLoader.getGroupManager().getGroup(groupId);
+		GroupModel model = groupManager.getGroup(groupId);
 		if (model == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
 					"group doesn't exist, may be closed.");
@@ -247,7 +253,6 @@ public class GroupController {
 	public void join(HttpServletResponse response,
 			@RequestParam String groupId, @RequestParam String username)
 			throws SQLException, IOException {
-		GroupManager groupManager = ContextLoader.getGroupManager();
 		GroupModel groupModel = groupManager.getGroup(groupId);
 		if (groupModel == null) {
 			// currently there is no existing group in the memory
@@ -305,7 +310,6 @@ public class GroupController {
 			throws IOException {
 		log.debug("unjoin group - username: " + username + "groupId: "
 				+ groupId);
-		GroupManager groupManager = ContextLoader.getGroupManager();
 		GroupModel groupModel = groupManager.getGroup(groupId);
 		if (groupModel == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
@@ -334,7 +338,6 @@ public class GroupController {
 			@RequestParam(value = "online_status", required = false) String onlineStatus,
 			@RequestParam(value = "video_status", required = false) String videoStatus,
 			@RequestParam(value = "telephone_status", required = false) String telephoneStatus) throws IOException {
-		GroupManager groupManager = ContextLoader.getGroupManager();
 		GroupModel groupModel = groupManager.getGroup(groupId);
 		if (groupModel == null) {
 			response.sendError(HttpServletResponse.SC_GONE,
