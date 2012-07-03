@@ -34,13 +34,14 @@ public class GroupManager {
 		return groupMap.remove(confId);
 	}
 	
-	public ActorRef createGroup(final String groupId, final String userName) throws SQLException{
+	@SuppressWarnings("serial")
+	public ActorRef createGroup(final String groupId, final String userName) {
 		ActorRef actor = actorSystem.actorOf(new Props(new UntypedActorFactory(){
 			@Override
 			public Actor create() {
+				log.info("create group model: " + groupId + " username: " + userName);
 				GroupModel model = new GroupModel(groupId, userName);
 				groupMap.put(groupId, model);
-				log.info("create group model: " + groupId + " username: " + userName);
 				return model;
 			}
 		}), groupId);

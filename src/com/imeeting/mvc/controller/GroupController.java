@@ -29,6 +29,7 @@ import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.TelephoneStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
+import com.imeeting.mvc.model.group.message.AddAttendeesToGroupMessage;
 import com.imeeting.mvc.model.group.message.DestroyConferenceMsg;
 import com.imeeting.mvc.model.group.message.LoadGroupAttendeesMsg;
 import com.richitec.util.Pager;
@@ -68,7 +69,7 @@ public class GroupController {
 			HttpServletResponse response,
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "moderator", required = false) String moderator,
-			@RequestParam(value = "attendeelist", required = false) String attendeeList)
+			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws IOException, SQLException, JSONException {
 		log.debug("create");
 		String groupId = RandomString.genRandomNum(8);
@@ -80,11 +81,17 @@ public class GroupController {
 			return;
 		}
 		GroupDB.insertAttendee(groupId, userName);
-
+		
 		GroupManager groupManager = ContextLoader.getGroupManager();
 		ActorRef actor = groupManager.createGroup(groupId, userName);
 		// actor.tell(new CreateAudioConferenceMsg());
 
+		// process attendees
+		if (attendeeList != null) {
+			actor.tell(new AddAttendeesToGroupMessage(attendeeList));
+		}
+		
+		
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		JSONObject ret = new JSONObject();
 		ret.put(GroupConstants.groupId.name(), groupId);
@@ -212,28 +219,9 @@ public class GroupController {
 			return;
 		}
 
-		// insert MySQL
-		JSONArray attendeesJsonArray = new JSONArray();
-		try {
-			attendeesJsonArray = new JSONArray(attendees);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		if (attendees != null) {
+			model.tell(new AddAttendeesToGroupMessage(attendees));
 		}
-		log.info("attendees size: " + attendeesJsonArray.length());
-		GroupDB.insertAttendees(groupId, attendeesJsonArray);
-
-		List<AttendeeBean> attendeesArrayList = new ArrayList<AttendeeBean>();
-		for (int i = 0; i < attendeesJsonArray.length(); i++) {
-			try {
-				attendeesArrayList.add(new AttendeeBean(attendeesJsonArray.getString(i),
-						OnlineStatus.offline));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
-		model.addAttendees(attendeesArrayList);
-
 	}
 
 	/**
