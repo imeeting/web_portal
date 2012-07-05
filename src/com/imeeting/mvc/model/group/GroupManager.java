@@ -33,6 +33,7 @@ public class GroupManager {
 			if (1 != r){
 				return null;
 			}
+			GroupDB.makeGroupVisibleForEachAttendee(groupId);
 			group = GroupDB.loadAttendees(group);
 			groupMap.put(groupId, group);
 		}

@@ -54,6 +54,12 @@ public class GroupDB {
 		}
 		DBHelper.getInstance().batchUpdate(sql, params);
 	}
+	
+	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
+        String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
+        Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
+        DBHelper.getInstance().update(sql, params);
+	}	
 
 	public static int insert(String groupId, String owner) throws SQLException {
 		String sql = "INSERT INTO im_group(groupId, owner) VALUES (?, ?)";
@@ -86,7 +92,7 @@ public class GroupDB {
 		return DBHelper.getInstance().count(sql, params);
 	}
 
-	public static JSONArray geGroupList(String userName, int offset,
+	public static JSONArray getGroupList(String userName, int offset,
 			int pageSize) throws SQLException {
 		// query conference list related to username
 		String sql = "SELECT c.groupId AS id, c.owner, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "

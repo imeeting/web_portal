@@ -147,7 +147,7 @@ public class GroupController {
 			@RequestParam(value = "username") String username) throws IOException, SQLException, JSONException {
 		
 		int count = GroupDB.getGroupTotalCount(username);
-		JSONArray confs = GroupDB.geGroupList(username, offset, PageSize);
+		JSONArray confs = GroupDB.getGroupList(username, offset, PageSize);
 
 		String url = "/conference/list" + "?";
 		Pager pager = new Pager(offset, PageSize, count, url);
