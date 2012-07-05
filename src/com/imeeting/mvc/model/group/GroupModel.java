@@ -1,43 +1,43 @@
 package com.imeeting.mvc.model.group;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import akka.actor.UntypedActor;
 
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.attendee.AttendeeAction;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
-import com.imeeting.mvc.model.group.message.IGroupMessage;
 import com.richitec.notify.Notifier;
 
-public class GroupModel extends UntypedActor {
+public class GroupModel {
+	
+	private static Log log = LogFactory.getLog(GroupModel.class);
 
 	private String groupId;
-	private String owner;
+	private String ownerName;
 	private String audioConfId;
-	private List<AttendeeBean> attendees;
+	private Map<String, AttendeeBean> attendeeMap;
 
-	public GroupModel(String groupId, String owner) {
+	
+	public GroupModel(String groupId, String ownerName) {
 		this.groupId = groupId;
-		this.owner = owner;
-		AttendeeBean attendee = new AttendeeBean(owner);
-		attendee.setOnlineStatus(OnlineStatus.online);
-		addAttendee(attendee);
+		this.ownerName = ownerName;
+		this.attendeeMap = new ConcurrentHashMap<String, AttendeeBean>();
 	}
 
 	public String getGroupId() {
 		return this.groupId;
 	}
 
-	public String getOwner() {
-		return this.owner;
+	public String getOwnerName() {
+		return this.ownerName;
 	}
 
 	public void setAudioConfId(String audioConfId) {
@@ -48,74 +48,20 @@ public class GroupModel extends UntypedActor {
 		return this.audioConfId;
 	}
 
-	public List<AttendeeBean> getAttendees() {
-		return attendees;
+	public final Collection<AttendeeBean> getAllAttendees() {
+		return attendeeMap.values();
+	}
+	
+	public AttendeeBean getAttendee(String userName){
+		return attendeeMap.get(userName);
+	}
+	
+	public boolean containsAttendee(String userName){
+		return attendeeMap.containsKey(userName);
 	}
 
 	public void addAttendee(AttendeeBean attendee) {
-		if (attendees == null) {
-			attendees = new ArrayList<AttendeeBean>();
-		}
-		attendees.add(attendee);
-	}
-
-	public void addAttendees(List<AttendeeBean> attendees) {
-		if (attendees == null) {
-			attendees = new ArrayList<AttendeeBean>();
-		}
-		this.attendees.addAll(attendees);
-	}
-
-	public void removeAttendee(AttendeeBean attendee) {
-		if (attendees != null) {
-			attendees.remove(attendee);
-		}
-	}
-
-	public void setAttendees(List<AttendeeBean> attendees) {
-		this.attendees = attendees;
-	}
-
-	/**
-	 * find specified attendee by name
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public AttendeeBean findAttendee(String name) {
-		AttendeeBean attendee = null;
-		if (attendees != null) {
-			for (AttendeeBean att : attendees) {
-				if (att.getUsername().equals(name)) {
-					attendee = att;
-					break;
-				}
-			}
-		}
-		return attendee;
-	}
-
-	public void tell(IGroupMessage msg) {
-		getSelf().tell(msg);
-	}
-
-	public void stop() throws SQLException {
-		GroupDB.close(groupId);
-
-		GroupManager confManager = ContextLoader.getGroupManager();
-		confManager.removeConference(this.groupId);
-
-		getContext().stop(getSelf());
-	}
-
-	@Override
-	public void onReceive(Object message) throws Exception {
-		if (message instanceof IGroupMessage) {
-			IGroupMessage confMsg = (IGroupMessage) message;
-			confMsg.onReceive(this);
-		} else {
-			unhandled(message);
-		}
+		attendeeMap.put(attendee.getUsername(), attendee);
 	}
 
 	public void broadcastAttendeeStatus(AttendeeBean attendee) {
@@ -133,7 +79,7 @@ public class GroupModel extends UntypedActor {
 
 	public void updateAttendeeStatus(String username, String onlineStatus,
 			String videoStatus, String telephoneStatus) {
-		AttendeeBean attendee = findAttendee(username);
+		AttendeeBean attendee = getAttendee(username);
 		if (attendee == null) {
 			// user are prohibited to join the group for he isn't in the group
 			return;
