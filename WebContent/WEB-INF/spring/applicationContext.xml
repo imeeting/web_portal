@@ -93,6 +93,10 @@
 		<property name="maxStatements">
 			<value>100</value>
 		</property>				 		
-	</bean>		
+	</bean>	
+	
+	<bean id="db_helper" class="com.richitec.db.DBHelper"> 
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>	
 
 </beans>

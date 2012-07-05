@@ -22,7 +22,7 @@ public class ContextLoader extends ContextLoaderListener {
 	public static ApplicationContext appContext;
 
 	public void contextDestroyed(ServletContextEvent event) {
-		DBHelper.getInstance().closeAll();
+		getDBHelper().closeAll();
 	}
 
 	@Override
@@ -36,9 +36,7 @@ public class ContextLoader extends ContextLoaderListener {
 		ConfigManager.getInstance().loadConfig(configStream);
 
 		appContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
-		
-		DBHelper.getInstance().setAppContext(appContext);
-	}
+	}	
 	
 	public static SMSClient getSMSClient(){
 		return (SMSClient)appContext.getBean("sms_client");
@@ -54,5 +52,9 @@ public class ContextLoader extends ContextLoaderListener {
 
 	public static Notifier getNotifier() {
 		return (Notifier)appContext.getBean("notifier");
+	}
+	
+	public static DBHelper getDBHelper(){
+		return (DBHelper)appContext.getBean("db_helper");
 	}
 }

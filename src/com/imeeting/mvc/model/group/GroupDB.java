@@ -15,8 +15,8 @@ import org.json.JSONObject;
 
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.GroupConstants;
+import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
-import com.richitec.db.DBHelper;
 
 public class GroupDB {
 	private static Log log = LogFactory.getLog(GroupDB.class);
@@ -52,19 +52,19 @@ public class GroupDB {
 		for (AttendeeBean attendee : attendeeCollection){
 			params.add(new Object[] { groupId, attendee.getUsername() });
 		}
-		DBHelper.getInstance().batchUpdate(sql, params);
+		ContextLoader.getDBHelper().batchUpdate(sql, params);
 	}
 	
 	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
         String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
         Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
-        DBHelper.getInstance().update(sql, params);
+        ContextLoader.getDBHelper().update(sql, params);
 	}	
 
 	public static int insert(String groupId, String owner) throws SQLException {
 		String sql = "INSERT INTO im_group(groupId, owner) VALUES (?, ?)";
 		Object[] params = new Object[] { groupId, owner };
-		return DBHelper.getInstance().update(sql, params);
+		return ContextLoader.getDBHelper().update(sql, params);
 	}
 
 	public static int close(String groupId) throws SQLException {
@@ -79,7 +79,7 @@ public class GroupDB {
 	private static int setStatus(String groupId, GroupStatus status) throws SQLException {
 		String sql = "UPDATE im_group set status = ? WHERE groupId = ?";
 		Object[] params = new Object[] { status.name(), groupId };
-		return DBHelper.getInstance().update(sql, params);
+		return ContextLoader.getDBHelper().update(sql, params);
 	}
 
 	public static int getGroupTotalCount(String username) throws SQLException {
@@ -89,7 +89,7 @@ public class GroupDB {
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
 				+ "ORDER BY c.created DESC";
 		Object[] params = new Object[] { username, UserGroupStatus.VISIABLE.name() };
-		return DBHelper.getInstance().count(sql, params);
+		return ContextLoader.getDBHelper().count(sql, params);
 	}
 
 	public static JSONArray getGroupList(String userName, int offset,
@@ -101,7 +101,7 @@ public class GroupDB {
 				+ "ORDER BY c.created DESC";
 		Object[] params = new Object[] { userName, UserGroupStatus.VISIABLE.name() };
 
-		List<Map<String, Object>> groupResultList = DBHelper.getInstance()
+		List<Map<String, Object>> groupResultList = ContextLoader.getDBHelper()
 				.queryPager(sql, params, offset, pageSize);
 		log.info("groupResultList size: " + groupResultList.size());
 		
@@ -151,7 +151,7 @@ public class GroupDB {
 		sql = "SELECT groupId AS id, username " + "FROM im_attendee "
 				+ "WHERE groupId IN " + groupIds.toString();
 		log.info(sql);
-		List<Map<String, Object>> attendeeList = DBHelper.getInstance().query(
+		List<Map<String, Object>> attendeeList = ContextLoader.getDBHelper().query(
 				sql);
 
 		for (Map<String, Object> attendeeMap : attendeeList) {
@@ -185,7 +185,7 @@ public class GroupDB {
 		String sql = "UPDATE im_attendee set status = ? WHERE groupId = ? AND username = ?";
 		Object[] params = new Object[] { UserGroupStatus.HIDDEN.name(), groupId,
 				userName };
-		return DBHelper.getInstance().update(sql, params);
+		return ContextLoader.getDBHelper().update(sql, params);
 	}
 	
 	public static void insertAttendees(String groupId, JSONArray attendees)
@@ -200,14 +200,14 @@ public class GroupDB {
 				e.printStackTrace();
 			}
 		}
-		DBHelper.getInstance().batchUpdate(sql, params);
+		ContextLoader.getDBHelper().batchUpdate(sql, params);
 	}
 
 	public static void insertAttendee(String groupId, String userName)
 			throws SQLException {
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		Object[] params = new Object[] { groupId, userName };
-		DBHelper.getInstance().update(sql, params);
+		ContextLoader.getDBHelper().update(sql, params);
 	}
 	
 	/**
@@ -219,14 +219,14 @@ public class GroupDB {
 	public static List<Map<String, Object>> getGroupAttendees(String groupId) throws SQLException {
 		String sql = "SELECT username FROM im_attendee WHERE groupId = ?";
 		Object[] params = new Object[] {groupId};
-		List<Map<String, Object>> result = DBHelper.getInstance().query(sql, params);
+		List<Map<String, Object>> result = ContextLoader.getDBHelper().query(sql, params);
 		return result;
 	}
 	
 	public static void editGroupTitle(String groupId, String title) throws SQLException {
 		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
 		Object[] params = new Object[] {title, groupId};
-		DBHelper.getInstance().update(sql, params);
+		ContextLoader.getDBHelper().update(sql, params);
 	}
 	
 	/**
@@ -239,7 +239,7 @@ public class GroupDB {
 	public static boolean isGroupExisted(String groupId) throws SQLException {
 		String sql = "SELECT count(groupId) FROM im_group WHERE groupId = ?";
 		Object[] params = new Object[] {groupId};
-		int count = DBHelper.getInstance().count(sql, params);
+		int count = ContextLoader.getDBHelper().count(sql, params);
 		boolean ret = false;
 		if (count > 0) {
 			ret = true;
@@ -258,7 +258,7 @@ public class GroupDB {
 	public static int updateOwnerAndStatus(String groupId, String owner, GroupStatus status) throws SQLException {
 		String sql = "UPDATE im_group SET owner = ? AND status = ? WHERE groupId = ?";
 		Object[] params = new Object[] {owner, status.name(), groupId};
-		int rows = DBHelper.getInstance().update(sql, params);
+		int rows = ContextLoader.getDBHelper().update(sql, params);
 		return rows;
 	}
 }

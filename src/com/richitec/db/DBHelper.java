@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.context.ApplicationContext;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -25,44 +24,22 @@ public class DBHelper {
 	 * @author ruanzhiyong6496
 	 * @version 1.0
 	 */
-	private static DBHelper dbHelper = null;
 	
 	private String dialect = "mysql";
-
 	
-	private String beanName;
-	private ApplicationContext applicationContext;
+	private ComboPooledDataSource dataSource;
 	
-	private ComboPooledDataSource bean(){
-		return (ComboPooledDataSource)applicationContext.getBean(beanName);
+	public DBHelper(){
+		//do nothing
 	}
-
-	/**
-	 * 私有构�?不让别人直接创建�?��BaseDao实例 读取配置文件加载数据库配置信息到Properties,创建�?��数量的连接到连接�?
-	 */
-	protected DBHelper(String beanName) {
-		this.beanName = beanName;
-	}
-
-	/**
-	 * 创建数据库操作接�?
-	 * 
-	 * @return 数据库操作接口BaseDao单例
-	 */
-	public synchronized static DBHelper getInstance() {
-		if (null == dbHelper) {
-			dbHelper = new DBHelper("dataSource_mysql_c3p0");
-		}
-		return dbHelper;
+	
+	public void setDataSource(ComboPooledDataSource ds){
+		this.dataSource = ds;
 	}
 	
 	public void closeAll(){
-		bean().close();
+		dataSource.close();
 	} 
-	
-	public void setAppContext(ApplicationContext context){
-		applicationContext = context;
-	}
 
 	/**
 	 * 获得数据库连�?
@@ -71,7 +48,7 @@ public class DBHelper {
 	 * @throws SQLException 
 	 */
 	public Connection getConn() throws SQLException {
-		return bean().getConnection();
+		return dataSource.getConnection();
 	}
 
 	/**

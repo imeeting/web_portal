@@ -29,6 +29,8 @@ import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.TelephoneStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
+import com.richitec.donkey.client.DonkeyClient;
+import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
 
@@ -50,10 +52,12 @@ public class GroupController {
 	private static Log log = LogFactory.getLog(GroupController.class);
 	
 	private GroupManager groupManager;
+	private DonkeyClient donkeyClient;
 	
 	@PostConstruct
 	public void init(){
 		groupManager = ContextLoader.getGroupManager();
+		donkeyClient = ContextLoader.getDonkeyClient();
 	}
 
 	/**
@@ -74,6 +78,7 @@ public class GroupController {
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws IOException, SQLException, JSONException {
+		//step 1. create GroupModel in memory
 		String groupId = RandomString.genRandomNum(8);
 		GroupModel group = groupManager.creatGroup(groupId, userName);
 		
@@ -91,8 +96,22 @@ public class GroupController {
 			}
 		}
 		
+		//step 2. save GroupModel in Database.
 		GroupDB.saveGroup(group);
 		
+		//step 3. create audio conference
+		DonkeyHttpResponse donkeyResp = 
+			donkeyClient.createNoControlConference(groupId, groupId);
+		if (null == donkeyResp || !donkeyResp.isAccepted()){
+			log.error("Create audio conference error : " + 
+					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
+			groupManager.removeGroup(groupId);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+					"Cannot create audio conference");
+			return;
+		}			
+		
+		//step 4. response to user
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		JSONObject ret = new JSONObject();
 		ret.put(GroupConstants.groupId.name(), groupId);
@@ -263,6 +282,7 @@ public class GroupController {
 		}
 		
 		if (userName.equals(group.getOwnerName())){
+			GroupDB.makeGroupVisibleForEachAttendee(groupId);
 			//TODO: send iOS notification; 
 		} else {
 			//Notify all attendees in the group that an attendee joined.

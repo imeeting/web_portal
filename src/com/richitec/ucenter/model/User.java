@@ -71,7 +71,7 @@ public class User {
 			Object[] params = new Object[] { Long.parseLong(phone),
 					MD5Util.md5(password), userkey };
 			try {
-				int resultCount = DBHelper.getInstance().update(sql, params);
+				int resultCount = ContextLoader.getDBHelper().update(sql, params);
 				result = resultCount > 0 ? "0" : "1001";
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -97,7 +97,7 @@ public class User {
 		String sql = "SELECT password, userkey FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
 		try {
-			List<Map<String, Object>> resultList = DBHelper.getInstance()
+			List<Map<String, Object>> resultList = ContextLoader.getDBHelper()
 					.query(sql, params);
 		
 			if (resultList.size() > 0) {
@@ -137,7 +137,7 @@ public class User {
 			String height) {
 		log.info("record device info - username:  " + username + " brand: "
 				+ brand);
-		DBHelper dh = DBHelper.getInstance();
+		DBHelper dh = ContextLoader.getDBHelper();
 
 		String sql = "SELECT count(username) FROM fy_device_info WHERE username = ?";
 		Object[] params = new Object[] { username };
@@ -237,7 +237,7 @@ public class User {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
 		int count = 0;
-		count = DBHelper.getInstance().count(sql, params);
+		count = ContextLoader.getDBHelper().count(sql, params);
 		return count == 0 ? "0" : "1"; // 0:不存�?1：存�?
 	}
 
@@ -252,7 +252,7 @@ public class User {
 		String sql = "SELECT userkey FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { phone };
 		try {
-			userkey = DBHelper.getInstance().scalar(sql, params);
+			userkey = ContextLoader.getDBHelper().scalar(sql, params);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			userkey = null;

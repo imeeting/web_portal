@@ -105,62 +105,91 @@ public class DonkeyClient {
 		return donkeyResponse;
 	}
 	
-	private DonkeyHttpResponse executeGet(List<String> paramList, String requestId){
+	private DonkeyHttpResponse executeGet(String url, List<String> paramList, String requestId){
 		paramList.add("appid=" + this.appId);
 		paramList.add("reqid=" + requestId);
 		String digest = getDigest(paramList);
 		paramList.add("sig=" + digest);
 		
 		String paramString = getParamsString(paramList);
-		HttpGet get = new HttpGet(this.baseUri + paramString);
+		HttpGet get = new HttpGet(url + paramString);
 		
 		DonkeyHttpResponse donkeyResponse = execute(get);
 		return donkeyResponse;
 	}
 	
-	public DonkeyHttpResponse createConference(String requestId){
+	public DonkeyHttpResponse createNoControlConference(String confId, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=create");
-		return executeGet(paramList, requestId);
+		paramList.add("conference=" + confId);
+		paramList.add("deleteWhen=nocontrol");
+		return executeGet(baseUri+"/create", paramList, requestId);
 	}
+	
+	public DonkeyHttpResponse createNoMediaConference(String confId, String requestId){
+		LinkedList<String> paramList = new LinkedList<String>();
+		paramList.add("conference=" + confId);
+		paramList.add("deleteWhen=nomedia");
+		return executeGet(baseUri+"/create", paramList, requestId);
+	}	
 	
 	public DonkeyHttpResponse destroyConference(String confId, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=destroy");
 		paramList.add("conference=" + confId);
-		return executeGet(paramList, requestId);
+		return executeGet(baseUri+"/destroy", paramList, requestId);
 	}
+	
+	public DonkeyHttpResponse addAttendee(String confId, String sipUri, String requestId){
+		LinkedList<String> paramList = new LinkedList<String>();
+		paramList.add("conference=" + confId);
+		paramList.add("sipuri=" + sipUri);
+		return executeGet(baseUri+"/add", paramList, requestId);
+	}
+	
+	public DonkeyHttpResponse callAttendee(String confId, String sipUri, String requestId){
+		LinkedList<String> paramList = new LinkedList<String>();
+		paramList.add("conference=" + confId);
+		paramList.add("sipuri=" + sipUri);
+		return executeGet(baseUri+"/call", paramList, requestId);
+	}	
+	
+	public DonkeyHttpResponse hangupAttendee(String confId, String sipUri, String requestId){
+		LinkedList<String> paramList = new LinkedList<String>();
+		paramList.add("conference=" + confId);
+		paramList.add("sipuri=" + sipUri);
+		return executeGet(baseUri+"/hangup", paramList, requestId);
+	}	
 	
 	public DonkeyHttpResponse joinConference(String confId, String sipUri, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=join");
+//		paramList.add("m=join");
 		paramList.add("conference=" + confId);
 		paramList.add("sipuri=" + sipUri);
-		return executeGet(paramList, requestId);
+		return executeGet(baseUri+"/join", paramList, requestId);
 	}
 	
 	public DonkeyHttpResponse unjoinConference(String confId, String sipUri, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=unjoin");
+//		paramList.add("m=unjoin");
 		paramList.add("conference=" + confId);
 		paramList.add("sipuri=" + sipUri);
-		return executeGet(paramList, requestId);
+		return executeGet(baseUri+ "/unjoin", paramList, requestId);
 	}
 	
 	public DonkeyHttpResponse muteAttendee(String confId, String attendee, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=mute");
+//		paramList.add("m=mute");
 		paramList.add("conference=" + confId);
-		paramList.add("attendee=" + attendee);
-		return executeGet(paramList, requestId);
+		paramList.add("sipuri=" + attendee);
+		return executeGet(baseUri + "mute", paramList, requestId);
 	}
 	
 	public DonkeyHttpResponse unmuteAttendee(String confId, String attendee, String requestId){
 		LinkedList<String> paramList = new LinkedList<String>();
-		paramList.add("m=unmute");
+//		paramList.add("m=unmute");
 		paramList.add("conference=" + confId);
-		paramList.add("attendee=" + attendee);
-		return executeGet(paramList, requestId);
+		paramList.add("sipuri=" + attendee);
+		return executeGet(baseUri+"unmute", paramList, requestId);
 	}	
+	
 	
 }
