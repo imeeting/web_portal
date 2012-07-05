@@ -2,6 +2,7 @@ package com.imeeting.mvc.model.group;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,32 @@ public class GroupDB {
 	public enum UserGroupStatus {
 		VISIABLE, HIDDEN
 	};
+	
+	public static GroupModel loadAttendees(GroupModel group) throws SQLException{
+		List<Map<String, Object>> list = GroupDB.getGroupAttendees(group.getGroupId());
+		for (Map<String, Object> map : list) {
+			String name = (String) map.get("username");
+			AttendeeBean attendee = new AttendeeBean(name); 
+			group.addAttendee(attendee);
+		}
+		
+		return group;
+	}
+	
+	public static void saveGroup(GroupModel group) throws SQLException{
+		insert(group.getGroupId(), group.getOwnerName());
+		Collection<AttendeeBean> attendeeCollection = group.getAllAttendees();
+		saveAttendees(group.getGroupId(), attendeeCollection);
+	}
+	
+	public static void saveAttendees(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
+		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
+		List<Object[]> params = new ArrayList<Object[]>();
+		for (AttendeeBean attendee : attendeeCollection){
+			params.add(new Object[] { groupId, attendee.getUsername() });
+		}
+		DBHelper.getInstance().batchUpdate(sql, params);
+	}
 
 	public static int insert(String groupId, String owner) throws SQLException {
 		String sql = "INSERT INTO im_group(groupId, owner) VALUES (?, ?)";
@@ -125,8 +152,8 @@ public class GroupDB {
 			String groupId = (String) attendeeMap.get("id");
 			String attendee = (String) attendeeMap.get(AttendeeConstants.username.name());
 
-			log.info("groupId: " + groupId);
-			log.info("attendee: " + attendee);
+//			log.info("groupId: " + groupId);
+//			log.info("attendee: " + attendee);
 			
 			JSONObject group = groupInfoMap.get(groupId);
 			try {
@@ -154,7 +181,7 @@ public class GroupDB {
 				userName };
 		return DBHelper.getInstance().update(sql, params);
 	}
-
+	
 	public static void insertAttendees(String groupId, JSONArray attendees)
 			throws SQLException {
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";

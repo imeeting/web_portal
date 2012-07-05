@@ -19,8 +19,8 @@
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/api/conf/**"/>
-			<bean class="com.imeeting.mvc.MobileInterceptor" />
+			<mvc:mapping path="/group/**"/>
+			<bean class="com.imeeting.mvc.GroupInterceptor" />
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />

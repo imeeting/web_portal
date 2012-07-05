@@ -26,11 +26,11 @@ public class AttendeeBean {
 		this(name, OnlineStatus.offline);
 	}
 	
-	public AttendeeBean(String username, OnlineStatus status) {
-		this.setUsername(username);
-		this.setOnlineStatus(status);
-		this.setVideoStatus(VideoStatus.off);
-		this.setTelephoneStatus(TelephoneStatus.idle);
+	public AttendeeBean(String userName, OnlineStatus status) {
+		this.username = userName;
+		this.onlineStatus = status;
+		this.videoStatus = VideoStatus.off;
+		this.telephoneStatus = TelephoneStatus.idle;
 	}
 	
 	public String getUsername() {
@@ -61,8 +61,10 @@ public class AttendeeBean {
 		return telephoneStatus;
 	}
 
-	public void setTelephoneStatus(TelephoneStatus telephoneStatus) {
-		this.telephoneStatus = telephoneStatus;
+	public void setTelephoneStatus(TelephoneStatus status) {
+		synchronized (telephoneStatus) {
+			telephoneStatus = status;
+		}
 	}
 
 	public JSONObject toJson() {
