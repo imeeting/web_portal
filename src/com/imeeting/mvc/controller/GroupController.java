@@ -182,7 +182,7 @@ public class GroupController {
 		GroupModel model = groupManager.getGroup(groupId);
 		Collection<AttendeeBean> attendees = model.getAllAttendees();
 		JSONArray ret = new JSONArray();
-		if (attendees != null) {
+		if (attendees != null && attendees.size()>0) {
 			for (AttendeeBean att : attendees) {
 				ret.put(att.toJson());
 			}
@@ -209,15 +209,10 @@ public class GroupController {
 			@RequestParam String groupId, 
 			@RequestParam String attendees)	throws IOException, SQLException, JSONException {
 		log.info("invite attendees");
-		GroupModel group = groupManager.getGroup(groupId);
-		if (group == null) {
-			response.sendError(HttpServletResponse.SC_GONE,
-					"group doesn't exist, may be closed.");
-			return;
-		}
 		
-		List<AttendeeBean> addedAttendeeList = new LinkedList<AttendeeBean>();
 		if (attendees != null && attendees.length() > 0) {
+			List<AttendeeBean> addedAttendeeList = new LinkedList<AttendeeBean>();
+			GroupModel group = groupManager.getGroup(groupId);
 			JSONArray attendeesJsonArray = new JSONArray(attendees);
 			for (int i = 0; i < attendeesJsonArray.length(); i++) {
 				String name = attendeesJsonArray.getString(i);
@@ -227,9 +222,9 @@ public class GroupController {
 					addedAttendeeList.add(attendee);
 				}
 			}
+			GroupDB.saveAttendees(groupId, addedAttendeeList);
 		}
 		
-		GroupDB.saveAttendees(groupId, addedAttendeeList);
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
@@ -320,11 +315,6 @@ public class GroupController {
 			@RequestParam(value = "video_status", required = false) String videoStatus,
 			@RequestParam(value = "telephone_status", required = false) String telephoneStatus) throws IOException {
 		GroupModel groupModel = groupManager.getGroup(groupId);
-		if (groupModel == null) {
-			response.sendError(HttpServletResponse.SC_GONE,
-					"group doesn't exist, may be closed.");
-			return;
-		}
 		groupModel.updateAttendeeStatus(userName, onlineStatus, videoStatus, telephoneStatus);
 	}
 
@@ -401,8 +391,7 @@ public class GroupController {
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName) throws SQLException {
-		int r = GroupDB.hideGroup(groupId, userName);
-		log.info("hidden row count " + r);
+		GroupDB.hideGroup(groupId, userName);
 	}
 	
 }

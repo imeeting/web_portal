@@ -62,7 +62,6 @@ public class GroupModel {
 
 	public void addAttendee(AttendeeBean attendee) {
 		attendeeMap.put(attendee.getUsername(), attendee);
-		log.info("attendee map size : " + attendeeMap.size());
 	}
 
 	public void broadcastAttendeeStatus(AttendeeBean attendee) {
