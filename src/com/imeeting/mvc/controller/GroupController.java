@@ -210,13 +210,12 @@ public class GroupController {
 	 * @param groupId
 	 * @param attendees
 	 *            - json array string
-	 * @throws IOException
-	 * @throws SQLException
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/invite")
 	public void invite(HttpServletResponse response,
 			@RequestParam String groupId, @RequestParam String attendees)
-			throws IOException, SQLException {
+			throws Exception {
 		log.info("invite attendees");
 		GroupModel model = groupManager.getGroup(groupId);
 		if (model == null) {
@@ -226,7 +225,7 @@ public class GroupController {
 		}
 
 		if (attendees != null) {
-			model.tell(new AddAttendeesToGroupMessage(attendees));
+			new AddAttendeesToGroupMessage(attendees).onReceive(model);
 		}
 	}
 

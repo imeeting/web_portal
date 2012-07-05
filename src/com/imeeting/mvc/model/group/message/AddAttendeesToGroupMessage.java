@@ -7,11 +7,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupModel;
+import com.imeeting.mvc.model.group.attendee.AttendeeAction;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
+import com.richitec.notify.Notifier;
 
 public class AddAttendeesToGroupMessage implements IGroupMessage {
 	private static Log log = LogFactory
@@ -57,6 +61,14 @@ public class AddAttendeesToGroupMessage implements IGroupMessage {
 		}
 
 		model.addAttendees(attendeesArrayList);
+		
+		// broadcast attendees adding message
+		JSONObject msg = new JSONObject();
+		msg.put("groupId", model.getGroupId());
+		msg.put("action", AttendeeAction.update_attendee_list.name());
+		
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(model.getGroupId(), msg.toString());
 	}
 
 }

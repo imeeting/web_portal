@@ -15,6 +15,9 @@ public class LoadGroupAttendeesMsg implements IGroupMessage {
 
 	@Override
 	public void onReceive(GroupModel model) throws Exception {
+		//reset group to be VISIBLE for each attendee
+		GroupDB.makeGroupVisibleForEachAttendee(model.getGroupId());
+		
 		List<Map<String, Object>> list = GroupDB.getGroupAttendees(model.getGroupId());
 		for (Map<String, Object> map : list) {
 			String name = (String) map.get("username");
