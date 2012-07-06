@@ -19,7 +19,16 @@
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/group/**"/>
+			<mvc:mapping path="/group/list"/>
+			<mvc:mapping path="/group/attendeeList"/>
+			<mvc:mapping path="/group/invite"/>
+			<mvc:mapping path="/group/kickout"/>
+			<mvc:mapping path="/group/unjoin"/>
+			<mvc:mapping path="/group/updateAttendeeStatus"/>
+			<mvc:mapping path="/group/call"/>
+			<mvc:mapping path="/group/hangup"/>
+			<mvc:mapping path="/group/mute"/>
+			<mvc:mapping path="/group/unmute"/>
 			<bean class="com.imeeting.mvc.GroupInterceptor" />
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
