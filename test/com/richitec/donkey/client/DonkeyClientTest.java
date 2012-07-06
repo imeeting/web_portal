@@ -1,5 +1,7 @@
 package com.richitec.donkey.client;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,7 +22,7 @@ public class DonkeyClientTest {
 
 	@Test
 	public void createNoControlConference(){
-		DonkeyHttpResponse response = client.createNoControlConference(confId, requestId);
+		DonkeyHttpResponse response = client.createNoControlConference(confId, null, requestId);
 		System.out.println(response.getEntityAsString());
 	}
 	
@@ -28,5 +30,12 @@ public class DonkeyClientTest {
 	public void destroyConference(){
 		DonkeyHttpResponse response = client.destroyConference(confId, requestId);
 		System.out.println(response.getEntityAsString());
+	}
+	
+	@Test
+	public void testJSONArray() throws JSONException{
+		String jsonStr = "[\"abc\", \"123\",]";
+		JSONArray json = new JSONArray(jsonStr);
+		System.out.println(json.toString());
 	}
 }

@@ -46,7 +46,7 @@ import com.richitec.util.RandomString;
 
 @Controller
 @RequestMapping(value = "/group")
-public class GroupController {
+public class GroupController extends ExceptionController {
 	public static final int PageSize = 20;
 
 	private static Log log = LogFactory.getLog(GroupController.class);
@@ -411,7 +411,10 @@ public class GroupController {
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName) throws SQLException {
-		GroupDB.hideGroup(groupId, userName);
+		int r = GroupDB.hideGroup(groupId, userName);
+		if (1 != r){
+			log.error("hide group <" + groupId + "> for user <" + userName + "> result=" + r);
+		}
 	}
 	
 }
