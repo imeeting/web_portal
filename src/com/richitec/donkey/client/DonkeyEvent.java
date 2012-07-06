@@ -14,6 +14,16 @@ public class DonkeyEvent {
 	private static final String sipUri = "sipUri";
 	private static final String method = "method";
 	
+	public static final String EV_CONFERENCE_CREATE_SUCCESS = "conf.create.success";
+	public static final String EV_CONFERENCE_CREATE_FAILED = "conf.create.failed";
+	public static final String EV_CONFERENCE_DESTROY_SUCCESS = "conf.destroy.success";	
+	public static final String EV_CONFERENCE_STATUS_CONFLICT = "conf.status.conflict";
+	
+	public static final String EV_ATTENDEE_CALL_ESTABLISHED = "attendee.call.established";
+	public static final String EV_ATTENDEE_CALL_FAILED = "attendee.call.failed";
+	public static final String EV_ATTENDEE_CALL_TERMINATED = "attendee.call.terminated";
+	public static final String EV_ATTENDEE_STATUS_CONFLICT = "attendee.status.conflit";
+	
 	private JSONObject json;
 	
 	public DonkeyEvent(String jsonString) throws JSONException{

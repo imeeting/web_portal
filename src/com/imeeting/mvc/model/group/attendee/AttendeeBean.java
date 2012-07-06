@@ -10,7 +10,11 @@ public class AttendeeBean {
 	}
 
 	public enum TelephoneStatus {
-		idle, calling, muting, unmuting, hangingup, intalking, muted, hangedup, callfailed
+		initil, calling, muting, unmuting, hangingup, intalking, muted, hangedup, callfailed
+	}
+	
+	public enum PhoneCallStatus {
+		CallWait, Established, TermWait, Failed, Terminated
 	}
 
 	public enum VideoStatus {
@@ -21,6 +25,7 @@ public class AttendeeBean {
 	private OnlineStatus onlineStatus;
 	private VideoStatus videoStatus;
 	private TelephoneStatus telephoneStatus;
+	private PhoneCallStatus phoneCallStatus;
 
 	public AttendeeBean(String name) {
 		this(name, OnlineStatus.offline);
@@ -30,7 +35,8 @@ public class AttendeeBean {
 		this.username = userName;
 		this.onlineStatus = status;
 		this.videoStatus = VideoStatus.off;
-		this.telephoneStatus = TelephoneStatus.idle;
+		this.telephoneStatus = TelephoneStatus.initil;
+		this.phoneCallStatus = PhoneCallStatus.Terminated;
 	}
 	
 	public String getUsername() {
@@ -64,6 +70,70 @@ public class AttendeeBean {
 	public void setTelephoneStatus(TelephoneStatus status) {
 		synchronized (telephoneStatus) {
 			telephoneStatus = status;
+		}
+	}
+	
+	public PhoneCallStatus getPhoneCallStatus(){
+		return phoneCallStatus;
+	}
+	
+	public boolean statusCall(){
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.Terminated.equals(phoneCallStatus) ||
+				PhoneCallStatus.Failed.equals(phoneCallStatus)){
+				phoneCallStatus = PhoneCallStatus.CallWait;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public boolean statusHangup() {
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
+				PhoneCallStatus.Established.equals(phoneCallStatus)){
+				phoneCallStatus = PhoneCallStatus.TermWait;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public boolean statusCallEstablished(){
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
+				phoneCallStatus = PhoneCallStatus.Established;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public boolean statusCallFailed(){
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
+				phoneCallStatus = PhoneCallStatus.Failed;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public boolean statusCallTerminated(){
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
+				PhoneCallStatus.TermWait.equals(phoneCallStatus) ||
+				PhoneCallStatus.Established.equals(phoneCallStatus) ||
+				PhoneCallStatus.Failed.equals(phoneCallStatus)	){
+				phoneCallStatus = PhoneCallStatus.Terminated;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 

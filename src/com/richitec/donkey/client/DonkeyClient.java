@@ -135,6 +135,10 @@ public class DonkeyClient {
 		return donkeyResponse;
 	}
 	
+	public static String generateSipUriFromPhone(String phone){
+		return "sip:0" + phone + "@donkey.com";
+	}
+	
 	private String getSIPUriJSONArray(Collection<String> attendeeList){
 		if (null != attendeeList && attendeeList.size()>0){
 			String attendeeArray = "[";
