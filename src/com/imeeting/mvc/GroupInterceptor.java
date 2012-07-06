@@ -29,13 +29,6 @@ public class GroupInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object obj) throws Exception {
-		if (request.getRequestURI().endsWith("/join") ||
-			request.getRequestURI().endsWith("/create")	|| 
-			request.getRequestURI().endsWith("/hide") ||
-			request.getRequestURI().endsWith("/editTitle")){
-			return true;
-		}
-		
 		String groupId = request.getParameter("groupId");
 		if (null != groupId){
 			GroupManager groupManager = ContextLoader.getGroupManager();
