@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="imeeting">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+	<property name="encoding" value="utf8"/>
+	
+	<property name="war.filename" value="imeeting.war" />
+	<property name="build.src" value="src"/>
+	<property name="build.bin" value="build/classes"/>
+	<property name="build.webContent" value="WebContent"/>
+	<property name="sailfin.dir" value="${env.SAILFIN_HOME}" />
+
+    <path id="build.classpath">
+        <pathelement location="${build.bin}"/>
+    	<fileset dir="${sailfin.dir}/lib" >
+    		<include name="*.jar"/>
+    	</fileset>
+    	<fileset dir="${build.webContent}/WEB-INF/lib">
+    		<include name="*.jar"/>
+    	</fileset>
+    </path>
+
+	<!-- 初始化-->
+    <target name="init">
+        <mkdir dir="${build.bin}"/>
+        <copy includeemptydirs="false" todir="${build.bin}">
+            <fileset dir="${build.src}">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>	
+
+	<!-- 清除 -->
+    <target name="clean">
+        <delete dir="${build.bin}" />
+    	<delete file="${war.filename}" />
+    </target>
+	
+	<!-- 构建工程 -->
+	<target depends="package" name="build" />
+	
+	<!-- 打包 -->
+	<target name="package" depends="build-project">
+		<war warfile="${war.filename}" webxml="${build.webContent}/WEB-INF/web.xml">
+			<classes dir="${build.bin}" />
+			<fileset dir="${build.webContent}" />
+		</war>
+	</target>
+	
+	<!-- 编译代码 -->	
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${build.bin}" source="${source}" target="${target}" encoding="${encoding}">
+            <src path="${build.src}"/>
+            <classpath refid="build.classpath"/>
+        </javac>
+    </target>
+</project>
