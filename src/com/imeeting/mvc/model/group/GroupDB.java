@@ -223,10 +223,10 @@ public class GroupDB {
 		return result;
 	}
 	
-	public static void editGroupTitle(String groupId, String title) throws SQLException {
+	public static int editGroupTitle(String groupId, String title) throws SQLException {
 		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
 		Object[] params = new Object[] {title, groupId};
-		ContextLoader.getDBHelper().update(sql, params);
+		return ContextLoader.getDBHelper().update(sql, params);
 	}
 	
 	/**
