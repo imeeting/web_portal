@@ -54,12 +54,6 @@ public class GroupDB {
 		}
 		ContextLoader.getDBHelper().batchUpdate(sql, params);
 	}
-	
-	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
-        String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
-        Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
-        ContextLoader.getDBHelper().update(sql, params);
-	}	
 
 	public static int insert(String groupId, String owner) throws SQLException {
 		String sql = "INSERT INTO im_group(groupId, owner) VALUES (?, ?)";
@@ -183,7 +177,7 @@ public class GroupDB {
 	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
 		Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
-		DBHelper.getInstance().update(sql, params);
+		ContextLoader.getDBHelper().update(sql, params);
 	}
 
 	public static int hideGroup(String groupId, String userName)
