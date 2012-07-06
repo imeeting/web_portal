@@ -391,7 +391,7 @@ public class GroupController extends ExceptionController {
 	 * @param username
 	 */
 	@RequestMapping(value = "/unmute", method = RequestMethod.POST)
-	public void unmute(			
+	public void unmute(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName) {
@@ -403,7 +403,10 @@ public class GroupController extends ExceptionController {
 			@RequestParam(value = "groupId") String groupId,
 			@RequestParam(value = "title") String title,
 			HttpServletResponse response) throws SQLException {
-		GroupDB.editGroupTitle(groupId, title);
+		int r = GroupDB.editGroupTitle(groupId, title);
+		if (1 != r){
+			log.error("editTitle for group <" + groupId + "> error");
+		}
 	}
 
 	@RequestMapping("/hide")
