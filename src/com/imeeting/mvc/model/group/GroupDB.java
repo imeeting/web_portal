@@ -41,7 +41,8 @@ public class GroupDB {
 	}
 	
 	public static void saveGroup(GroupModel group) throws SQLException{
-		insert(group.getGroupId(), group.getOwnerName());
+		insert(group.getGroupId());
+		editGroupTitle(group.getGroupId(), "ID: " + group.getGroupId()); // temporary use only
 		Collection<AttendeeBean> attendeeCollection = group.getAllAttendees();
 		saveAttendees(group.getGroupId(), attendeeCollection);
 	}
@@ -61,9 +62,9 @@ public class GroupDB {
         ContextLoader.getDBHelper().update(sql, params);
 	}	
 
-	public static int insert(String groupId, String owner) throws SQLException {
-		String sql = "INSERT INTO im_group(groupId, owner) VALUES (?, ?)";
-		Object[] params = new Object[] { groupId, owner };
+	public static int insert(String groupId) throws SQLException {
+		String sql = "INSERT INTO im_group(groupId) VALUES (?)";
+		Object[] params = new Object[] { groupId };
 		return ContextLoader.getDBHelper().update(sql, params);
 	}
 
@@ -95,7 +96,7 @@ public class GroupDB {
 	public static JSONArray getGroupList(String userName, int offset,
 			int pageSize) throws SQLException {
 		// query conference list related to username
-		String sql = "SELECT c.groupId AS id, c.owner, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
+		String sql = "SELECT c.groupId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
 				+ "ORDER BY c.created DESC";
@@ -116,12 +117,10 @@ public class GroupDB {
 
 		for (Map<String, Object> groupMap : groupResultList) {
 			String groupId = (String) groupMap.get("id");
-			String owner = (String) groupMap.get("owner");
 			Long createdTime = (Long) groupMap.get("created");
 			String status = (String) groupMap.get("status");
 			String title = (String) groupMap.get("title");
 			log.info("groupId: " + groupId);
-			log.info("owner: " + owner);
 			log.info("created time: " + createdTime.longValue());
 			log.info("status: " + status);
 			log.info("title: " + title);
@@ -129,7 +128,6 @@ public class GroupDB {
 			JSONObject group = new JSONObject();
 			try {
 				group.put(GroupConstants.groupId.name(), groupId);
-				group.put(GroupConstants.owner.name(), owner);
 				group.put(GroupConstants.created_time.name(), createdTime);
 				group.put(GroupConstants.status.name(), status);
 				group.put(GroupConstants.title.name(), title);
@@ -178,12 +176,6 @@ public class GroupDB {
 			groupJSONArray.put(group);
 		}
 		return groupJSONArray;
-	}
-	
-	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
-		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
-		Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
-		DBHelper.getInstance().update(sql, params);
 	}
 
 	public static int hideGroup(String groupId, String userName)
@@ -254,16 +246,16 @@ public class GroupDB {
 	}
 	
 	/**
-	 * update the owner and status of specified group
+	 * update status of specified group
 	 * @param groupId
-	 * @param owner
 	 * @param status
 	 * @return rows
 	 * @throws SQLException 
 	 */
-	public static int updateOwnerAndStatus(String groupId, String owner, GroupStatus status) throws SQLException {
-		String sql = "UPDATE im_group SET owner = ? AND status = ? WHERE groupId = ?";
-		Object[] params = new Object[] {owner, status.name(), groupId};
+	public static int updateStatus(String groupId, GroupStatus status) throws SQLException {
+		log.info("updateOwnerAndStatus - " + " groupId: " + groupId);
+		String sql = "UPDATE im_group SET createCount = createCount + 1 AND status = ? WHERE groupId = ?";
+		Object[] params = new Object[] {status.name(), groupId};
 		int rows = ContextLoader.getDBHelper().update(sql, params);
 		return rows;
 	}

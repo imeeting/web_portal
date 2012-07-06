@@ -85,23 +85,35 @@ public class GroupController extends ExceptionController {
 		AttendeeBean owner = new AttendeeBean(userName, OnlineStatus.online);
 		group.addAttendee(owner);
 		
-		log.info("attendees : " + attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
-			JSONArray attendeesJsonArray = new JSONArray(attendeeList);
-			log.info("attendees json array size : " + attendeesJsonArray.length());
-			for (int i = 0; i < attendeesJsonArray.length(); i++) {
-				String name = attendeesJsonArray.getString(i);
-				AttendeeBean attendee = new AttendeeBean(name);
-				group.addAttendee(attendee);
+			try {
+				JSONArray attendeesJsonArray = new JSONArray(attendeeList);
+				for (int i = 0; i < attendeesJsonArray.length(); i++) {
+					String name = attendeesJsonArray.getString(i);
+					AttendeeBean attendee = new AttendeeBean(name);
+					group.addAttendee(attendee);
+				}
+			} catch(JSONException e) {
+				log.error("\nCannot parse attendees : " + attendeeList);
+				groupManager.removeGroup(groupId);
+				throw e;
 			}
 		}
 		
 		//step 2. save GroupModel in Database.
-		GroupDB.saveGroup(group);
+		try {
+			GroupDB.saveGroup(group);
+		} catch (SQLException e) {
+			log.error("\nSave group <" + groupId + "> to database error : \n" + 
+					  "SQL Error Code : " + e.getErrorCode() + "\n" +
+					  "Message : " + e.getMessage());
+			groupManager.removeGroup(groupId);
+			throw e;
+		}
 		
 		//step 3. create audio conference
 		DonkeyHttpResponse donkeyResp = 
-			donkeyClient.createNoControlConference(groupId, groupId);
+			donkeyClient.createNoControlConference(groupId, group.getAllAttendeeName(), groupId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()){
 			log.error("Create audio conference error : " + 
 					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
@@ -109,12 +121,15 @@ public class GroupController extends ExceptionController {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
 					"Cannot create audio conference");
 			return;
-		}			
+		}	
 		
-		//step 4. response to user
-		response.setStatus(HttpServletResponse.SC_CREATED);
+		//step 4. send iPhone notification to all attendees.
+		
+		//step 5. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(GroupConstants.groupId.name(), groupId);
+		ret.put(GroupConstants.owner.name(), group.getOwnerName());
+		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}
 
@@ -242,6 +257,10 @@ public class GroupController extends ExceptionController {
 				}
 			}
 			GroupDB.saveAttendees(groupId, addedAttendeeList);
+			
+			//TODO: add attendees to audio conference
+			
+			//TODO: send iPhone notification
 		}
 		
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -267,12 +286,13 @@ public class GroupController extends ExceptionController {
 	 * @param userName
 	 * @throws SQLException
 	 * @throws IOException
+	 * @throws JSONException 
 	 */
 	@RequestMapping(value = "/join")
 	public void join(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
-			@RequestParam(value="username") String userName) throws SQLException, IOException {
+			@RequestParam(value="username") String userName) throws SQLException, IOException, JSONException {
 		GroupModel group = groupManager.checkAndCreateGroupModel(groupId, userName);
 		if (null == group){
 			log.error("Cannot join <" + userName + "> to group <"+groupId+
@@ -283,14 +303,23 @@ public class GroupController extends ExceptionController {
 		
 		if (userName.equals(group.getOwnerName())){
 			GroupDB.makeGroupVisibleForEachAttendee(groupId);
-			//TODO: send iOS notification; 
+			
+			//create audio conference
+			DonkeyHttpResponse donkeyResp = 
+				donkeyClient.createNoControlConference(groupId, group.getAllAttendeeName(), groupId);
+			
+			//TODO: send iPhone notification; 
 		} else {
-			//Notify all attendees in the group that an attendee joined.
 			AttendeeBean attendee = group.getAttendee(userName);
 			// notify other people that User has joined
 			group.broadcastAttendeeStatus(attendee);
 		}
+		
+		JSONObject ret = new JSONObject();
+		ret.put(GroupConstants.groupId.name(), group.getGroupId());
+		ret.put(GroupConstants.owner.name(), group.getOwnerName());
 		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().print(ret.toString());
 	}
 
 	/**
@@ -300,13 +329,14 @@ public class GroupController extends ExceptionController {
 	 * @param confId
 	 * @param userName
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
 	@RequestMapping(value = "/unjoin")
 	public void unjoin(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName)
-			throws IOException {
+			throws IOException, SQLException {
 		log.debug("unjoin group - username: " + userName + "groupId: "
 				+ groupId);
 		GroupModel groupModel = groupManager.getGroup(groupId);
@@ -323,6 +353,8 @@ public class GroupController extends ExceptionController {
 		// notify other people that User has unjoined
 		groupModel.broadcastAttendeeStatus(attendee);
 
+		groupManager.removeGroupIfEmpty(groupId);
+		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
