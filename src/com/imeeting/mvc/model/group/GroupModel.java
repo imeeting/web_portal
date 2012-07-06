@@ -1,6 +1,8 @@
 package com.imeeting.mvc.model.group;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,6 +52,14 @@ public class GroupModel {
 
 	public final Collection<AttendeeBean> getAllAttendees() {
 		return attendeeMap.values();
+	}
+	
+	public Collection<String> getAllAttendeeName(){
+		List<String> list = new LinkedList<String>();
+		for (AttendeeBean a : getAllAttendees()){
+			list.add(a.getUsername());
+		}
+		return list;
 	}
 	
 	public AttendeeBean getAttendee(String userName){
