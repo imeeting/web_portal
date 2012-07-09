@@ -44,10 +44,10 @@ public class GroupDB {
 		insert(group.getGroupId());
 		editGroupTitle(group.getGroupId(), "ID: " + group.getGroupId()); // temporary use only
 		Collection<AttendeeBean> attendeeCollection = group.getAllAttendees();
-		saveAttendees(group.getGroupId(), attendeeCollection);
+		saveAttendeeBeans(group.getGroupId(), attendeeCollection);
 	}
 	
-	public static void saveAttendees(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
+	public static void saveAttendeeBeans(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeBean attendee : attendeeCollection){
@@ -55,6 +55,15 @@ public class GroupDB {
 		}
 		ContextLoader.getDBHelper().batchUpdate(sql, params);
 	}
+	
+	public static void saveAttendees(String groupId, Collection<String> attendeeNameCollection) throws SQLException{
+		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
+		List<Object[]> params = new ArrayList<Object[]>();
+		for (String attendeeName : attendeeNameCollection){
+			params.add(new Object[] { groupId, attendeeName });
+		}
+		ContextLoader.getDBHelper().batchUpdate(sql, params);
+	}	
 
 	public static int insert(String groupId) throws SQLException {
 		String sql = "INSERT INTO im_group(groupId) VALUES (?)";
