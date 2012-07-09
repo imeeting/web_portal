@@ -255,7 +255,7 @@ public class GroupDB {
 	 */
 	public static int updateStatus(String groupId, GroupStatus status) throws SQLException {
 		log.info("updateOwnerAndStatus - " + " groupId: " + groupId);
-		String sql = "UPDATE im_group SET createCount = createCount + 1 AND status = ? WHERE groupId = ?";
+		String sql = "UPDATE im_group SET createCount=createCount+1 AND status=? WHERE groupId = ?";
 		Object[] params = new Object[] {status.name(), groupId};
 		int rows = ContextLoader.getDBHelper().update(sql, params);
 		return rows;

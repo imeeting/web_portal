@@ -34,7 +34,6 @@ public class ContextLoader extends ContextLoaderListener {
 		InputStream configStream = context
 				.getResourceAsStream("/WEB-INF/config/Configuration.properties");
 		ConfigManager.getInstance().loadConfig(configStream);
-
 		appContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 	}	
 	
