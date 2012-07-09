@@ -243,25 +243,37 @@ public class GroupController extends ExceptionController {
 			@RequestParam String groupId, 
 			@RequestParam String attendees)	throws IOException, SQLException, JSONException {
 		log.info("invite attendees");
-		
-		if (attendees != null && attendees.length() > 0) {
-			List<AttendeeBean> addedAttendeeList = new LinkedList<AttendeeBean>();
-			GroupModel group = groupManager.getGroup(groupId);
-			JSONArray attendeesJsonArray = new JSONArray(attendees);
-			for (int i = 0; i < attendeesJsonArray.length(); i++) {
-				String name = attendeesJsonArray.getString(i);
-				if (!group.containsAttendee(name)){
-					AttendeeBean attendee = new AttendeeBean(name);
-					group.addAttendee(attendee);
-					addedAttendeeList.add(attendee);
-				}
-			}
-			GroupDB.saveAttendees(groupId, addedAttendeeList);
-			
-			//TODO: add attendees to audio conference
-			
-			//TODO: send iPhone notification
+		if (null == attendees || attendees.length() < 0){
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
 		}
+		
+		List<String> addedAttendeeList = new LinkedList<String>();
+		GroupModel group = groupManager.getGroup(groupId);
+		JSONArray attendeesJsonArray = new JSONArray(attendees);
+		for (int i = 0; i < attendeesJsonArray.length(); i++) {
+			String name = attendeesJsonArray.getString(i);
+			if (!group.containsAttendee(name)){
+				AttendeeBean attendee = new AttendeeBean(name);
+				group.addAttendee(attendee);
+				addedAttendeeList.add(name);
+			}
+		}
+		
+		GroupDB.saveAttendees(groupId, addedAttendeeList);
+		
+		//add attendees to audio conference
+		DonkeyHttpResponse donkeyResp =
+			donkeyClient.addMoreAttendee(groupId, addedAttendeeList, groupId);
+		if (null == donkeyResp || !donkeyResp.isAccepted()){
+			log.error("Add attenddes to audio conference <" +groupId+ "> error : " + 
+					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+					"Cannot add attendees to audio conference");
+			return;
+		}	
+		
+		//TODO: send iPhone notification
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
@@ -275,7 +287,7 @@ public class GroupController extends ExceptionController {
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId,
 			@RequestParam(value="username") String userName) {
-
+		//TODO: same with /unjoin
 	}
 
 	/**
@@ -307,6 +319,14 @@ public class GroupController extends ExceptionController {
 			//create audio conference
 			DonkeyHttpResponse donkeyResp = 
 				donkeyClient.createNoControlConference(groupId, group.getAllAttendeeName(), groupId);
+			if (null == donkeyResp || !donkeyResp.isAccepted()){
+				log.error("Create audio conference error : " + 
+						(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
+				groupManager.removeGroup(groupId);
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+						"Cannot create audio conference");
+				return;
+			}
 			
 			//TODO: send iPhone notification; 
 		} else {
