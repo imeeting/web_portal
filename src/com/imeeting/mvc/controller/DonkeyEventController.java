@@ -14,6 +14,7 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.imeeting.mvc.model.group.GroupModel;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
+import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyEvent;
 
 @Controller
@@ -99,7 +100,7 @@ public class DonkeyEventController {
 		GroupModel group = groupManager.getGroup(requestId);
 		//TODO: notify all attendees in this group.
 		String sipUri = event.getSipUri();
-		String attendeeName = sipUri; //TODO: extract name from sip uri.
+		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallEstablished();
 	}
@@ -109,7 +110,7 @@ public class DonkeyEventController {
 		GroupModel group = groupManager.getGroup(requestId);
 		//TODO: notify all attendees in this group.
 		String sipUri = event.getSipUri();
-		String attendeeName = sipUri; //TODO: extract name from sip uri.
+		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallFailed();
 	}
@@ -119,7 +120,7 @@ public class DonkeyEventController {
 		GroupModel group = groupManager.getGroup(requestId);
 		//TODO: notify all attendees in this group.
 		String sipUri = event.getSipUri();
-		String attendeeName = sipUri; //TODO: extract name from sip uri.
+		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallTerminated();
 	}

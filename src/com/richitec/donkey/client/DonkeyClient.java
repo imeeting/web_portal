@@ -58,6 +58,15 @@ public class DonkeyClient {
 		this.appKey = appKey;
 	}
 	
+	public static String generateSipUriFromPhone(String phone){
+		return "sip:0" + phone + "@donkey.com";
+	}
+	
+	public static String getPhoneNumberFromSipUri(String sipUri){
+		String [] sl = sipUri.split(":");
+		return sl[1];
+	}
+	
 	private String getParamsString(List<String> paramList){
 		StringBuffer sb = new StringBuffer();
 		for (String s : paramList){
@@ -133,10 +142,6 @@ public class DonkeyClient {
 		
 		DonkeyHttpResponse donkeyResponse = execute(post);
 		return donkeyResponse;
-	}
-	
-	public static String generateSipUriFromPhone(String phone){
-		return "sip:0" + phone + "@donkey.com";
 	}
 	
 	private String getSIPUriJSONArray(Collection<String> attendeeList){
