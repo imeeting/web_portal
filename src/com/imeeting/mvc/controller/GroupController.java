@@ -369,7 +369,17 @@ public class GroupController extends ExceptionController {
 		// update the status
 		attendee.setOnlineStatus(OnlineStatus.offline);
 		attendee.setVideoStatus(VideoStatus.off);
-		attendee.setTelephoneStatus(TelephoneStatus.initil);
+		
+		//update phone call status and hang up this call
+		if (attendee.statusHangup()){
+			String sipUri = DonkeyClient.generateSipUriFromPhone(userName);
+			DonkeyHttpResponse donkeyResp =
+				donkeyClient.hangupAttendee(groupModel.getAudioConfId(), sipUri, groupId);
+			if (null == donkeyResp || !donkeyResp.isAccepted()){
+				log.error("Hangup <" + userName + "> in group <" + groupId + "> failed : " + 
+						(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
+			}
+		}
 		// notify other people that User has unjoined
 		groupModel.broadcastAttendeeStatus(attendee);
 
