@@ -24,7 +24,6 @@ public class AttendeeBean {
 	private String username;
 	private OnlineStatus onlineStatus;
 	private VideoStatus videoStatus;
-	private TelephoneStatus telephoneStatus;
 	private PhoneCallStatus phoneCallStatus;
 
 	public AttendeeBean(String name) {
@@ -35,7 +34,6 @@ public class AttendeeBean {
 		this.username = userName;
 		this.onlineStatus = status;
 		this.videoStatus = VideoStatus.off;
-		this.telephoneStatus = TelephoneStatus.initil;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
 	}
 	
@@ -61,16 +59,6 @@ public class AttendeeBean {
 
 	public void setVideoStatus(VideoStatus videoStatus) {
 		this.videoStatus = videoStatus;
-	}
-
-	public TelephoneStatus getTelephoneStatus() {
-		return telephoneStatus;
-	}
-
-	public void setTelephoneStatus(TelephoneStatus status) {
-		synchronized (telephoneStatus) {
-			telephoneStatus = status;
-		}
 	}
 	
 	public PhoneCallStatus getPhoneCallStatus(){
@@ -143,7 +131,7 @@ public class AttendeeBean {
 			obj.put("username", username);
 			obj.put("online_status", onlineStatus.name());
 			obj.put("video_status", videoStatus.name());
-			obj.put("telephone_status", telephoneStatus.name());
+			obj.put("telephone_status", phoneCallStatus.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
