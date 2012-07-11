@@ -98,12 +98,6 @@
 		</property>				 		
 	</bean>	
 	
-	<!-- 
-	<bean id="db_helper" class="com.richitec.db.DBHelper"> 
-		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
-	</bean>	
-	-->
-	
 	<bean id="user_dao" class="com.richitec.ucenter.model.UserDAO">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>

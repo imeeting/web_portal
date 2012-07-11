@@ -1,10 +1,7 @@
 package com.richitec.ucenter.model;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
@@ -12,11 +9,8 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.framework.ContextLoader;
 import com.richitec.sms.client.SMSHttpResponse;
