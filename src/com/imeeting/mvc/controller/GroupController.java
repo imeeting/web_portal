@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import com.imeeting.constants.GroupConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.GroupDB;
@@ -27,7 +26,6 @@ import com.imeeting.mvc.model.group.GroupManager;
 import com.imeeting.mvc.model.group.GroupModel;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
-import com.imeeting.mvc.model.group.attendee.AttendeeBean.TelephoneStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
@@ -114,8 +112,10 @@ public class GroupController extends ExceptionController {
 		}
 		
 		//step 3. create audio conference
+		String confId = RandomString.genRandomNum(6);
+		group.setAudioConfId(confId);
 		DonkeyHttpResponse donkeyResp = 
-			donkeyClient.createNoControlConference(groupId, group.getAllAttendeeName(), groupId);
+			donkeyClient.createNoControlConference(confId, group.getAllAttendeeName(), groupId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()){
 			log.error("Create audio conference error : " + 
 					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
@@ -130,6 +130,7 @@ public class GroupController extends ExceptionController {
 		//step 5. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(GroupConstants.groupId.name(), groupId);
+		ret.put(GroupConstants.audioConfId.name(), confId);
 		ret.put(GroupConstants.owner.name(), group.getOwnerName());
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
@@ -264,11 +265,14 @@ public class GroupController extends ExceptionController {
 		
 		groupDao.saveAttendees(groupId, addedAttendeeList);
 		
+		// notify all attendees to update attendee list
+		group.notifyAttendeesToUpdateMemberList();
+		
 		//add attendees to audio conference
 		DonkeyHttpResponse donkeyResp =
-			donkeyClient.addMoreAttendee(groupId, addedAttendeeList, groupId);
+			donkeyClient.addMoreAttendee(group.getAudioConfId(), addedAttendeeList, groupId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()){
-			log.error("Add attenddes to audio conference <" +groupId+ "> error : " + 
+			log.error("Add attenddes to audio conference <" +group.getAudioConfId()+ "> error : " + 
 					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
 					"Cannot add attendees to audio conference");
@@ -282,14 +286,40 @@ public class GroupController extends ExceptionController {
 
 	/**
 	 * Moderator can kick out any attendee of his conference.
+	 * @throws IOException 
 	 * 
 	 */
 	@RequestMapping(value = "/kickout")
 	public void kickout(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId,
-			@RequestParam(value="username") String userName) {
-		//TODO: same with /unjoin
+			@RequestParam(value="dstUserName") String dstUserName) throws IOException {
+		log.debug("kickout group - username: " + dstUserName + "groupId: "
+				+ groupId);
+		GroupModel groupModel = groupManager.getGroup(groupId);
+		AttendeeBean attendee = groupModel.getAttendee(dstUserName);
+		if (attendee == null) {
+			// user are prohibited to join the group for he isn't in the group
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
+			return;
+		}
+		// update the status
+		attendee.setOnlineStatus(OnlineStatus.offline);
+		attendee.setVideoStatus(VideoStatus.off);
+		
+		//update phone call status and hang up this call
+		if (attendee.statusHangup()){
+			String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
+			DonkeyHttpResponse donkeyResp = donkeyClient.unjoinConference(groupModel.getAudioConfId(), sipUri, groupId);
+			if (null == donkeyResp || !donkeyResp.isAccepted()){
+				log.error("Hangup <" + dstUserName + "> in group <" + groupId + "> failed : " + 
+						(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
+			}
+		}
+		
+		groupModel.removeAttendee(dstUserName);
+		groupModel.notifyAttendeesToUpdateMemberList();
+		
 	}
 
 	/**
@@ -319,8 +349,10 @@ public class GroupController extends ExceptionController {
 			groupDao.makeGroupVisibleForEachAttendee(groupId);
 			
 			//create audio conference
+			String confId = RandomString.genRandomNum(6);
+			group.setAudioConfId(confId);
 			DonkeyHttpResponse donkeyResp = 
-				donkeyClient.createNoControlConference(groupId, group.getAllAttendeeName(), groupId);
+				donkeyClient.createNoControlConference(confId, group.getAllAttendeeName(), groupId);
 			if (null == donkeyResp || !donkeyResp.isAccepted()){
 				log.error("Create audio conference error : " + 
 						(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
@@ -339,6 +371,7 @@ public class GroupController extends ExceptionController {
 		
 		JSONObject ret = new JSONObject();
 		ret.put(GroupConstants.groupId.name(), group.getGroupId());
+		ret.put(GroupConstants.audioConfId.name(), group.getAudioConfId());
 		ret.put(GroupConstants.owner.name(), group.getOwnerName());
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.getWriter().print(ret.toString());
@@ -375,8 +408,7 @@ public class GroupController extends ExceptionController {
 		//update phone call status and hang up this call
 		if (attendee.statusHangup()){
 			String sipUri = DonkeyClient.generateSipUriFromPhone(userName);
-			DonkeyHttpResponse donkeyResp =
-				donkeyClient.hangupAttendee(groupModel.getAudioConfId(), sipUri, groupId);
+			DonkeyHttpResponse donkeyResp = donkeyClient.unjoinConference(groupModel.getAudioConfId(), sipUri, groupId);
 			if (null == donkeyResp || !donkeyResp.isAccepted()){
 				log.error("Hangup <" + userName + "> in group <" + groupId + "> failed : " + 
 						(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
@@ -414,9 +446,9 @@ public class GroupController extends ExceptionController {
 	public void call(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
-			@RequestParam(value="username") String userName) throws IOException {
+			@RequestParam(value="dstUserName") String dstUserName) throws IOException {
 		GroupModel group = groupManager.getGroup(groupId);
-		AttendeeBean attendee = group.getAttendee(userName);
+		AttendeeBean attendee = group.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
 			return;
@@ -424,23 +456,23 @@ public class GroupController extends ExceptionController {
 		
 		//transfer attendee status from Initial to CallWait
 		if (!attendee.statusCall()){
-			log.error("Cannot call <" + userName + ">, beacuse attendee status is " 
+			log.error("Cannot call <" + dstUserName + ">, beacuse attendee status is " 
 					+ attendee.getPhoneCallStatus());
-			response.sendError(HttpServletResponse.SC_CONFLICT, "Not Invited!");
+			response.sendError(HttpServletResponse.SC_CONFLICT, "Conflicted Command!");
 			return;
 		}
 		
-		String sipUri = DonkeyClient.generateSipUriFromPhone(userName);
+		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
 		DonkeyHttpResponse donkeyResp =
 			donkeyClient.callAttendee(group.getAudioConfId(), sipUri, groupId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()){
-			log.error("Call <" + userName + "> in group <" + groupId + "> failed : " + 
+			log.error("Call <" + dstUserName + "> in group <" + groupId + "> failed : " + 
 					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
-					"Call <" + userName + "> failed!");
+					"Call <" + dstUserName + "> failed!");
 			return;
 		}
-		
+		group.broadcastAttendeeStatus(attendee);
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
@@ -456,9 +488,9 @@ public class GroupController extends ExceptionController {
 	public void hangup(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
-			@RequestParam(value="username") String userName) throws IOException {
+			@RequestParam(value="dstUserName") String dstUserName) throws IOException {
 		GroupModel group = groupManager.getGroup(groupId);
-		AttendeeBean attendee = group.getAttendee(userName);
+		AttendeeBean attendee = group.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
@@ -466,23 +498,22 @@ public class GroupController extends ExceptionController {
 		
 		//transfer attendee status from Initial to CallWait
 		if (!attendee.statusHangup()){
-			log.error("Cannot hangup <" + userName + ">, beacuse attendee status is " 
+			log.error("Cannot hangup <" + dstUserName + ">, beacuse attendee status is " 
 					+ attendee.getPhoneCallStatus());
 			response.sendError(HttpServletResponse.SC_CONFLICT);
 			return;
 		}
 		
-		String sipUri = DonkeyClient.generateSipUriFromPhone(userName);
+		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
 		DonkeyHttpResponse donkeyResp =
 			donkeyClient.hangupAttendee(group.getAudioConfId(), sipUri, groupId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()){
-			log.error("Hangup <" + userName + "> in group <" + groupId + "> failed : " + 
+			log.error("Hangup <" + dstUserName + "> in group <" + groupId + "> failed : " + 
 					(null==donkeyResp? "NULL Response" : donkeyResp.getStatusCode()));
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
-					"Hangup <" + userName + "> failed!");
+					"Hangup <" + dstUserName + "> failed!");
 			return;
 		}
-		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 

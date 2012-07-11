@@ -66,6 +66,11 @@ public class GroupModel {
 		return attendeeMap.get(userName);
 	}
 	
+	public AttendeeBean removeAttendee(String userName) {
+		AttendeeBean ab = attendeeMap.remove(userName);
+		return ab;
+	}
+	
 	public boolean containsAttendee(String userName){
 		return attendeeMap.containsKey(userName);
 	}
@@ -86,7 +91,19 @@ public class GroupModel {
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getGroupId(), msg.toString());
 	}
-
+	
+	public void notifyAttendeesToUpdateMemberList() {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("groupId", getGroupId());
+			msg.put("action", AttendeeAction.update_attendee_list.name());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(getGroupId(), msg.toString());
+	}
+	
 	public void updateAttendeeStatus(String username, String onlineStatus,
 			String videoStatus, String telephoneStatus) {
 		AttendeeBean attendee = getAttendee(username);

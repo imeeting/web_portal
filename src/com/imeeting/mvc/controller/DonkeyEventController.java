@@ -103,6 +103,7 @@ public class DonkeyEventController {
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallEstablished();
+		group.broadcastAttendeeStatus(attendee);
 	}
 	
 	private void onAttendeeCallFailed(DonkeyEvent event){
@@ -113,16 +114,22 @@ public class DonkeyEventController {
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallFailed();
+		group.broadcastAttendeeStatus(attendee);
 	}
 	
 	private void onAttendeeCallTerminated(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		GroupModel group = groupManager.getGroup(requestId);
+		log.info("1 group: " + group);
 		//TODO: notify all attendees in this group.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
+		log.info("2 group: " + group);
 		AttendeeBean attendee = group.getAttendee(attendeeName);
+		log.info("3 group: " + group);
 		attendee.statusCallTerminated();
+		log.info("4 group: " + group);
+		group.broadcastAttendeeStatus(attendee);
 	}
 	
 	private void onAttendeeStatusConflict(DonkeyEvent event){
