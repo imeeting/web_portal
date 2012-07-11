@@ -53,11 +53,13 @@ public class GroupController extends ExceptionController {
 	
 	private GroupManager groupManager;
 	private DonkeyClient donkeyClient;
+	private GroupDB groupDao;
 	
 	@PostConstruct
 	public void init(){
 		groupManager = ContextLoader.getGroupManager();
 		donkeyClient = ContextLoader.getDonkeyClient();
+		groupDao = ContextLoader.getGroupDAO();
 	}
 
 	/**
@@ -102,7 +104,7 @@ public class GroupController extends ExceptionController {
 		
 		//step 2. save GroupModel in Database.
 		try {
-			GroupDB.saveGroup(group);
+			groupDao.saveGroup(group);
 		} catch (SQLException e) {
 			log.error("\nSave group <" + groupId + "> to database error : \n" + 
 					  "SQL Error Code : " + e.getErrorCode() + "\n" +
@@ -180,8 +182,8 @@ public class GroupController extends ExceptionController {
 			@RequestParam(value = "offset", required = false, defaultValue = "1") int offset,
 			@RequestParam(value = "username") String username) throws IOException, SQLException, JSONException {
 		
-		int count = GroupDB.getGroupTotalCount(username);
-		JSONArray confs = GroupDB.getGroupList(username, offset, PageSize);
+		int count = groupDao.getGroupTotalCount(username);
+		JSONArray confs = groupDao.getGroupList(username, offset, PageSize);
 
 		String url = "/conference/list" + "?";
 		Pager pager = new Pager(offset, PageSize, count, url);
@@ -260,7 +262,7 @@ public class GroupController extends ExceptionController {
 			}
 		}
 		
-		GroupDB.saveAttendees(groupId, addedAttendeeList);
+		groupDao.saveAttendees(groupId, addedAttendeeList);
 		
 		//add attendees to audio conference
 		DonkeyHttpResponse donkeyResp =
@@ -314,7 +316,7 @@ public class GroupController extends ExceptionController {
 		}
 		
 		if (userName.equals(group.getOwnerName())){
-			GroupDB.makeGroupVisibleForEachAttendee(groupId);
+			groupDao.makeGroupVisibleForEachAttendee(groupId);
 			
 			//create audio conference
 			DonkeyHttpResponse donkeyResp = 
@@ -519,7 +521,7 @@ public class GroupController extends ExceptionController {
 			@RequestParam(value = "groupId") String groupId,
 			@RequestParam(value = "title") String title,
 			HttpServletResponse response) throws SQLException {
-		int r = GroupDB.editGroupTitle(groupId, title);
+		int r = groupDao.editGroupTitle(groupId, title);
 		if (1 != r){
 			log.error("editTitle for group <" + groupId + "> error");
 		}
@@ -530,7 +532,7 @@ public class GroupController extends ExceptionController {
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName) throws SQLException {
-		int r = GroupDB.hideGroup(groupId, userName);
+		int r = groupDao.hideGroup(groupId, userName);
 		if (1 != r){
 			log.error("hide group <" + groupId + "> for user <" + userName + "> result=" + r);
 		}

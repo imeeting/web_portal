@@ -1,32 +1,38 @@
 package com.richitec.ucenter.model;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.SAXException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.framework.ContextLoader;
 import com.richitec.db.DBHelper;
-import com.richitec.sms.client.SMSClient;
 import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
-import com.sun.xml.rpc.processor.modeler.j2ee.xml.string;
 
-public class User {
-	private static Log log = LogFactory.getLog(User.class);
+public class UserDAO {
+	private static Log log = LogFactory.getLog(UserDAO.class);
 	public static final String SESSION_BEAN = "userBean";
 	public static final String PASSWORD_STR = "huuguanghui";
+	
+	private JdbcTemplate jdbc;
+	
+	public void setDataSource(DataSource ds){
+		jdbc = new JdbcTemplate(ds);
+	}
 
 	/**
 	 * 获得手机验证码
@@ -36,7 +42,7 @@ public class User {
 	 * @param phoneCode
 	 * @return
 	 */
-	public static String getPhoneCode(HttpSession session, String phone) {
+	public String getPhoneCode(HttpSession session, String phone) {
 		String result = "0";
 		String phoneCode = RandomString.validateCode();
 		log.info("phone code: " + phoneCode);
@@ -63,20 +69,15 @@ public class User {
 	 * @param code
 	 * @return
 	 */
-	public static String regUser(String phone, String password, String password1) {
+	public String regUser(String phone, String password, String password1) {
 		String result = checkRegisterUser(phone, password, password1);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
 			String sql = "INSERT INTO im_user(username, password, userkey) VALUE (?,?,?)";
 			Object[] params = new Object[] { Long.parseLong(phone),
 					MD5Util.md5(password), userkey };
-			try {
-				int resultCount = ContextLoader.getDBHelper().update(sql, params);
-				result = resultCount > 0 ? "0" : "1001";
-			} catch (SQLException e) {
-				e.printStackTrace();
-				result = "1001";
-			}
+			int resultCount = jdbc.update(sql, params);
+			result = resultCount > 0 ? "0" : "1001";
 		}
 		return result;
 	}
@@ -90,34 +91,35 @@ public class User {
 	 * @return
 	 * @throws JSONException
 	 */
-	public static JSONObject login(HttpSession session, String loginName,
-			String loginPwd) throws JSONException {
-		JSONObject ret = new JSONObject();
-		String result = "";
+	public JSONObject login(HttpSession session, String loginName,
+			final String loginPwd) throws JSONException {
 		String sql = "SELECT password, userkey FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
-		try {
-			List<Map<String, Object>> resultList = ContextLoader.getDBHelper()
-					.query(sql, params);
 		
-			if (resultList.size() > 0) {
-				Map<String, Object> resultMap = resultList.get(0);
-				String password = (String) resultMap.get("password");
-				String userkey = (String) resultMap.get("userkey");
-				if (loginPwd.equals(password)) {
-					result = "0";
-					ret.put("userkey", userkey);
-				} else {
-					result = "1";
+		JSONObject ret = jdbc.queryForObject(sql, params, new RowMapper<JSONObject>(){
+			@Override
+			public JSONObject mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				JSONObject obj = new JSONObject();
+				try {
+					if (loginPwd.equals(rs.getString("password"))){
+						obj.put("userkey", rs.getString("userkey"));
+						obj.put("result", "0");
+					} else {
+						obj.put("result", "1");
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-			} else {
-				result = "2";
+				return obj;
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			result = "1001";
+		});
+		
+		if (null == ret){
+			ret = new JSONObject();
+			ret.put("result", "2");
 		}
-		ret.put("result", result);
+		
 		return ret;
 	}
 
@@ -132,36 +134,25 @@ public class User {
 	 * @param width
 	 * @param height
 	 */
-	public static void recodeDeviceInfo(String username, String brand,
+	public void recodeDeviceInfo(String username, String brand,
 			String model, String release, String sdk, String width,
 			String height) {
 		log.info("record device info - username:  " + username + " brand: "
 				+ brand);
-		DBHelper dh = ContextLoader.getDBHelper();
 
 		String sql = "SELECT count(username) FROM fy_device_info WHERE username = ?";
-		Object[] params = new Object[] { username };
-		try {
-			int count = dh.count(sql, params);
-			if (count > 0) {
-				// update device info
-				sql = "UPDATE fy_device_info SET brand=?, model=?, release_ver=?, sdk=?, width=?, height=? WHERE username = ?";
-				params = new Object[] { brand, model, release, sdk, width,
-						height, username };
-				dh.update(sql, params);
-			} else {
-				// insert new device info
-				sql = "INSERT INTO fy_device_info VALUES(?,?,?,?,?,?,?)";
-				params = new Object[] { username, brand, model, release, sdk,
-						width, height };
-				dh.update(sql, params);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		int count = jdbc.queryForInt(sql, username);
+		if (count > 0){
+			jdbc.update("UPDATE fy_device_info SET brand=?, model=?, " +
+					"release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
+					brand, model, release, sdk, width, height, username);
+		} else {
+			jdbc.update("NSERT INTO fy_device_info VALUES(?,?,?,?,?,?,?)",
+					 username, brand, model, release, sdk, width, height );
 		}
 	}
 
-	public static String checkPhoneCode(HttpSession session, String code) {
+	public String checkPhoneCode(HttpSession session, String code) {
 		if (code.equals("")) {
 			return "1"; // 验证码必�?
 		} else if (!code.equals(session.getAttribute("phonecode"))) {
@@ -181,14 +172,14 @@ public class User {
 	 * @param code
 	 * @return
 	 */
-	public static String checkRegisterUser(String phone, String password,
+	public String checkRegisterUser(String phone, String password,
 			String password1) {
 		try {
 			if (phone.equals("")) {
 				return "1"; // 手机号码必填
 			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
 				return "2"; // 手机号码格式错误
-			} else if (!isExistsLoginName(phone).equals("0")) {
+			} else if (isExistsLoginName(phone)) {
 				return "3"; // 手机号码已存�?
 			} else if (password.equals("")) {
 				return "4"; // 密码必填
@@ -209,13 +200,13 @@ public class User {
 	 * @param phone
 	 * @return
 	 */
-	public static String checkRegisterPhone(String phone) {
+	public String checkRegisterPhone(String phone) {
 		try {
 			if (phone.equals("")) {
 				return "1"; // 手机号码必填
 			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
 				return "2"; // 手机号码格式错误
-			} else if (!isExistsLoginName(phone).equals("0")) {
+			} else if (isExistsLoginName(phone)) {
 				return "3"; // 手机号码已存�?
 			} else {
 				return "0";
@@ -232,13 +223,11 @@ public class User {
 	 * @return
 	 * @throws SQLException
 	 */
-	private static String isExistsLoginName(String loginName)
+	private boolean isExistsLoginName(String loginName)
 			throws SQLException {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
-		int count = 0;
-		count = ContextLoader.getDBHelper().count(sql, params);
-		return count == 0 ? "0" : "1"; // 0:不存�?1：存�?
+		return jdbc.queryForInt(sql, params) > 0;
 	}
 
 	/**
@@ -247,17 +236,10 @@ public class User {
 	 * @param phone
 	 * @return
 	 */
-	public static String getUserKey(String phone) {
-		String userkey = null;
+	public String getUserKey(String phone) {
 		String sql = "SELECT userkey FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { phone };
-		try {
-			userkey = ContextLoader.getDBHelper().scalar(sql, params);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			userkey = null;
-		}
-		return userkey;
+		return jdbc.queryForObject(sql, params, String.class);
 	}
 
 }

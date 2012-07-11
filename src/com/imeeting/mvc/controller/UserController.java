@@ -1,6 +1,7 @@
 package com.imeeting.mvc.controller;
 
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.richitec.ucenter.model.User;
+import com.imeeting.framework.ContextLoader;
+import com.richitec.ucenter.model.UserDAO;
 
 
 @Controller
@@ -20,6 +22,13 @@ import com.richitec.ucenter.model.User;
 public class UserController {
 
 	private static Log log = LogFactory.getLog(UserController.class);
+	
+	private UserDAO userDao;
+	
+	@PostConstruct
+	public void init(){
+		userDao = ContextLoader.getUserDAO();
+	}
 
 	@RequestMapping("/login")
 	public void login(
@@ -35,7 +44,7 @@ public class UserController {
 		log.info("login loginname: " + loginName + " pwd: " + loginPwd);
 		JSONObject jsonUser = new JSONObject();
 		try {
-			JSONObject jsonResult = User.login(session, loginName, loginPwd);
+			JSONObject jsonResult = userDao.login(session, loginName, loginPwd);
 		//	String result = jsonResult.getString("result");
 			
 //			if (result.equals("0")) {
@@ -57,10 +66,10 @@ public class UserController {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
-			result = User.checkRegisterPhone(phone);
+			result = userDao.checkRegisterPhone(phone);
 			log.info("check register phone return: " + result);
 			if (result.equals("0")) {
-				result = User.getPhoneCode(session, phone);
+				result = userDao.getPhoneCode(session, phone);
 			}
 			jsonUser.put("result", result);
 		} catch (JSONException e) {
@@ -76,7 +85,7 @@ public class UserController {
 		try {
 			String result = "0";
 			if (session.getAttribute("phonecode") != null) {
-				result = User.checkPhoneCode(session, code);
+				result = userDao.checkPhoneCode(session, code);
 			} else {
 				result = "6"; // session timeout
 			}
@@ -98,7 +107,7 @@ public class UserController {
 			String phone = "";
 			if (session.getAttribute("phonenumber") != null) {
 				phone = (String) session.getAttribute("phonenumber");
-				result = User.regUser(phone, password, password1);
+				result = userDao.regUser(phone, password, password1);
 			} else {
 				result = "6"; // session过期
 			}

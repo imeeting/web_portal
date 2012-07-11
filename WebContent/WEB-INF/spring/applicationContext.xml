@@ -38,9 +38,6 @@
 		</property>		
 	</bean>
 	
-	<bean id="group_manager" class="com.imeeting.mvc.model.group.GroupManager">
-	</bean>
-	
 	<bean id="notifier" class="com.richitec.notify.Notifier">
 		<property name="notifyUrl">
 			<value>${notify_url}</value>
@@ -95,8 +92,22 @@
 		</property>				 		
 	</bean>	
 	
+	<!-- 
 	<bean id="db_helper" class="com.richitec.db.DBHelper"> 
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>	
+	-->
+	
+	<bean id="user_dao" class="com.richitec.ucenter.model.UserDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
+	
+	<bean id="group_dao" class="com.imeeting.mvc.model.group.GroupDB">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
+		
+	<bean id="group_manager" class="com.imeeting.mvc.model.group.GroupManager">
+		<property name="groupDao" ref="group_dao"></property>
+	</bean>
 
 </beans>

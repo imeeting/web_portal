@@ -2,6 +2,7 @@ package com.imeeting.mvc.model.group;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,9 +18,14 @@ public class GroupManager {
 	private static Log log = LogFactory.getLog(GroupManager.class);
 
 	private Map<String, GroupModel> groupMap = null;
+	private GroupDB groupDao;
 
 	public GroupManager() {
 		groupMap = new ConcurrentHashMap<String, GroupModel>();
+	}
+	
+	public void setGroupDao(GroupDB dao){
+		groupDao = dao;
 	}
 
 	public GroupModel getGroup(String groupId) {
@@ -31,11 +37,14 @@ public class GroupManager {
 		GroupModel group = groupMap.get(groupId);
 		if (null == group) {
 			group = new GroupModel(groupId, ownerName);
-			int r = GroupDB.updateStatus(groupId, GroupStatus.OPEN);
+			int r = groupDao.updateStatus(groupId, GroupStatus.OPEN);
 			if (1 != r) {
 				return null;
 			}
-			group = GroupDB.loadAttendees(group);
+			List<AttendeeBean> list = groupDao.getGroupAttendees(groupId);
+			for (AttendeeBean bean : list){
+				group.addAttendee(bean);
+			}
 			groupMap.put(groupId, group);
 		}
 
@@ -75,7 +84,7 @@ public class GroupManager {
 			}
 			if (isEmpty) {
 				removeGroup(groupId);
-				GroupDB.close(groupId);
+				groupDao.close(groupId);
 			}
 		}
 	}

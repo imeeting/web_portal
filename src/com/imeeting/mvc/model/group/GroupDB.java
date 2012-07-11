@@ -1,5 +1,6 @@
 package com.imeeting.mvc.model.group;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,19 +8,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.GroupConstants;
-import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
 
 public class GroupDB {
 	private static Log log = LogFactory.getLog(GroupDB.class);
+	
+	private JdbcTemplate jdbc;
 	
 	public enum GroupStatus {
 		OPEN, CLOSE
@@ -29,84 +35,70 @@ public class GroupDB {
 		VISIABLE, HIDDEN
 	};
 	
-	public static GroupModel loadAttendees(GroupModel group) throws SQLException{
-		List<Map<String, Object>> list = GroupDB.getGroupAttendees(group.getGroupId());
-		for (Map<String, Object> map : list) {
-			String name = (String) map.get("username");
-			AttendeeBean attendee = new AttendeeBean(name); 
-			group.addAttendee(attendee);
-		}
-		
-		return group;
+	public void setDataSource(DataSource ds){
+		jdbc = new JdbcTemplate(ds);
 	}
-	
-	public static void saveGroup(GroupModel group) throws SQLException{
+
+	public void saveGroup(GroupModel group) throws SQLException{
 		insert(group.getGroupId());
 		editGroupTitle(group.getGroupId(), "ID: " + group.getGroupId()); // temporary use only
 		Collection<AttendeeBean> attendeeCollection = group.getAllAttendees();
 		saveAttendeeBeans(group.getGroupId(), attendeeCollection);
 	}
 	
-	public static void saveAttendeeBeans(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
+	public void saveAttendeeBeans(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeBean attendee : attendeeCollection){
 			params.add(new Object[] { groupId, attendee.getUsername() });
 		}
-		ContextLoader.getDBHelper().batchUpdate(sql, params);
+		jdbc.batchUpdate(sql, params);
 	}
 	
-	public static void saveAttendees(String groupId, Collection<String> attendeeNameCollection) throws SQLException{
+	public void saveAttendees(String groupId, Collection<String> attendeeNameCollection) throws SQLException{
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (String attendeeName : attendeeNameCollection){
 			params.add(new Object[] { groupId, attendeeName });
 		}
-		ContextLoader.getDBHelper().batchUpdate(sql, params);
+		jdbc.batchUpdate(sql, params);
 	}	
 
-	public static int insert(String groupId) throws SQLException {
-		String sql = "INSERT INTO im_group(groupId) VALUES (?)";
-		Object[] params = new Object[] { groupId };
-		return ContextLoader.getDBHelper().update(sql, params);
+	public int insert(String groupId) throws SQLException {
+		return jdbc.update("INSERT INTO im_group(groupId) VALUES (?)", groupId);
 	}
 
-	public static int close(String groupId) throws SQLException {
+	public int close(String groupId) throws SQLException {
 		return setStatus(groupId, GroupStatus.CLOSE);
 	}
 	
-	@Deprecated
-	public static int open(String groupId) throws SQLException {
-		return setStatus(groupId, GroupStatus.OPEN);
-	}
-	
-	private static int setStatus(String groupId, GroupStatus status) throws SQLException {
-		String sql = "UPDATE im_group set status = ? WHERE groupId = ?";
-		Object[] params = new Object[] { status.name(), groupId };
-		return ContextLoader.getDBHelper().update(sql, params);
+	private int setStatus(String groupId, GroupStatus status) throws SQLException {
+		return jdbc.update(
+					"UPDATE im_group set status=? WHERE groupId=?",
+					status.name(), groupId);
 	}
 
-	public static int getGroupTotalCount(String username) throws SQLException {
+	public int getGroupTotalCount(String username) throws SQLException {
 		// query the total count of conference list related to username
 		String sql = "SELECT count(c.groupId) "
-				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
-				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
-				+ "ORDER BY c.created DESC";
-		Object[] params = new Object[] { username, UserGroupStatus.VISIABLE.name() };
-		return ContextLoader.getDBHelper().count(sql, params);
+			+ "FROM im_group AS c INNER JOIN im_attendee AS a "
+			+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
+			+ "ORDER BY c.created DESC";
+		return jdbc.queryForInt(sql, username, UserGroupStatus.VISIABLE.name());
 	}
 
-	public static JSONArray getGroupList(String userName, int offset,
+	public JSONArray getGroupList(String userName, int offset,
 			int pageSize) throws SQLException {
 		// query conference list related to username
 		String sql = "SELECT c.groupId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
 				+ "ON c.groupId = a.groupId AND a.username = ? AND a.status = ? "
-				+ "ORDER BY c.created DESC";
-		Object[] params = new Object[] { userName, UserGroupStatus.VISIABLE.name() };
+				+ "ORDER BY c.created DESC LIMIT ?, ?";
 
-		List<Map<String, Object>> groupResultList = ContextLoader.getDBHelper()
-				.queryPager(sql, params, offset, pageSize);
+		int startIndex = (offset - 1) * pageSize;
+		List<Map<String, Object>> groupResultList = 
+			jdbc.queryForList(sql, userName, UserGroupStatus.VISIABLE.name(), startIndex, pageSize);
+		
 		log.info("groupResultList size: " + groupResultList.size());
 		
 		if (groupResultList.size() <= 0) {
@@ -152,8 +144,7 @@ public class GroupDB {
 		sql = "SELECT groupId AS id, username " + "FROM im_attendee "
 				+ "WHERE groupId IN " + groupIds.toString();
 		log.info(sql);
-		List<Map<String, Object>> attendeeList = ContextLoader.getDBHelper().query(
-				sql);
+		List<Map<String, Object>> attendeeList = jdbc.queryForList(sql);
 
 		for (Map<String, Object> attendeeMap : attendeeList) {
 			String groupId = (String) attendeeMap.get("id");
@@ -182,41 +173,17 @@ public class GroupDB {
 	}
 
 	
-	public static void makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
+	public int makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
-		Object[] params = new Object[] { UserGroupStatus.VISIABLE.name(), groupId};
-		ContextLoader.getDBHelper().update(sql, params);
+		return jdbc.update(sql, UserGroupStatus.VISIABLE.name(), groupId );
 	}
 
-	public static int hideGroup(String groupId, String userName)
+	public int hideGroup(String groupId, String userName)
 			throws SQLException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? AND username = ?";
-		Object[] params = new Object[] { UserGroupStatus.HIDDEN.name(), groupId,
-				userName };
-		return ContextLoader.getDBHelper().update(sql, params);
-	}
-	
-	public static void insertAttendees(String groupId, JSONArray attendees)
-			throws SQLException {
-		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
-		List<Object[]> params = new ArrayList<Object[]>();
-		for (int i = 0; i < attendees.length(); i++) {
-			try {
-				String attendee = attendees.getString(i);
-				params.add(new Object[] { groupId, attendee });
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-		ContextLoader.getDBHelper().batchUpdate(sql, params);
+		return jdbc.update(sql, UserGroupStatus.HIDDEN.name(), groupId, userName);
 	}
 
-	public static void insertAttendee(String groupId, String userName)
-			throws SQLException {
-		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
-		Object[] params = new Object[] { groupId, userName };
-		ContextLoader.getDBHelper().update(sql, params);
-	}
 	
 	/**
 	 * get attendees from group
@@ -224,35 +191,21 @@ public class GroupDB {
 	 * @return List<Map<String, Object>>
 	 * @throws SQLException 
 	 */
-	public static List<Map<String, Object>> getGroupAttendees(String groupId) throws SQLException {
-		String sql = "SELECT username FROM im_attendee WHERE groupId = ?";
-		Object[] params = new Object[] {groupId};
-		List<Map<String, Object>> result = ContextLoader.getDBHelper().query(sql, params);
-		return result;
+	public List<AttendeeBean> getGroupAttendees(String groupId) throws SQLException {
+		return jdbc.query("SELECT username FROM im_attendee WHERE groupId = ?", 
+				new Object[] {groupId}, 
+				new RowMapper<AttendeeBean>(){
+					@Override
+					public AttendeeBean mapRow(ResultSet rs, int rowNum)
+							throws SQLException {
+						return new AttendeeBean(rs.getString("username"));
+					}
+				});
 	}
 	
-	public static int editGroupTitle(String groupId, String title) throws SQLException {
+	public int editGroupTitle(String groupId, String title) throws SQLException {
 		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
-		Object[] params = new Object[] {title, groupId};
-		return ContextLoader.getDBHelper().update(sql, params);
-	}
-	
-	/**
-	 * check if the group exists in the db
-	 * @param groupId
-	 * @return
-	 * @throws SQLException
-	 */
-	@Deprecated
-	public static boolean isGroupExisted(String groupId) throws SQLException {
-		String sql = "SELECT count(groupId) FROM im_group WHERE groupId = ?";
-		Object[] params = new Object[] {groupId};
-		int count = ContextLoader.getDBHelper().count(sql, params);
-		boolean ret = false;
-		if (count > 0) {
-			ret = true;
-		}
-		return ret;
+		return jdbc.update(sql, title, groupId);
 	}
 	
 	/**
@@ -262,11 +215,10 @@ public class GroupDB {
 	 * @return rows
 	 * @throws SQLException 
 	 */
-	public static int updateStatus(String groupId, GroupStatus status) throws SQLException {
+	public int updateStatus(String groupId, GroupStatus status) throws SQLException {
 		log.info("updateOwnerAndStatus - " + " groupId: " + groupId);
-		String sql = "UPDATE im_group SET createCount = createCount + 1 AND status = ? WHERE groupId = ?";
-		Object[] params = new Object[] {status.name(), groupId};
-		int rows = ContextLoader.getDBHelper().update(sql, params);
-		return rows;
+		return jdbc.update(
+				"UPDATE im_group SET createCount=createCount+1 AND status=? WHERE groupId=?", 
+				status.name(), groupId);
 	}
 }
