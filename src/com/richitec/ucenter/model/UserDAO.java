@@ -13,11 +13,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.framework.ContextLoader;
-import com.richitec.db.DBHelper;
 import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
@@ -91,36 +92,19 @@ public class UserDAO {
 	 * @return
 	 * @throws JSONException
 	 */
-	public JSONObject login(HttpSession session, String loginName,
-			final String loginPwd) throws JSONException {
-		String sql = "SELECT password, userkey FROM im_user WHERE username = ?";
-		Object[] params = new Object[] { loginName };
-		
-		JSONObject ret = jdbc.queryForObject(sql, params, new RowMapper<JSONObject>(){
-			@Override
-			public JSONObject mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				JSONObject obj = new JSONObject();
-				try {
-					if (loginPwd.equals(rs.getString("password"))){
-						obj.put("userkey", rs.getString("userkey"));
-						obj.put("result", "0");
-					} else {
-						obj.put("result", "1");
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				return obj;
+	public String login(String loginName, final String loginPwd) {
+		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=?";
+		Object[] params = new Object[] { loginName, loginPwd };
+		String result = null;
+		try {
+			String userkey = jdbc.queryForObject(sql, params, String.class);
+			if (null != userkey){
+				result = "1";
 			}
-		});
-		
-		if (null == ret){
-			ret = new JSONObject();
-			ret.put("result", "2");
-		}
-		
-		return ret;
+		} catch (EmptyResultDataAccessException e) {
+			result = "0";
+		} 
+		return result;
 	}
 
 	/**

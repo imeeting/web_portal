@@ -14,6 +14,12 @@
 		</property>
 	</bean>	
 	
+	<bean id="imeeting_config" class="com.imeeting.framework.Configuration">
+		<property name="uploadDir">
+			<value>${upload_tmp_dir}</value>
+		</property>
+	</bean>
+	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
 		<property name="baseUri">
 			<value>${textMessageUrl}</value>

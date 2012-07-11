@@ -43,26 +43,17 @@ public class UserController {
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("login loginname: " + loginName + " pwd: " + loginPwd);
 		JSONObject jsonUser = new JSONObject();
-		try {
-			JSONObject jsonResult = userDao.login(session, loginName, loginPwd);
-		//	String result = jsonResult.getString("result");
-			
-//			if (result.equals("0")) {
-//				User.recodeDeviceInfo(loginName, brand, model, release, sdk,
-//						width, height);
-//			}
-			jsonUser = jsonResult;
-		} catch (JSONException e) {
-			e.printStackTrace();
-			jsonUser.put("result", "1001");
-		}
+		String result = userDao.login(loginName, loginPwd);
+		jsonUser.put("result", result);
 		log.info("result: " + jsonUser.toString());
 		response.getWriter().print(jsonUser.toString());
 	}
 
 	@RequestMapping("/getPhoneCode")
-	public void getPhoneCode(@RequestParam(value = "phone") String phone,
-			HttpServletResponse response, HttpSession session) throws Exception {
+	public void getPhoneCode(
+			@RequestParam(value = "phone") String phone,
+			HttpServletResponse response, 
+			HttpSession session) throws Exception {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
@@ -97,9 +88,11 @@ public class UserController {
 	}
 
 	@RequestMapping("/regUser")
-	public void regUser(@RequestParam(value = "password") String password,
+	public void regUser(
+			@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
-			HttpServletResponse response, HttpSession session) throws Exception {
+			HttpServletResponse response, 
+			HttpSession session) throws Exception {
 		log.info("regUser");
 		JSONObject jsonUser = new JSONObject();
 		try {

@@ -3,6 +3,8 @@ package com.imeeting.mvc.controller;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -11,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.richitec.util.ConfigManager;
+import com.imeeting.framework.Configuration;
+import com.imeeting.framework.ContextLoader;
 import com.richitec.util.RandomString;
 
 @Controller
@@ -19,6 +22,13 @@ import com.richitec.util.RandomString;
 public class ProfileController {
 	
 	private static Log log = LogFactory.getLog(ProfileController.class);
+	
+	private Configuration config;
+	
+	@PostConstruct
+	public void init(){
+		config = ContextLoader.getConfiguration();
+	}
 	
 	@RequestMapping(value="/changepassword")
 	public void changePassword(){
@@ -38,7 +48,7 @@ public class ProfileController {
 		log.info("File Origin Name: " + avatarFile.getOriginalFilename());
 		log.info("File Name: " + avatarFile.getName());
 		log.info("File Size: " + avatarFile.getSize());
-		String tmpDir = ConfigManager.getInstance().getAttribute("upload_tmp_dir");
+		String tmpDir = config.getUploadDir();
 		String source_id = "im_" + RandomString.genRandomNum(10);
 		String tmpFile = tmpDir + source_id;
 		avatarFile.transferTo(new File(tmpFile));

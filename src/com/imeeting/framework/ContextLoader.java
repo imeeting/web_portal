@@ -12,12 +12,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.richitec.db.DBHelper;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
-import com.richitec.util.ConfigManager;
 
 
 public class ContextLoader extends ContextLoaderListener {
@@ -26,21 +24,21 @@ public class ContextLoader extends ContextLoaderListener {
 
 	public void contextDestroyed(ServletContextEvent event) {
 		ComboPooledDataSource ds = (ComboPooledDataSource) appContext.getBean("dataSource_mysql_c3p0");
-		ds.close();
+		if (null != ds){
+			ds.close();
+		}
 	}
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
 		ServletContext context = event.getServletContext();
-
-		// load configuration file
-		InputStream configStream = context
-				.getResourceAsStream("/WEB-INF/config/Configuration.properties");
-		ConfigManager.getInstance().loadConfig(configStream);
-
 		appContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 	}	
+	
+	public static Configuration getConfiguration(){
+		return (Configuration)appContext.getBean("imeeting_config");
+	}
 	
 	public static SMSClient getSMSClient(){
 		return (SMSClient)appContext.getBean("sms_client");
