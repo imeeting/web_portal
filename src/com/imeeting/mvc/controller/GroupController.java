@@ -1,7 +1,6 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,7 +77,7 @@ public class GroupController extends ExceptionController {
 			HttpServletResponse response,
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
-			throws IOException, SQLException, JSONException {
+			throws IOException, DataAccessException, JSONException {
 		//step 1. create GroupModel in memory
 		String groupId = RandomString.genRandomNum(8);
 		GroupModel group = groupManager.creatGroup(groupId, userName);
@@ -103,9 +103,8 @@ public class GroupController extends ExceptionController {
 		//step 2. save GroupModel in Database.
 		try {
 			groupDao.saveGroup(group);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("\nSave group <" + groupId + "> to database error : \n" + 
-					  "SQL Error Code : " + e.getErrorCode() + "\n" +
 					  "Message : " + e.getMessage());
 			groupManager.removeGroup(groupId);
 			throw e;
@@ -149,7 +148,7 @@ public class GroupController extends ExceptionController {
 	@RequestMapping(value = "/destroy")
 	public void destroy(HttpServletResponse response,
 			@RequestParam String username, @RequestParam String groupId)
-			throws IOException, SQLException {
+			throws IOException {
 		// /
 		log.debug("destroy");
 		GroupModel conference = groupManager.getGroup(groupId);
@@ -181,7 +180,8 @@ public class GroupController extends ExceptionController {
 	public void list(
 			HttpServletResponse response,
 			@RequestParam(value = "offset", required = false, defaultValue = "1") int offset,
-			@RequestParam(value = "username") String username) throws IOException, SQLException, JSONException {
+			@RequestParam(value = "username") String username) throws IOException, 
+			DataAccessException, JSONException {
 		
 		int count = groupDao.getGroupTotalCount(username);
 		JSONArray confs = groupDao.getGroupList(username, offset, PageSize);
@@ -244,7 +244,7 @@ public class GroupController extends ExceptionController {
 	public void invite(
 			HttpServletResponse response,
 			@RequestParam String groupId, 
-			@RequestParam String attendees)	throws IOException, SQLException, JSONException {
+			@RequestParam String attendees)	throws IOException, DataAccessException, JSONException {
 		log.info("invite attendees");
 		if (null == attendees || attendees.length() < 0){
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -336,7 +336,7 @@ public class GroupController extends ExceptionController {
 	public void join(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
-			@RequestParam(value="username") String userName) throws SQLException, IOException, JSONException {
+			@RequestParam(value="username") String userName) throws DataAccessException, IOException, JSONException {
 		GroupModel group = groupManager.checkAndCreateGroupModel(groupId, userName);
 		if (null == group){
 			log.error("Cannot join <" + userName + "> to group <"+groupId+
@@ -391,7 +391,7 @@ public class GroupController extends ExceptionController {
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
 			@RequestParam(value="username") String userName)
-			throws IOException, SQLException {
+			throws IOException, DataAccessException {
 		log.debug("unjoin group - username: " + userName + "groupId: "
 				+ groupId);
 		GroupModel groupModel = groupManager.getGroup(groupId);
@@ -551,7 +551,7 @@ public class GroupController extends ExceptionController {
 	public void editTitle(
 			@RequestParam(value = "groupId") String groupId,
 			@RequestParam(value = "title") String title,
-			HttpServletResponse response) throws SQLException {
+			HttpServletResponse response) throws DataAccessException {
 		int r = groupDao.editGroupTitle(groupId, title);
 		if (1 != r){
 			log.error("editTitle for group <" + groupId + "> error");
@@ -562,7 +562,7 @@ public class GroupController extends ExceptionController {
 	public void hideGroup(
 			HttpServletResponse response,
 			@RequestParam(value="groupId") String groupId, 
-			@RequestParam(value="username") String userName) throws SQLException {
+			@RequestParam(value="username") String userName) throws DataAccessException {
 		int r = groupDao.hideGroup(groupId, userName);
 		if (1 != r){
 			log.error("hide group <" + groupId + "> for user <" + userName + "> result=" + r);

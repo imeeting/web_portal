@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.DataAccessException;
 
 import com.imeeting.mvc.model.group.GroupDB.GroupStatus;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
@@ -33,7 +34,7 @@ public class GroupManager {
 	}
 
 	public synchronized GroupModel checkAndCreateGroupModel(String groupId,
-			String ownerName) throws SQLException {
+			String ownerName) {
 		GroupModel group = groupMap.get(groupId);
 		if (null == group) {
 			group = new GroupModel(groupId, ownerName);
@@ -71,7 +72,7 @@ public class GroupManager {
 	 * @param groupId
 	 * @throws SQLException 
 	 */
-	public synchronized void removeGroupIfEmpty(String groupId) throws SQLException {
+	public synchronized void removeGroupIfEmpty(String groupId) throws DataAccessException {
 		GroupModel group = getGroup(groupId);
 		if (group != null) {
 			Collection<AttendeeBean> attendees = group.getAllAttendees();

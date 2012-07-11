@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -39,14 +40,14 @@ public class GroupDB {
 		jdbc = new JdbcTemplate(ds);
 	}
 
-	public void saveGroup(GroupModel group) throws SQLException{
+	public void saveGroup(GroupModel group) throws DataAccessException {
 		insert(group.getGroupId());
 		editGroupTitle(group.getGroupId(), "ID: " + group.getGroupId()); // temporary use only
 		Collection<AttendeeBean> attendeeCollection = group.getAllAttendees();
 		saveAttendeeBeans(group.getGroupId(), attendeeCollection);
 	}
 	
-	public void saveAttendeeBeans(String groupId, Collection<AttendeeBean> attendeeCollection) throws SQLException{
+	public void saveAttendeeBeans(String groupId, Collection<AttendeeBean> attendeeCollection) throws DataAccessException {
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeBean attendee : attendeeCollection){
@@ -55,7 +56,7 @@ public class GroupDB {
 		jdbc.batchUpdate(sql, params);
 	}
 	
-	public void saveAttendees(String groupId, Collection<String> attendeeNameCollection) throws SQLException{
+	public void saveAttendees(String groupId, Collection<String> attendeeNameCollection) throws DataAccessException {
 		String sql = "INSERT INTO im_attendee(groupId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (String attendeeName : attendeeNameCollection){
@@ -64,21 +65,21 @@ public class GroupDB {
 		jdbc.batchUpdate(sql, params);
 	}	
 
-	public int insert(String groupId) throws SQLException {
+	public int insert(String groupId) throws DataAccessException {
 		return jdbc.update("INSERT INTO im_group(groupId) VALUES (?)", groupId);
 	}
 
-	public int close(String groupId) throws SQLException {
+	public int close(String groupId) throws DataAccessException {
 		return setStatus(groupId, GroupStatus.CLOSE);
 	}
 	
-	private int setStatus(String groupId, GroupStatus status) throws SQLException {
+	private int setStatus(String groupId, GroupStatus status) throws DataAccessException {
 		return jdbc.update(
 					"UPDATE im_group set status=? WHERE groupId=?",
 					status.name(), groupId);
 	}
 
-	public int getGroupTotalCount(String username) throws SQLException {
+	public int getGroupTotalCount(String username) throws DataAccessException {
 		// query the total count of conference list related to username
 		String sql = "SELECT count(c.groupId) "
 			+ "FROM im_group AS c INNER JOIN im_attendee AS a "
@@ -88,7 +89,7 @@ public class GroupDB {
 	}
 
 	public JSONArray getGroupList(String userName, int offset,
-			int pageSize) throws SQLException {
+			int pageSize) throws DataAccessException {
 		// query conference list related to username
 		String sql = "SELECT c.groupId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
 				+ "FROM im_group AS c INNER JOIN im_attendee AS a "
@@ -173,13 +174,12 @@ public class GroupDB {
 	}
 
 	
-	public int makeGroupVisibleForEachAttendee(String groupId) throws SQLException {
+	public int makeGroupVisibleForEachAttendee(String groupId) throws DataAccessException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? ";
 		return jdbc.update(sql, UserGroupStatus.VISIABLE.name(), groupId );
 	}
 
-	public int hideGroup(String groupId, String userName)
-			throws SQLException {
+	public int hideGroup(String groupId, String userName) throws DataAccessException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE groupId = ? AND username = ?";
 		return jdbc.update(sql, UserGroupStatus.HIDDEN.name(), groupId, userName);
 	}
@@ -191,7 +191,7 @@ public class GroupDB {
 	 * @return List<Map<String, Object>>
 	 * @throws SQLException 
 	 */
-	public List<AttendeeBean> getGroupAttendees(String groupId) throws SQLException {
+	public List<AttendeeBean> getGroupAttendees(String groupId) throws DataAccessException {
 		return jdbc.query("SELECT username FROM im_attendee WHERE groupId = ?", 
 				new Object[] {groupId}, 
 				new RowMapper<AttendeeBean>(){
@@ -203,7 +203,7 @@ public class GroupDB {
 				});
 	}
 	
-	public int editGroupTitle(String groupId, String title) throws SQLException {
+	public int editGroupTitle(String groupId, String title) throws DataAccessException {
 		String sql = "UPDATE im_group SET title = ? WHERE groupId = ?";
 		return jdbc.update(sql, title, groupId);
 	}
@@ -215,7 +215,7 @@ public class GroupDB {
 	 * @return rows
 	 * @throws SQLException 
 	 */
-	public int updateStatus(String groupId, GroupStatus status) throws SQLException {
+	public int updateStatus(String groupId, GroupStatus status) throws DataAccessException {
 		log.info("updateOwnerAndStatus - " + " groupId: " + groupId);
 		return jdbc.update(
 				"UPDATE im_group SET createCount=createCount+1 AND status=? WHERE groupId=?", 

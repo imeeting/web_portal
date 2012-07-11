@@ -70,8 +70,10 @@ public class UserController {
 	}
 
 	@RequestMapping("/checkPhoneCode")
-	public void checkPhoneCode(@RequestParam(value = "code") String code,
-			HttpServletResponse response, HttpSession session) throws Exception {
+	public void checkPhoneCode(
+			@RequestParam(value = "code") String code,
+			HttpServletResponse response, 
+			HttpSession session) throws Exception {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
