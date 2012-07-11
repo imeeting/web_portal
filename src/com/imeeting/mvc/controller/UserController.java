@@ -19,7 +19,7 @@ import com.richitec.ucenter.model.UserDAO;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends ExceptionController {
 
 	private static Log log = LogFactory.getLog(UserController.class);
 	
