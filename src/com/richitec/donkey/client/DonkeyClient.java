@@ -24,6 +24,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+
+import com.richitec.util.TextUtility;
 
 public class DonkeyClient {
 
@@ -63,8 +66,12 @@ public class DonkeyClient {
 	}
 	
 	public static String getPhoneNumberFromSipUri(String sipUri){
-		String [] sl = sipUri.split(":");
-		return sl[1];
+		String[] s1 = TextUtility.splitText(sipUri, "sip:0", "@donkey.com");
+		String phoneNumber = sipUri;
+		if (s1 != null && s1.length > 0) {
+			phoneNumber = s1[0];
+		}
+		return phoneNumber;
 	}
 	
 	private String getParamsString(List<String> paramList){
@@ -145,6 +152,7 @@ public class DonkeyClient {
 	}
 	
 	private String getSIPUriJSONArray(Collection<String> attendeeList){
+		
 		if (null != attendeeList && attendeeList.size()>0){
 			String attendeeArray = "[";
 			for(String attendee : attendeeList){

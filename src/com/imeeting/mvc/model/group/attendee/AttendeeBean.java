@@ -9,10 +9,6 @@ public class AttendeeBean {
 		online, offline
 	}
 
-	public enum TelephoneStatus {
-		initil, calling, muting, unmuting, hangingup, intalking, muted, hangedup, callfailed
-	}
-	
 	public enum PhoneCallStatus {
 		CallWait, Established, TermWait, Failed, Terminated
 	}
