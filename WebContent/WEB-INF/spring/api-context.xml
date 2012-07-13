@@ -31,6 +31,10 @@
 			<mvc:mapping path="/group/unmute"/>
 			<bean class="com.imeeting.mvc.GroupInterceptor" />
 		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/group/**"/>
+			<bean class="com.imeeting.mvc.APIAuthInterceptor"></bean>
+		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
 	</mvc:interceptors>

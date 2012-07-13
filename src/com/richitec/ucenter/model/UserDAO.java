@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -87,21 +88,25 @@ public class UserDAO {
 	 * @return
 	 * @throws JSONException
 	 */
-	public String login(String loginName, final String loginPwd) throws DataAccessException {
+	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
 		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=?";
 		Object[] params = new Object[] { loginName, loginPwd };
 		String result = null;
+		JSONObject ret = new JSONObject();
 		try {
 			String userkey = jdbc.queryForObject(sql, params, String.class);
 			if (null != userkey){
 				result = "0";
+				ret.put("result", result);
+				ret.put("userkey", userkey);
 			}
 		} catch (EmptyResultDataAccessException e) {
 			result = "1";
+			ret.put("result", result);
 		} catch (DataAccessException e) {
 			throw e;
 		}
-		return result;
+		return ret;
 	}
 
 	/**
