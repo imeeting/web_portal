@@ -12,6 +12,7 @@ import com.imeeting.mvc.model.group.GroupDB;
 import com.imeeting.mvc.model.group.GroupManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.richitec.donkey.client.DonkeyClient;
+import com.richitec.notify.APNSProviderClient;
 import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
@@ -20,7 +21,7 @@ import com.richitec.ucenter.model.UserDAO;
 public class ContextLoader extends ContextLoaderListener {
 	
 	public static ApplicationContext appContext;
-
+	public static String appAbsolutePath;
 	public void contextDestroyed(ServletContextEvent event) {
 		ComboPooledDataSource ds = (ComboPooledDataSource) appContext.getBean("dataSource_mysql_c3p0");
 		if (null != ds){
@@ -32,6 +33,7 @@ public class ContextLoader extends ContextLoaderListener {
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
 		ServletContext context = event.getServletContext();
+		appAbsolutePath = context.getRealPath("/");
 		appContext = WebApplicationContextUtils.getRequiredWebApplicationContext(context);
 	}	
 	
@@ -61,5 +63,17 @@ public class ContextLoader extends ContextLoaderListener {
 	
 	public static UserDAO getUserDAO() {
 		return (UserDAO) appContext.getBean("user_dao");
+	}
+	
+	public static APNSProviderClient getDevAPNSProviderClient() {
+		APNSProviderClient client = (APNSProviderClient) appContext.getBean("apns_provider_dev");
+		client.initAPNS();
+		return client;
+	}
+	
+	public static APNSProviderClient getDistAPNSProviderClient() {
+		APNSProviderClient client = (APNSProviderClient) appContext.getBean("apns_provider_dist");
+		client.initAPNS();
+		return client;
 	}
 }

@@ -110,4 +110,33 @@
 		<property name="groupDao" ref="group_dao"></property>
 	</bean>
 
+	<bean id="apns_provider_dev" class="com.richitec.notify.APNSProviderClient">
+		<property name="notifyThreadsMaxNumber">
+			<value>${notifyThreadsMaxNumber}</value>
+		</property>
+		<property name="production">
+			<value>false</value>
+		</property>
+		<property name="cerFilePath">
+			<value>${cerFilePath}</value>
+		</property>
+		<property name="privateKeyPwd">
+			<value>${privateKeyPwd}</value>
+		</property>
+	</bean>
+	
+	<bean id="apns_provider_dist" class="com.richitec.notify.APNSProviderClient">
+		<property name="notifyThreadsMaxNumber">
+			<value>${notifyThreadsMaxNumber}</value>
+		</property>
+		<property name="production">
+			<value>true</value>
+		</property>
+		<property name="cerFilePath">
+			<value>${cerFilePath}</value>
+		</property>
+		<property name="privateKeyPwd">
+			<value>${privateKeyPwd}</value>
+		</property>
+	</bean>
 </beans>
