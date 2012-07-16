@@ -221,4 +221,10 @@ public class GroupDB {
 				"UPDATE im_group SET createCount=createCount+1 AND status=? WHERE groupId=?", 
 				status.name(), groupId);
 	}
+	
+	public List<String> getTokens(String userNames) {
+		String sql = "SELECT token FROM im_token WHERE username IN " + userNames;
+		List<String> tokens = jdbc.queryForList(sql, String.class);
+		return tokens;
+	}
 }

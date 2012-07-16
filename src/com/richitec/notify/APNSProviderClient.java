@@ -181,12 +181,12 @@ public class APNSProviderClient {
 		// start push notification threads pool
 		pushNotificationThreadsPool.start();
 		// wait for all threads
-		try {
-			pushNotificationThreadsPool.waitForAllThreads();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			pushNotificationThreadsPool.waitForAllThreads();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 }

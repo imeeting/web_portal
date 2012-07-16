@@ -70,7 +70,7 @@ public class UserDAO {
 		String result = checkRegisterUser(phone, password, password1);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey) VALUE (?,?,?)";
+			String sql = "INSERT INTO im_user(username, password, userkey) VALUES (?,?,?)";
 			Object[] params = new Object[] { Long.parseLong(phone),
 					MD5Util.md5(password), userkey };
 			int resultCount = jdbc.update(sql, params);
@@ -133,7 +133,7 @@ public class UserDAO {
 					"release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
 					brand, model, release, sdk, width, height, username);
 		} else {
-			jdbc.update("NSERT INTO fy_device_info VALUES(?,?,?,?,?,?,?)",
+			jdbc.update("INSERT INTO fy_device_info VALUE(?,?,?,?,?,?,?)",
 					 username, brand, model, release, sdk, width, height );
 		}
 	}
@@ -228,4 +228,16 @@ public class UserDAO {
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
+	public String saveToken(String userName, String token) {
+		String retCode = "0";
+		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
+		int affectedRows = jdbc.update(sql, token, userName);
+		if (affectedRows == 0) {
+			// no user existed, insert new one
+			sql = "INSERT INTO im_token(username, token) VALUES(?,?)";
+			int rows = jdbc.update(sql, userName, token);
+			retCode = rows > 0 ? "0" : "1001";
+		}
+		return retCode;
+	}
 }

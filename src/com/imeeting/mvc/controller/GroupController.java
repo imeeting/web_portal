@@ -124,7 +124,8 @@ public class GroupController extends ExceptionController {
 			return;
 		}	
 		
-		//step 4. send iPhone notification to all attendees.
+		//step 4. send APNS notification to all attendees.
+		group.notifyAttendeesInvited();
 		
 		//step 5. response to user
 		JSONObject ret = new JSONObject();
@@ -265,9 +266,6 @@ public class GroupController extends ExceptionController {
 		
 		groupDao.saveAttendees(groupId, addedAttendeeList);
 		
-		// notify all attendees to update attendee list
-		group.notifyAttendeesToUpdateMemberList();
-		
 		//add attendees to audio conference
 		DonkeyHttpResponse donkeyResp =
 			donkeyClient.addMoreAttendee(group.getAudioConfId(), addedAttendeeList, groupId);
@@ -279,7 +277,11 @@ public class GroupController extends ExceptionController {
 			return;
 		}	
 		
-		//TODO: send iPhone notification
+		// notify all attendees to update attendee list
+		group.notifyAttendeesToUpdateMemberList();
+		
+		// send APNS notification
+		group.notifyAttendeesInvited();
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
@@ -318,7 +320,7 @@ public class GroupController extends ExceptionController {
 		}
 		
 		groupModel.removeAttendee(dstUserName);
-		groupModel.notifyAttendeesToUpdateMemberList();
+		groupModel.notifyAttendeeKickOut(dstUserName);
 		
 	}
 
@@ -362,7 +364,8 @@ public class GroupController extends ExceptionController {
 				return;
 			}
 			
-			//TODO: send iPhone notification; 
+			// send iPhone notification; 
+			group.notifyAttendeesInvited();
 		} else {
 			AttendeeBean attendee = group.getAttendee(userName);
 			// notify other people that User has joined
@@ -430,6 +433,7 @@ public class GroupController extends ExceptionController {
 			@RequestParam(value = "online_status", required = false) String onlineStatus,
 			@RequestParam(value = "video_status", required = false) String videoStatus,
 			@RequestParam(value = "telephone_status", required = false) String telephoneStatus) throws IOException {
+		log.info("updateAttendeeStatus - groupId: " + groupId + " username: " + userName);
 		GroupModel groupModel = groupManager.getGroup(groupId);
 		groupModel.updateAttendeeStatus(userName, onlineStatus, videoStatus, telephoneStatus);
 	}

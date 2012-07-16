@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javapns.notification.PushNotificationPayload;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -79,12 +81,65 @@ public class GroupModel {
 		attendeeMap.put(attendee.getUsername(), attendee);
 	}
 
+	public List<String> getTokensFromAttendees() {
+		StringBuffer userNames = new StringBuffer();
+		for (AttendeeBean ab : this.attendeeMap.values()) {
+			if (!ab.getUsername().equals(ownerName)) {
+				userNames.append(ab.getUsername()).append(',');
+			}	
+		}
+		if (userNames.lastIndexOf(",") == userNames.length() - 1) {
+			userNames.deleteCharAt(userNames.length() - 1);
+		}
+		List<String> tokens = null;
+		if (userNames.length() > 0) {
+			tokens = ContextLoader.getGroupDAO().getTokens("(" + userNames.toString() + ")");
+		}
+		return tokens;
+	}
+	
+	public void notifyAttendeesInvited() {
+		log.info("notifyAttendeesInvited");
+		List<String> tokens = getTokensFromAttendees();
+		if (tokens == null || tokens.size() <= 0) {
+			return;
+		}
+		
+		for(String token : tokens) {
+			log.info("token: " + token);
+		}
+		
+		PushNotificationPayload payload = new PushNotificationPayload();
+		try {
+			payload.addAlert("您被" + ownerName + "邀请加入讨论组");
+			payload.addCustomDictionary("groupId", groupId);
+			payload.addSound("default");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		ContextLoader.getDevAPNSProviderClient().pushNotification(tokens, payload);
+		ContextLoader.getDistAPNSProviderClient().pushNotification(tokens, payload);
+	}
+	
 	public void broadcastAttendeeStatus(AttendeeBean attendee) {
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("groupId", getGroupId());
 			msg.put("action", AttendeeAction.update_status.name());
 			msg.put("attendee", attendee.toJson());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(getGroupId(), msg.toString());
+	}
+	
+	public void notifyAttendeeKickOut(String userName) {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("groupId", getGroupId());
+			msg.put("username", userName);
+			msg.put("action", AttendeeAction.kickout.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
