@@ -4,5 +4,6 @@ public enum AttendeeAction {
 	update_status,
 	update_attendee_list,
 	update_phone_status,
-	kickout
+	kickout,
+	invited
 }

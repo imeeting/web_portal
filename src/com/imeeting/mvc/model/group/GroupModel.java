@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.attendee.AttendeeAction;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
@@ -88,7 +89,7 @@ public class GroupModel {
 				userNames.append(ab.getUsername()).append(',');
 			}	
 		}
-		if (userNames.lastIndexOf(",") == userNames.length() - 1) {
+		if (userNames.length() > 0 && userNames.lastIndexOf(",") == userNames.length() - 1) {
 			userNames.deleteCharAt(userNames.length() - 1);
 		}
 		List<String> tokens = null;
@@ -111,9 +112,10 @@ public class GroupModel {
 		
 		PushNotificationPayload payload = new PushNotificationPayload();
 		try {
-			payload.addAlert("您被" + ownerName + "邀请加入讨论组");
+			payload.addAlert("" + ownerName + "邀请您加入讨论组");
 			payload.addCustomDictionary("groupId", groupId);
-			payload.addSound("default");
+			payload.addCustomDictionary("action", AttendeeAction.invited.name());
+			payload.addSound("office_phone.caf");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
