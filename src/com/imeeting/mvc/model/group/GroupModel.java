@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.group.attendee.AttendeeAction;
 import com.imeeting.mvc.model.group.attendee.AttendeeBean;
@@ -29,7 +28,6 @@ public class GroupModel {
 	private String ownerName;
 	private String audioConfId;
 	private Map<String, AttendeeBean> attendeeMap;
-
 	
 	public GroupModel(String groupId, String ownerName) {
 		this.groupId = groupId;
