@@ -125,7 +125,7 @@ public class GroupController extends ExceptionController {
 		}	
 		
 		//step 4. send APNS notification to all attendees.
-		group.notifyAttendeesInvited();
+		//group.notifyAttendeesInvited();
 		
 		//step 5. response to user
 		JSONObject ret = new JSONObject();
@@ -281,7 +281,7 @@ public class GroupController extends ExceptionController {
 		group.notifyAttendeesToUpdateMemberList();
 		
 		// send APNS notification
-		group.notifyAttendeesInvited();
+		//group.notifyAttendeesInvited();
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
@@ -365,7 +365,7 @@ public class GroupController extends ExceptionController {
 			}
 			
 			// send iPhone notification; 
-			group.notifyAttendeesInvited();
+			//group.notifyAttendeesInvited();
 		} else {
 			AttendeeBean attendee = group.getAttendee(userName);
 			// notify other people that User has joined

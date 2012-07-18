@@ -104,6 +104,10 @@ public class DonkeyEventController {
 		AttendeeBean attendee = group.getAttendee(attendeeName);
 		attendee.statusCallEstablished();
 		group.broadcastAttendeeStatus(attendee);
+		if (attendeeName.equals(group.getOwnerName())) {
+			// when owner's phone is established, notify all attendees to join
+			group.notifyAttendeesInvited();
+		}
 	}
 	
 	private void onAttendeeCallFailed(DonkeyEvent event){
