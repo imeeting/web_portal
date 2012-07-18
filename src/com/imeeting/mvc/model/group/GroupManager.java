@@ -34,11 +34,13 @@ public class GroupManager {
 	}
 
 	public synchronized GroupModel checkAndCreateGroupModel(String groupId,
-			String ownerName) {
+			String userName) {
 		GroupModel group = groupMap.get(groupId);
+		log.info("checkAndCreateGroupModel - group: " + group);
 		if (null == group) {
-			group = new GroupModel(groupId, ownerName);
+			group = new GroupModel(groupId, userName);
 			int r = groupDao.updateStatus(groupId, GroupStatus.OPEN);
+			log.info("updateStatus affected rows: " + r);
 			if (1 != r) {
 				return null;
 			}
@@ -49,7 +51,7 @@ public class GroupManager {
 			groupMap.put(groupId, group);
 		}
 
-		AttendeeBean attendee = group.getAttendee(ownerName);
+		AttendeeBean attendee = group.getAttendee(userName);
 		attendee.setOnlineStatus(AttendeeBean.OnlineStatus.online);
 
 		return group;

@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -69,7 +70,7 @@ public class UserDAO {
 		String result = checkRegisterUser(phone, password, password1);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey) VALUE (?,?,?)";
+			String sql = "INSERT INTO im_user(username, password, userkey) VALUES (?,?,?)";
 			Object[] params = new Object[] { Long.parseLong(phone),
 					MD5Util.md5(password), userkey };
 			int resultCount = jdbc.update(sql, params);
@@ -87,21 +88,25 @@ public class UserDAO {
 	 * @return
 	 * @throws JSONException
 	 */
-	public String login(String loginName, final String loginPwd) throws DataAccessException {
+	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
 		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=?";
 		Object[] params = new Object[] { loginName, loginPwd };
 		String result = null;
+		JSONObject ret = new JSONObject();
 		try {
 			String userkey = jdbc.queryForObject(sql, params, String.class);
 			if (null != userkey){
 				result = "0";
+				ret.put("result", result);
+				ret.put("userkey", userkey);
 			}
 		} catch (EmptyResultDataAccessException e) {
 			result = "1";
+			ret.put("result", result);
 		} catch (DataAccessException e) {
 			throw e;
 		}
-		return result;
+		return ret;
 	}
 
 	/**
@@ -128,7 +133,7 @@ public class UserDAO {
 					"release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
 					brand, model, release, sdk, width, height, username);
 		} else {
-			jdbc.update("NSERT INTO fy_device_info VALUES(?,?,?,?,?,?,?)",
+			jdbc.update("INSERT INTO fy_device_info VALUE(?,?,?,?,?,?,?)",
 					 username, brand, model, release, sdk, width, height );
 		}
 	}
@@ -223,4 +228,16 @@ public class UserDAO {
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
+	public String saveToken(String userName, String token) {
+		String retCode = "0";
+		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
+		int affectedRows = jdbc.update(sql, token, userName);
+		if (affectedRows == 0) {
+			// no user existed, insert new one
+			sql = "INSERT INTO im_token(username, token) VALUES(?,?)";
+			int rows = jdbc.update(sql, userName, token);
+			retCode = rows > 0 ? "0" : "1001";
+		}
+		return retCode;
+	}
 }

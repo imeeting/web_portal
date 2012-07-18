@@ -1,5 +1,6 @@
 package com.imeeting.mvc.controller;
 
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -16,17 +17,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.imeeting.framework.ContextLoader;
 import com.richitec.ucenter.model.UserDAO;
 
-
 @Controller
 @RequestMapping("/user")
 public class UserController extends ExceptionController {
 
 	private static Log log = LogFactory.getLog(UserController.class);
-	
+
 	private UserDAO userDao;
-	
+
 	@PostConstruct
-	public void init(){
+	public void init() {
 		userDao = ContextLoader.getUserDAO();
 	}
 
@@ -42,18 +42,14 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("login loginname: " + loginName + " pwd: " + loginPwd);
-		JSONObject jsonUser = new JSONObject();
-		String result = userDao.login(loginName, loginPwd);
-		jsonUser.put("result", result);
+		JSONObject jsonUser = userDao.login(loginName, loginPwd);
 		log.info("result: " + jsonUser.toString());
 		response.getWriter().print(jsonUser.toString());
 	}
 
 	@RequestMapping("/getPhoneCode")
-	public void getPhoneCode(
-			@RequestParam(value = "phone") String phone,
-			HttpServletResponse response, 
-			HttpSession session) throws Exception {
+	public void getPhoneCode(@RequestParam(value = "phone") String phone,
+			HttpServletResponse response, HttpSession session) throws Exception {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
@@ -70,10 +66,8 @@ public class UserController extends ExceptionController {
 	}
 
 	@RequestMapping("/checkPhoneCode")
-	public void checkPhoneCode(
-			@RequestParam(value = "code") String code,
-			HttpServletResponse response, 
-			HttpSession session) throws Exception {
+	public void checkPhoneCode(@RequestParam(value = "code") String code,
+			HttpServletResponse response, HttpSession session) throws Exception {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
@@ -90,11 +84,9 @@ public class UserController extends ExceptionController {
 	}
 
 	@RequestMapping("/regUser")
-	public void regUser(
-			@RequestParam(value = "password") String password,
+	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
-			HttpServletResponse response, 
-			HttpSession session) throws Exception {
+			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
 		JSONObject jsonUser = new JSONObject();
 		try {
@@ -113,4 +105,14 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	@RequestMapping("/regToken")
+	public void regToken(
+			@RequestParam(value = "username", required = true) String userName,
+			@RequestParam String token, HttpServletResponse response)
+			throws JSONException, IOException {
+		JSONObject resultJson = new JSONObject();
+		String result = userDao.saveToken(userName, token);
+		resultJson.put("result", result);
+		response.getWriter().print(resultJson.toString());
+	}
 }

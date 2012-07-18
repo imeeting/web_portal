@@ -75,7 +75,7 @@ public class GroupDB {
 	
 	private int setStatus(String groupId, GroupStatus status) throws DataAccessException {
 		return jdbc.update(
-					"UPDATE im_group set status=? WHERE groupId=?",
+					"UPDATE im_group SET status=? WHERE groupId=?",
 					status.name(), groupId);
 	}
 
@@ -216,9 +216,13 @@ public class GroupDB {
 	 * @throws SQLException 
 	 */
 	public int updateStatus(String groupId, GroupStatus status) throws DataAccessException {
-		log.info("updateOwnerAndStatus - " + " groupId: " + groupId);
-		return jdbc.update(
-				"UPDATE im_group SET createCount=createCount+1 AND status=? WHERE groupId=?", 
-				status.name(), groupId);
+		log.info("updateStatus - " + " groupId: " + groupId);
+		return setStatus(groupId, status);
+	}
+	
+	public List<String> getTokens(String userNames) {
+		String sql = "SELECT token FROM im_token WHERE username IN " + userNames;
+		List<String> tokens = jdbc.queryForList(sql, String.class);
+		return tokens;
 	}
 }

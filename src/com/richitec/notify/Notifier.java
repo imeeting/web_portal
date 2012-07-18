@@ -18,10 +18,8 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
-import com.imeeting.mvc.controller.GroupController;
-
 public class Notifier {
-	private static Log log = LogFactory.getLog(GroupController.class);
+	private static Log log = LogFactory.getLog(Notifier.class);
 
 	private static final int timeoutConnection = 10000;
 	private static final int timeoutSocket = 20000;
@@ -82,5 +80,4 @@ public class Notifier {
 			e.printStackTrace();
 		}
 	}
-	
 }
