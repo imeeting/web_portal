@@ -1,4 +1,4 @@
-package com.imeeting.mvc.model.group;
+package com.imeeting.mvc.model.conference;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -14,29 +14,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.group.attendee.AttendeeAction;
-import com.imeeting.mvc.model.group.attendee.AttendeeBean;
-import com.imeeting.mvc.model.group.attendee.AttendeeBean.OnlineStatus;
-import com.imeeting.mvc.model.group.attendee.AttendeeBean.VideoStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean.VideoStatus;
 import com.richitec.notify.Notifier;
 
-public class GroupModel {
+public class ConferenceModel {
 	
-	private static Log log = LogFactory.getLog(GroupModel.class);
+	private static Log log = LogFactory.getLog(ConferenceModel.class);
 
-	private String groupId;
+	private String conferenceId;
 	private String ownerName;
 	private String audioConfId;
 	private Map<String, AttendeeBean> attendeeMap;
 	
-	public GroupModel(String groupId, String ownerName) {
-		this.groupId = groupId;
+	public ConferenceModel(String conferenceId, String ownerName) {
+		this.conferenceId = conferenceId;
 		this.ownerName = ownerName;
 		this.attendeeMap = new ConcurrentHashMap<String, AttendeeBean>();
 	}
 
-	public String getGroupId() {
-		return this.groupId;
+	public String getConferenceId() {
+		return this.conferenceId;
 	}
 
 	public String getOwnerName() {
@@ -92,7 +92,7 @@ public class GroupModel {
 		}
 		List<String> tokens = null;
 		if (userNames.length() > 0) {
-			tokens = ContextLoader.getGroupDAO().getTokens("(" + userNames.toString() + ")");
+			tokens = ContextLoader.getConferenceDAO().getTokens("(" + userNames.toString() + ")");
 		}
 		return tokens;
 	}
@@ -111,7 +111,7 @@ public class GroupModel {
 		PushNotificationPayload payload = new PushNotificationPayload();
 		try {
 			payload.addAlert("" + ownerName + "邀请您加入讨论组");
-			payload.addCustomDictionary("groupId", groupId);
+			payload.addCustomDictionary("conferenceId", conferenceId);
 			payload.addCustomDictionary("action", AttendeeAction.invited.name());
 			payload.addSound("office_phone.caf");
 		} catch (JSONException e) {
@@ -124,46 +124,45 @@ public class GroupModel {
 	public void broadcastAttendeeStatus(AttendeeBean attendee) {
 		JSONObject msg = new JSONObject();
 		try {
-			msg.put("groupId", getGroupId());
+			msg.put("conferenceId", getConferenceId());
 			msg.put("action", AttendeeAction.update_status.name());
 			msg.put("attendee", attendee.toJson());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		Notifier nf = ContextLoader.getNotifier();
-		nf.notifyWithHttpPost(getGroupId(), msg.toString());
+		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
 	
 	public void notifyAttendeeKickOut(String userName) {
 		JSONObject msg = new JSONObject();
 		try {
-			msg.put("groupId", getGroupId());
+			msg.put("conferenceId", getConferenceId());
 			msg.put("username", userName);
 			msg.put("action", AttendeeAction.kickout.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		Notifier nf = ContextLoader.getNotifier();
-		nf.notifyWithHttpPost(getGroupId(), msg.toString());
+		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
 	
 	public void notifyAttendeesToUpdateMemberList() {
 		JSONObject msg = new JSONObject();
 		try {
-			msg.put("groupId", getGroupId());
+			msg.put("conferenceId", getConferenceId());
 			msg.put("action", AttendeeAction.update_attendee_list.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		Notifier nf = ContextLoader.getNotifier();
-		nf.notifyWithHttpPost(getGroupId(), msg.toString());
+		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
 	
 	public void updateAttendeeStatus(String username, String onlineStatus,
 			String videoStatus, String telephoneStatus) {
 		AttendeeBean attendee = getAttendee(username);
 		if (attendee == null) {
-			// user are prohibited to join the group for he isn't in the group
 			return;
 		}
 		if (onlineStatus != null) {

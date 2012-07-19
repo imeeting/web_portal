@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.group.GroupManager;
-import com.imeeting.mvc.model.group.GroupModel;
-import com.imeeting.mvc.model.group.attendee.AttendeeBean;
+import com.imeeting.mvc.model.conference.ConferenceManager;
+import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyEvent;
 
@@ -23,11 +23,11 @@ public class DonkeyEventController {
 	
 	private static Log log = LogFactory.getLog(DonkeyEventController.class);
 	
-	private GroupManager groupManager;
+	private ConferenceManager conferenceManager;
 
 	@PostConstruct
 	public void init(){
-		groupManager = ContextLoader.getGroupManager();
+		conferenceManager = ContextLoader.getConferenceManager();
 	}
 	
 	@RequestMapping
@@ -73,73 +73,69 @@ public class DonkeyEventController {
 	
 	private void onConferenceCreateSuccess(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
+		ConferenceModel conference = conferenceManager.getConference(requestId);
 		String audioConfId = event.getConferenceId();
-		group.setAudioConfId(audioConfId);
+		conference.setAudioConfId(audioConfId);
 	}
 	
 	private void onConferenceCreateFailed(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 	}
 	
 	private void onConferenceDestroySuccess(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
+		ConferenceModel conference = conferenceManager.getConference(requestId);
 	}
 	
 	private void onConferenceStatusConflict(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 	}
 	
 	private void onAttendeeCallEstablished(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		AttendeeBean attendee = group.getAttendee(attendeeName);
+		AttendeeBean attendee = conference.getAttendee(attendeeName);
 		attendee.statusCallEstablished();
-		group.broadcastAttendeeStatus(attendee);
-		if (attendeeName.equals(group.getOwnerName())) {
+		conference.broadcastAttendeeStatus(attendee);
+		if (attendeeName.equals(conference.getOwnerName())) {
 			// when owner's phone is established, notify all attendees to join
-			group.notifyAttendeesInvited();
+			conference.notifyAttendeesInvited();
 		}
 	}
 	
 	private void onAttendeeCallFailed(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		AttendeeBean attendee = group.getAttendee(attendeeName);
+		AttendeeBean attendee = conference.getAttendee(attendeeName);
 		attendee.statusCallFailed();
-		group.broadcastAttendeeStatus(attendee);
+		conference.broadcastAttendeeStatus(attendee);
 	}
 	
 	private void onAttendeeCallTerminated(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		log.info("1 group: " + group);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		log.info("2 group: " + group);
-		AttendeeBean attendee = group.getAttendee(attendeeName);
-		log.info("3 group: " + group);
+		AttendeeBean attendee = conference.getAttendee(attendeeName);
 		attendee.statusCallTerminated();
-		log.info("4 group: " + group);
-		group.broadcastAttendeeStatus(attendee);
+		conference.broadcastAttendeeStatus(attendee);
 	}
 	
 	private void onAttendeeStatusConflict(DonkeyEvent event){
 		String requestId = event.getRequestId();
-		GroupModel group = groupManager.getGroup(requestId);
-		//TODO: notify all attendees in this group.
+		ConferenceModel conference = conferenceManager.getConference(requestId);
+		//TODO: notify all attendees in this conference.
 	}
 	
 }

@@ -8,8 +8,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.imeeting.mvc.model.group.GroupDB;
-import com.imeeting.mvc.model.group.GroupManager;
+import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.notify.APNSProviderClient;
@@ -49,16 +49,16 @@ public class ContextLoader extends ContextLoaderListener {
 		return (DonkeyClient)appContext.getBean("donkey_client");
 	}
 	
-	public static GroupManager getGroupManager(){
-		return (GroupManager)appContext.getBean("group_manager");
+	public static ConferenceManager getConferenceManager(){
+		return (ConferenceManager)appContext.getBean("conference_manager");
 	}
 
 	public static Notifier getNotifier() {
 		return (Notifier)appContext.getBean("notifier");
 	}
 	
-	public static GroupDB getGroupDAO() {
-		return (GroupDB) appContext.getBean("group_dao");
+	public static ConferenceDB getConferenceDAO() {
+		return (ConferenceDB) appContext.getBean("conference_dao");
 	}
 	
 	public static UserDAO getUserDAO() {

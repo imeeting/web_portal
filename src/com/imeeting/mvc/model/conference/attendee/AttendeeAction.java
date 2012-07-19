@@ -1,4 +1,4 @@
-package com.imeeting.mvc.model.group.attendee;
+package com.imeeting.mvc.model.conference.attendee;
 
 public enum AttendeeAction {
 	update_status,

@@ -7,9 +7,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.group.GroupManager;
+import com.imeeting.mvc.model.conference.ConferenceManager;
 
-public class GroupInterceptor implements HandlerInterceptor {
+public class ConferenceInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void afterCompletion(HttpServletRequest arg0,
@@ -29,11 +29,11 @@ public class GroupInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object obj) throws Exception {
-		String groupId = request.getParameter("groupId");
-		if (null != groupId){
-			GroupManager groupManager = ContextLoader.getGroupManager();
-			if (null == groupManager.getGroup(groupId)){
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "GROUP:"+groupId);
+		String conferenceId = request.getParameter("conferenceId");
+		if (null != conferenceId){
+			ConferenceManager conferenceManager = ContextLoader.getConferenceManager();
+			if (null == conferenceManager.getConference(conferenceId)){
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "CONFERENCE:"+conferenceId);
 				return false;
 			}
 		}
