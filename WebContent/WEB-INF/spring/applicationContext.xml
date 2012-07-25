@@ -102,12 +102,12 @@
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
 	
-	<bean id="group_dao" class="com.imeeting.mvc.model.group.GroupDB">
+	<bean id="conference_dao" class="com.imeeting.mvc.model.conference.ConferenceDB">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
 		
-	<bean id="group_manager" class="com.imeeting.mvc.model.group.GroupManager">
-		<property name="groupDao" ref="group_dao"></property>
+	<bean id="conference_manager" class="com.imeeting.mvc.model.conference.ConferenceManager">
+		<property name="conferenceDao" ref="conference_dao"></property>
 	</bean>
 
 	<bean id="apns_provider_dev" class="com.richitec.notify.APNSProviderClient">

@@ -1,4 +1,4 @@
-package com.imeeting.mvc.model.group.attendee;
+package com.imeeting.mvc.model.conference.attendee;
 
 import org.json.JSONException;
 import org.json.JSONObject;

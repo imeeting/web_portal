@@ -19,28 +19,29 @@
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/group/list"/>
-			<mvc:mapping path="/group/attendeeList"/>
-			<mvc:mapping path="/group/invite"/>
-			<mvc:mapping path="/group/kickout"/>
-			<mvc:mapping path="/group/unjoin"/>
-			<mvc:mapping path="/group/updateAttendeeStatus"/>
-			<mvc:mapping path="/group/call"/>
-			<mvc:mapping path="/group/hangup"/>
-			<mvc:mapping path="/group/mute"/>
-			<mvc:mapping path="/group/unmute"/>
-			<bean class="com.imeeting.mvc.GroupInterceptor" />
+			<mvc:mapping path="/conference/list"/>
+			<mvc:mapping path="/conference/attendeeList"/>
+			<mvc:mapping path="/conference/invite"/>
+			<mvc:mapping path="/conference/kickout"/>
+			<mvc:mapping path="/conference/unjoin"/>
+			<mvc:mapping path="/conference/updateAttendeeStatus"/>
+			<mvc:mapping path="/conference/call"/>
+			<mvc:mapping path="/conference/hangup"/>
+			<mvc:mapping path="/conference/mute"/>
+			<mvc:mapping path="/conference/unmute"/>
+			<bean class="com.imeeting.mvc.ConferenceInterceptor" />
 		</mvc:interceptor>
 		<mvc:interceptor>
-			<mvc:mapping path="/group/list"/>
-			<mvc:mapping path="/group/attendeeList"/>
-			<mvc:mapping path="/group/invite"/>
-			<mvc:mapping path="/group/kickout"/>
-			<mvc:mapping path="/group/unjoin"/>
-			<mvc:mapping path="/group/call"/>
-			<mvc:mapping path="/group/hangup"/>
-			<mvc:mapping path="/group/mute"/>
-			<mvc:mapping path="/group/unmute"/>
+			<mvc:mapping path="/conference/list"/>
+			<mvc:mapping path="/conference/attendeeList"/>
+			<mvc:mapping path="/conference/invite"/>
+			<mvc:mapping path="/conference/kickout"/>
+			<mvc:mapping path="/conference/join"/>
+			<mvc:mapping path="/conference/unjoin"/>
+			<mvc:mapping path="/conference/call"/>
+			<mvc:mapping path="/conference/hangup"/>
+			<mvc:mapping path="/conference/mute"/>
+			<mvc:mapping path="/conference/unmute"/>
 			<bean class="com.imeeting.mvc.APIAuthInterceptor"></bean>
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->

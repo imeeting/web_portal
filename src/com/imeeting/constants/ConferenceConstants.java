@@ -1,7 +1,7 @@
 package com.imeeting.constants;
 
-public enum GroupConstants {
-	groupId,
+public enum ConferenceConstants {
+	conferenceId,
 	audioConfId,
 	owner,
 	created_time,
