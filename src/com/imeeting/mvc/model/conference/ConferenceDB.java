@@ -42,7 +42,7 @@ public class ConferenceDB {
 
 	public void saveConference(ConferenceModel conference) throws DataAccessException {
 		insert(conference.getConferenceId());
-		editConferenceTitle(conference.getConferenceId(), "ID: " + conference.getConferenceId()); // temporary use only
+		editConferenceTitle(conference.getConferenceId(), "群聊号: " + conference.getConferenceId()); // temporary use only
 		Collection<AttendeeBean> attendeeCollection = conference.getAllAttendees();
 		saveAttendeeBeans(conference.getConferenceId(), attendeeCollection);
 	}
@@ -56,13 +56,17 @@ public class ConferenceDB {
 		jdbc.batchUpdate(sql, params);
 	}
 	
-	public void saveAttendees(String conferenceId, Collection<String> attendeeNameCollection) throws DataAccessException {
+	public void saveAttendees(String conferenceId, Collection<String> attendeeNameCollection) {
 		String sql = "INSERT INTO im_attendee(conferenceId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (String attendeeName : attendeeNameCollection){
 			params.add(new Object[] { conferenceId, attendeeName });
 		}
-		jdbc.batchUpdate(sql, params);
+		try {
+			jdbc.batchUpdate(sql, params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}	
 
 	public int insert(String conferenceId) throws DataAccessException {
