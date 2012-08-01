@@ -1,10 +1,12 @@
 package com.imeeting.mvc.model.conference.attendee;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AttendeeBean {
-
+	private static Log log = LogFactory.getLog(AttendeeBean.class);
 	public enum OnlineStatus {
 		online, offline
 	}
@@ -62,10 +64,12 @@ public class AttendeeBean {
 	}
 	
 	public boolean statusCall(){
+		log.info("statusCall");
 		synchronized (phoneCallStatus) {
 			if (PhoneCallStatus.Terminated.equals(phoneCallStatus) ||
 				PhoneCallStatus.Failed.equals(phoneCallStatus)){
 				phoneCallStatus = PhoneCallStatus.CallWait;
+				log.info("set " + username + " status as " + phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
@@ -74,10 +78,12 @@ public class AttendeeBean {
 	}
 	
 	public boolean statusHangup() {
+		log.info("statusHangup");
 		synchronized (phoneCallStatus) {
 			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
 				PhoneCallStatus.Established.equals(phoneCallStatus)){
 				phoneCallStatus = PhoneCallStatus.TermWait;
+				log.info("set " + username + " status as " + phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
@@ -86,9 +92,11 @@ public class AttendeeBean {
 	}
 	
 	public boolean statusCallEstablished(){
+		log.info("statusCallEstablished");
 		synchronized (phoneCallStatus) {
 			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
 				phoneCallStatus = PhoneCallStatus.Established;
+				log.info("set " + username + " status as " + phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
@@ -97,9 +105,11 @@ public class AttendeeBean {
 	}
 	
 	public boolean statusCallFailed(){
+		log.info("statusCallFailed");
 		synchronized (phoneCallStatus) {
 			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
 				phoneCallStatus = PhoneCallStatus.Failed;
+				log.info("set " + username + " status as " + phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
@@ -108,12 +118,14 @@ public class AttendeeBean {
 	}
 	
 	public boolean statusCallTerminated(){
+		log.info("statusCallTerminated");
 		synchronized (phoneCallStatus) {
 			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
 				PhoneCallStatus.TermWait.equals(phoneCallStatus) ||
 				PhoneCallStatus.Established.equals(phoneCallStatus) ||
 				PhoneCallStatus.Failed.equals(phoneCallStatus)	){
 				phoneCallStatus = PhoneCallStatus.Terminated;
+				log.info("set " + username + " status as " + phoneCallStatus.name());
 				return true;
 			} else {
 				return false;

@@ -42,8 +42,9 @@ public class ConferenceManager {
 		}
 
 		AttendeeBean attendee = conference.getAttendee(userName);
-		attendee.setOnlineStatus(AttendeeBean.OnlineStatus.online);
-
+		if (attendee != null) {
+			attendee.setOnlineStatus(AttendeeBean.OnlineStatus.online);
+		}
 		return conference;
 	}
 

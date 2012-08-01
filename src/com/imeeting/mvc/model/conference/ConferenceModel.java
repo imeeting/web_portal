@@ -21,14 +21,14 @@ import com.imeeting.mvc.model.conference.attendee.AttendeeBean.VideoStatus;
 import com.richitec.notify.Notifier;
 
 public class ConferenceModel {
-	
+
 	private static Log log = LogFactory.getLog(ConferenceModel.class);
 
 	private String conferenceId;
 	private String ownerName;
 	private String audioConfId;
 	private Map<String, AttendeeBean> attendeeMap;
-	
+
 	public ConferenceModel(String conferenceId, String ownerName) {
 		this.conferenceId = conferenceId;
 		this.ownerName = ownerName;
@@ -54,25 +54,25 @@ public class ConferenceModel {
 	public final Collection<AttendeeBean> getAllAttendees() {
 		return attendeeMap.values();
 	}
-	
-	public Collection<String> getAllAttendeeName(){
+
+	public Collection<String> getAllAttendeeName() {
 		List<String> list = new LinkedList<String>();
-		for (AttendeeBean a : getAllAttendees()){
+		for (AttendeeBean a : getAllAttendees()) {
 			list.add(a.getUsername());
 		}
 		return list;
 	}
-	
-	public AttendeeBean getAttendee(String userName){
+
+	public AttendeeBean getAttendee(String userName) {
 		return attendeeMap.get(userName);
 	}
-	
+
 	public AttendeeBean removeAttendee(String userName) {
 		AttendeeBean ab = attendeeMap.remove(userName);
 		return ab;
 	}
-	
-	public boolean containsAttendee(String userName){
+
+	public boolean containsAttendee(String userName) {
 		return attendeeMap.containsKey(userName);
 	}
 
@@ -85,42 +85,46 @@ public class ConferenceModel {
 		for (AttendeeBean ab : this.attendeeMap.values()) {
 			if (!ab.getUsername().equals(ownerName)) {
 				userNames.append(ab.getUsername()).append(',');
-			}	
+			}
 		}
-		if (userNames.length() > 0 && userNames.lastIndexOf(",") == userNames.length() - 1) {
+		if (userNames.length() > 0
+				&& userNames.lastIndexOf(",") == userNames.length() - 1) {
 			userNames.deleteCharAt(userNames.length() - 1);
 		}
 		List<String> tokens = null;
 		if (userNames.length() > 0) {
-			tokens = ContextLoader.getConferenceDAO().getTokens("(" + userNames.toString() + ")");
+			tokens = ContextLoader.getConferenceDAO().getTokens(
+					"(" + userNames.toString() + ")");
 		}
 		return tokens;
 	}
-	
+
 	public void notifyAttendeesInvited() {
 		log.info("notifyAttendeesInvited");
 		List<String> tokens = getTokensFromAttendees();
 		if (tokens == null || tokens.size() <= 0) {
 			return;
 		}
-		
-		for(String token : tokens) {
+
+		for (String token : tokens) {
 			log.info("token: " + token);
 		}
-		
+
 		PushNotificationPayload payload = new PushNotificationPayload();
 		try {
 			payload.addAlert("" + ownerName + "邀请您加入讨论组");
 			payload.addCustomDictionary("conferenceId", conferenceId);
 			payload.addCustomDictionary("action", AttendeeAction.invited.name());
-			payload.addSound("office_phone.caf");
+			payload.addSound("default");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		ContextLoader.getDevAPNSProviderClient().pushNotification(tokens, payload);
-		ContextLoader.getDistAPNSProviderClient().pushNotification(tokens, payload);
+		ContextLoader.getDevAPNSProviderClient().pushNotification(tokens,
+				payload);
+		ContextLoader.getDistAPNSProviderClient().pushNotification(tokens,
+				payload);
 	}
-	
+
 	public void broadcastAttendeeStatus(AttendeeBean attendee) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -133,7 +137,7 @@ public class ConferenceModel {
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
-	
+
 	public void notifyAttendeeKickOut(String userName) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -146,7 +150,7 @@ public class ConferenceModel {
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
-	
+
 	public void notifyAttendeesToUpdateMemberList() {
 		JSONObject msg = new JSONObject();
 		try {
@@ -158,9 +162,9 @@ public class ConferenceModel {
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
-	
+
 	public void updateAttendeeStatus(String username, String onlineStatus,
-			String videoStatus, String telephoneStatus) {
+			String videoStatus) {
 		AttendeeBean attendee = getAttendee(username);
 		if (attendee == null) {
 			return;
@@ -168,7 +172,7 @@ public class ConferenceModel {
 		if (onlineStatus != null) {
 			if (onlineStatus.equals(OnlineStatus.online.name())) {
 				attendee.setOnlineStatus(OnlineStatus.online);
-			} else if (onlineStatus.equals(OnlineStatus.offline.name())){
+			} else if (onlineStatus.equals(OnlineStatus.offline.name())) {
 				attendee.setOnlineStatus(OnlineStatus.offline);
 			}
 		}
@@ -179,7 +183,7 @@ public class ConferenceModel {
 				attendee.setVideoStatus(VideoStatus.off);
 			}
 		}
-		
+
 		broadcastAttendeeStatus(attendee);
 	}
 }
