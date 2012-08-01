@@ -6,3 +6,4 @@
 *.ear
 .classpath
 .settings/*
+WebContent/WEB-INF/cert/*
