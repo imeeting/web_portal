@@ -61,16 +61,18 @@ public class DonkeyClient {
 	}
 	
 	public static String generateSipUriFromPhone(String phone){
-		return "sip:0" + phone + "@donkey.com";
+//		return "sip:0" + phone + "@donkey.com";
+		return phone;
 	}
 	
 	public static String getPhoneNumberFromSipUri(String sipUri){
-		String[] s1 = TextUtility.splitText(sipUri, "sip:0", "@donkey.com");
-		String phoneNumber = sipUri;
-		if (s1 != null && s1.length > 0) {
-			phoneNumber = s1[0];
-		}
-		return phoneNumber;
+//		String[] s1 = TextUtility.splitText(sipUri, "sip:0", "@donkey.com");
+//		String phoneNumber = sipUri;
+//		if (s1 != null && s1.length > 0) {
+//			phoneNumber = s1[0];
+//		}
+//		return phoneNumber;
+		return sipUri;
 	}
 	
 	private String getParamsString(List<String> paramList){
@@ -151,11 +153,11 @@ public class DonkeyClient {
 	}
 	
 	private String getSIPUriJSONArray(Collection<String> attendeeList){
-		
 		if (null != attendeeList && attendeeList.size()>0){
 			String attendeeArray = "[";
 			for(String attendee : attendeeList){
-				attendeeArray += "\"sip:0" + attendee + "@donkey.com\","; 
+//				attendeeArray += "\"sip:0" + attendee + "@donkey.com\","; 
+				attendeeArray += "\"" + attendee + "\",";
 			}
 			attendeeArray += "]";
 			return attendeeArray;
@@ -177,10 +179,12 @@ public class DonkeyClient {
 	
 	public DonkeyHttpResponse createNoMediaConference(
 			String confId, Collection<String> attendeeList, String requestId){
+		log.info("createNoMediaConference - confId:" + confId);
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair("conference", confId));
 		params.add(new BasicNameValuePair("deleteWhen", "nomedia"));
 		String attendeeJSONArray = getSIPUriJSONArray(attendeeList);
+		log.info("createNoMediaConference - attendeeJSONArray: " + attendeeJSONArray);
 		if (null != attendeeJSONArray){
 			params.add(new BasicNameValuePair("sipuriList", attendeeJSONArray));
 		}		
@@ -212,6 +216,8 @@ public class DonkeyClient {
 	}
 	
 	public DonkeyHttpResponse callAttendee(String confId, String sipUri, String requestId){
+		log.info("callAttendee - confId: " + confId + " sipUri: " + sipUri);
+		
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair("conference", confId));
 		params.add(new BasicNameValuePair("sipuri", sipUri));

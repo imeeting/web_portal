@@ -102,7 +102,14 @@ public class DonkeyEventController {
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		
+		if (attendee == null) {
+			log.info("onAttendeeCallEstablished - attendee is null");
+			return;
+		}
 		attendee.statusCallEstablished();
+		log.info("onAttendeeCallEstablished - attendee: " + attendee.toJson().toString());
+		
 		conference.broadcastAttendeeStatus(attendee);
 		if (attendeeName.equals(conference.getOwnerName())) {
 			// when owner's phone is established, notify all attendees to join
@@ -117,7 +124,14 @@ public class DonkeyEventController {
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		
+		if (attendee == null) {
+			log.info("onAttendeeCallFailed - attendee is null");
+			return;
+		}
 		attendee.statusCallFailed();
+		log.info("onAttendeeCallFailed - attendee: " + attendee.toJson().toString());
+		
 		conference.broadcastAttendeeStatus(attendee);
 	}
 	
@@ -128,7 +142,13 @@ public class DonkeyEventController {
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		
+		if (attendee == null) {
+			log.info("onAttendeeCallTerminated - attendee is null");
+			return;
+		}
 		attendee.statusCallTerminated();
+		log.info("onAttendeeCallTerminated - attendee: " + attendee.toJson().toString());
 		conference.broadcastAttendeeStatus(attendee);
 	}
 	

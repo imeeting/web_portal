@@ -45,7 +45,7 @@ public class Notifier {
 	}
 
 	public void notifyWithHttpPost(String notifyID, String msg) {
-		log.info("notify - notify id: " + notifyID);
+		log.info("notify - notify id: " + notifyID + " msg: " + msg);
 
 		if (notifyUrl == null || notifyUrl.equals("")) {
 			return;

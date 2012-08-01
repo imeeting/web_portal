@@ -480,6 +480,7 @@ public class ConferenceController extends ExceptionController {
 		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
 				conference.getAudioConfId(), sipUri, conferenceId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			attendee.statusCallTerminated();
 			log.error("Call <"
 					+ dstUserName
 					+ "> in conferece <"

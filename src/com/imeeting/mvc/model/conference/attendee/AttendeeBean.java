@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 public class AttendeeBean {
 	private static Log log = LogFactory.getLog(AttendeeBean.class);
+
 	public enum OnlineStatus {
 		online, offline
 	}
@@ -27,14 +28,14 @@ public class AttendeeBean {
 	public AttendeeBean(String name) {
 		this(name, OnlineStatus.offline);
 	}
-	
+
 	public AttendeeBean(String userName, OnlineStatus status) {
 		this.username = userName;
 		this.onlineStatus = status;
 		this.videoStatus = VideoStatus.off;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -58,74 +59,80 @@ public class AttendeeBean {
 	public void setVideoStatus(VideoStatus videoStatus) {
 		this.videoStatus = videoStatus;
 	}
-	
-	public PhoneCallStatus getPhoneCallStatus(){
+
+	public PhoneCallStatus getPhoneCallStatus() {
 		return phoneCallStatus;
 	}
-	
-	public boolean statusCall(){
+
+	public boolean statusCall() {
 		log.info("statusCall");
 		synchronized (phoneCallStatus) {
-			if (PhoneCallStatus.Terminated.equals(phoneCallStatus) ||
-				PhoneCallStatus.Failed.equals(phoneCallStatus)){
+			if (PhoneCallStatus.Terminated.equals(phoneCallStatus)
+					|| PhoneCallStatus.Failed.equals(phoneCallStatus)) {
 				phoneCallStatus = PhoneCallStatus.CallWait;
-				log.info("set " + username + " status as " + phoneCallStatus.name());
+				log.info("set " + username + " status as "
+						+ phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
 			}
 		}
 	}
-	
+
 	public boolean statusHangup() {
 		log.info("statusHangup");
 		synchronized (phoneCallStatus) {
-			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
-				PhoneCallStatus.Established.equals(phoneCallStatus)){
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Established.equals(phoneCallStatus)) {
 				phoneCallStatus = PhoneCallStatus.TermWait;
-				log.info("set " + username + " status as " + phoneCallStatus.name());
+				log.info("set " + username + " status as "
+						+ phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
 			}
 		}
 	}
-	
-	public boolean statusCallEstablished(){
+
+	public boolean statusCallEstablished() {
 		log.info("statusCallEstablished");
 		synchronized (phoneCallStatus) {
-			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Terminated.equals(phoneCallStatus)) {
 				phoneCallStatus = PhoneCallStatus.Established;
-				log.info("set " + username + " status as " + phoneCallStatus.name());
+				log.info("set " + username + " status as "
+						+ phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
 			}
 		}
 	}
-	
-	public boolean statusCallFailed(){
+
+	public boolean statusCallFailed() {
 		log.info("statusCallFailed");
 		synchronized (phoneCallStatus) {
-			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)){
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)) {
 				phoneCallStatus = PhoneCallStatus.Failed;
-				log.info("set " + username + " status as " + phoneCallStatus.name());
+				log.info("set " + username + " status as "
+						+ phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
 			}
 		}
 	}
-	
-	public boolean statusCallTerminated(){
+
+	public boolean statusCallTerminated() {
 		log.info("statusCallTerminated");
 		synchronized (phoneCallStatus) {
-			if (PhoneCallStatus.CallWait.equals(phoneCallStatus) ||
-				PhoneCallStatus.TermWait.equals(phoneCallStatus) ||
-				PhoneCallStatus.Established.equals(phoneCallStatus) ||
-				PhoneCallStatus.Failed.equals(phoneCallStatus)	){
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.TermWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Established.equals(phoneCallStatus)
+					|| PhoneCallStatus.Failed.equals(phoneCallStatus)) {
 				phoneCallStatus = PhoneCallStatus.Terminated;
-				log.info("set " + username + " status as " + phoneCallStatus.name());
+				log.info("set " + username + " status as "
+						+ phoneCallStatus.name());
 				return true;
 			} else {
 				return false;
