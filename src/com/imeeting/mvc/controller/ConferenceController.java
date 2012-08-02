@@ -263,9 +263,9 @@ public class ConferenceController extends ExceptionController {
 				addedAttendeeList.add(name);
 			}
 		}
-		
+
 		conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
-		
+
 		// add attendees to audio conference
 		DonkeyHttpResponse donkeyResp = donkeyClient.addMoreAttendee(
 				conference.getAudioConfId(), addedAttendeeList, conferenceId);
@@ -363,7 +363,7 @@ public class ConferenceController extends ExceptionController {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
-		
+
 		// notify other people that User has joined
 		conference.broadcastAttendeeStatus(attendee);
 
@@ -550,12 +550,37 @@ public class ConferenceController extends ExceptionController {
 	 * @param response
 	 * @param confId
 	 * @param username
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "/mute", method = RequestMethod.POST)
 	public void mute(HttpServletResponse response,
 			@RequestParam(value = "conferenceId") String conferenceId,
-			@RequestParam(value = "username") String userName) {
+			@RequestParam(value = "dstUserName") String dstUserName)
+			throws IOException {
+		ConferenceModel conference = conferenceManager
+				.getConference(conferenceId);
+		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		if (attendee == null) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
 
+		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
+		DonkeyHttpResponse donkeyResp = donkeyClient.muteAttendee(
+				conference.getAudioConfId(), sipUri, conferenceId);
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			log.error("Mute <"
+					+ dstUserName
+					+ "> in conference <"
+					+ conferenceId
+					+ "> failed : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Mute <" + dstUserName + "> failed!");
+			return;
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	/**
@@ -564,12 +589,37 @@ public class ConferenceController extends ExceptionController {
 	 * @param response
 	 * @param confId
 	 * @param username
+	 * @throws IOException
 	 */
 	@RequestMapping(value = "/unmute", method = RequestMethod.POST)
 	public void unmute(HttpServletResponse response,
 			@RequestParam(value = "conferenceId") String conferenceId,
-			@RequestParam(value = "username") String userName) {
+			@RequestParam(value = "dstUserName") String dstUserName)
+			throws IOException {
+		ConferenceModel conference = conferenceManager
+				.getConference(conferenceId);
+		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		if (attendee == null) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
 
+		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
+		DonkeyHttpResponse donkeyResp = donkeyClient.unmuteAttendee(
+				conference.getAudioConfId(), sipUri, conferenceId);
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			log.error("Unmute <"
+					+ dstUserName
+					+ "> in conference <"
+					+ conferenceId
+					+ "> failed : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Unmute <" + dstUserName + "> failed!");
+			return;
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	@RequestMapping("/editTitle")

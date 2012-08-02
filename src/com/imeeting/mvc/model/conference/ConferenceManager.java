@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 
+import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
@@ -78,6 +79,7 @@ public class ConferenceManager {
 			}
 			if (isEmpty) {
 				removeConference(conferenceId);
+				ContextLoader.getDonkeyClient().destroyConference(conferenceId, conferenceId);
 				conferenceDao.close(conferenceId);
 			}
 		}
