@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
@@ -24,10 +25,11 @@ public class DonkeyEventController {
 	private static Log log = LogFactory.getLog(DonkeyEventController.class);
 	
 	private ConferenceManager conferenceManager;
-
+	private ConferenceDB conferenceDao;
 	@PostConstruct
 	public void init(){
 		conferenceManager = ContextLoader.getConferenceManager();
+		conferenceDao = ContextLoader.getConferenceDAO();
 	}
 	
 	@RequestMapping
@@ -87,6 +89,10 @@ public class DonkeyEventController {
 	private void onConferenceDestroySuccess(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (conference != null) {
+			conferenceManager.removeConference(requestId);
+			conferenceDao.close(requestId);
+		}
 	}
 	
 	private void onConferenceStatusConflict(DonkeyEvent event){
@@ -98,19 +104,26 @@ public class DonkeyEventController {
 	private void onAttendeeCallEstablished(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
-		//TODO: notify all attendees in this conference.
+		// notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeBean attendee = conference.getAttendee(attendeeName);
 		
 		if (attendee == null) {
-			log.info("onAttendeeCallEstablished - attendee is null");
-			return;
+			log.info("onAttendeeCallEstablished - attendee is null, add to conference");
+			attendee = new AttendeeBean(attendeeName);
+			conference.addAttendee(attendee);
+			
+			conferenceDao.saveAttendee(requestId, attendeeName);
+			
+			attendee.statusCallEstablished();
+			conference.notifyAttendeesToUpdateMemberList();
+		} else {
+			attendee.statusCallEstablished();
+			conference.broadcastAttendeeStatus(attendee);
 		}
-		attendee.statusCallEstablished();
 		log.info("onAttendeeCallEstablished - attendee: " + attendee.toJson().toString());
 		
-		conference.broadcastAttendeeStatus(attendee);
 		if (attendeeName.equals(conference.getOwnerName())) {
 			// when owner's phone is established, notify all attendees to join
 			conference.notifyAttendeesInvited();
