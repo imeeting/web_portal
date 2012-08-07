@@ -41,7 +41,6 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
 			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
 			HttpServletResponse response, HttpSession session) throws Exception {
-		log.info("login loginname: " + loginName + " pwd: " + loginPwd);
 		JSONObject jsonUser = userDao.login(loginName, loginPwd);
 		log.info("result: " + jsonUser.toString());
 		response.getWriter().print(jsonUser.toString());
