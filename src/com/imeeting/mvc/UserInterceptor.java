@@ -1,4 +1,4 @@
-package com.imeeting.web.mvc;
+package com.imeeting.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

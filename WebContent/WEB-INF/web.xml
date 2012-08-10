@@ -58,7 +58,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Spring MVC Dispatcher Servlet For API</servlet-name>
-		<url-pattern>/conference/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 	
 	<filter>
