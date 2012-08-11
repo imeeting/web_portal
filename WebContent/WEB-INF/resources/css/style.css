@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+
+body {
+	font-family: 微软雅黑;
+}
+/*
+.navbar .brand {
+	font-size: 40px;
+	padding: 5px 20px;
+}
+*/
+
+footer {
+	color: #999;
+	border-top-style: solid;
+	border-top-color: #999;
+	border-top-width: 1px;
+	padding: 10px 0px 50px; 
+	margin-top: 50px;
+}
+
+footer span {
+	margin-right: 40px;
+}
+
+#signin-form {
+	margin-top: 50px;
+	margin-bottom: 200px;
+}
