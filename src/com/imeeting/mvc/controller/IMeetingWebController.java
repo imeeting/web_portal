@@ -33,6 +33,16 @@ public class IMeetingWebController {
 		return "features";
 	}
 	
+	@RequestMapping(value="/deposite", method=RequestMethod.GET)
+	public String deposite() {
+		return "deposite";
+	}		
+	
+	@RequestMapping(value="/forgetpwd", method=RequestMethod.GET)
+	public String forgetpwd() {
+		return "forgetpwd";
+	}		
+	
 	@RequestMapping(value="/account", method=RequestMethod.GET)
 	public String account() {
 		return "account";

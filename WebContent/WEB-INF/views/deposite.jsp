@@ -1,0 +1,73 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>智会-在线充值</title>
+	<jsp:include page="common/_head.jsp"></jsp:include>
+  </head>
+
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">智会</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+    	<div class="row">
+    		<form action="" class="span6 offset3">
+	    		<div class="page-header">
+	    			<h2>1.&nbsp;请输入要充值的账户名</h2>
+	    		</div>
+	    		<input type="text" />
+	    		<div class="page-header">
+	    			<h2>2.&nbsp;请选择你喜欢的充值方式</h2>
+	    		</div>
+	    		<div class="tabbable">
+	    			<ul class="nav nav-tabs">
+	    				<li class="active">
+	    					<a href="#pane-alipay" data-toggle="tab">支付宝充值</a>
+	    				</li>
+	    				<li>
+	    					<a href="#pane-bank" data-toggle="tab">网银充值</a>
+	    				</li>
+	    				<li>
+	    					<a href="#pane-zhihuicard" data-toggle="tab">智会卡充值</a>
+	    				</li>
+	    			</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="pane-alipay">
+							<label>充值金额</label>
+							<input type="text" />
+						</div>				
+						<div class="tab-pane" id="pane-bank">
+							<label>充值金额</label>
+							<input type="text" />
+						</div>
+						<div class="tab-pane" id="pane-zhihuicard">
+							<label>卡号</label>
+							<input type="text" />
+							<label>密码</label>
+							<input type="text" />							
+						</div>						
+					</div>	    			
+	    		</div>
+	    		<hr>
+	    		<button type="submit" class="btn btn-primary btn-large">确&nbsp;定</button>
+    		</form>
+    	</div>
+ 	
+		<jsp:include page="common/_footer.jsp"></jsp:include>
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+    <script src="js/bootstrap.js"></script>
+
+  </body>
+</html>

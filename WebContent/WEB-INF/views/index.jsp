@@ -21,6 +21,7 @@
             <ul class="nav pull-right">
               <li class="active"><a href="home">首页</a></li>
               <li><a href="features">功能介绍</a></li>
+              <li><a href="deposite">在线充值</a></li>
               <li><a href="signin">登录</a></li>
             </ul>
           </div>
