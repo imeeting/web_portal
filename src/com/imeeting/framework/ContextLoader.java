@@ -16,6 +16,7 @@ import com.richitec.notify.APNSProviderClient;
 import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
+import com.richitec.vos.client.VOSClient;
 
 
 public class ContextLoader extends ContextLoaderListener {
@@ -75,5 +76,9 @@ public class ContextLoader extends ContextLoaderListener {
 		APNSProviderClient client = (APNSProviderClient) appContext.getBean("apns_provider_dist");
 		client.initAPNS();
 		return client;
+	}
+	
+	public static VOSClient getVOSClient(){
+		return (VOSClient) appContext.getBean("vos_client");
 	}
 }

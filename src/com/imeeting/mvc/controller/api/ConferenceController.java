@@ -30,6 +30,7 @@ import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean.VideoStatus;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
+import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
 
@@ -53,12 +54,14 @@ public class ConferenceController extends ExceptionController {
 	private ConferenceManager conferenceManager;
 	private DonkeyClient donkeyClient;
 	private ConferenceDB conferenceDao;
+	private UserDAO userDao;
 
 	@PostConstruct
 	public void init() {
 		conferenceManager = ContextLoader.getConferenceManager();
 		donkeyClient = ContextLoader.getDonkeyClient();
 		conferenceDao = ContextLoader.getConferenceDAO();
+		userDao = ContextLoader.getUserDAO();
 	}
 
 	/**
@@ -115,8 +118,10 @@ public class ConferenceController extends ExceptionController {
 
 		// step 3. create audio conference
 		conference.setAudioConfId(conferenceId);
+		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(userName);
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
-				conferenceId, conference.getAllAttendeeName(), conferenceId);
+				conferenceId, vosPhoneNumber.toString(), 
+				conference.getAllAttendeeName(), conferenceId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
 			log.error("Create audio conference error : "
 					+ (null == donkeyResp ? "NULL Response" : donkeyResp

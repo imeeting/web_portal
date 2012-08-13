@@ -18,6 +18,15 @@
 		<property name="uploadDir">
 			<value>${upload_tmp_dir}</value>
 		</property>
+		<property name="suite0Id">
+			<value>${vos_suite0_id}</value>
+		</property>
+		<property name="suite5Id">
+			<value>${vos_suite5_id}</value>
+		</property>
+		<property name="suite10Id">
+			<value>${vos_suite10_id}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
@@ -42,6 +51,18 @@
 		<property name="appKey">
 			<value>${donkey_app_key}</value>
 		</property>		
+	</bean>
+	
+	<bean id="vos_client" class="com.richitec.vos.client.VOSClient">
+		<property name="baseUri">
+			<value>${vos_base_uri}</value>
+		</property>
+		<property name="loginName">
+			<value>${vos_loginName}</value>
+		</property>
+		<property name="loginPassword">
+			<value>${vos_loginPassword}</value>
+		</property>
 	</bean>
 	
 	<bean id="notifier" class="com.richitec.notify.Notifier">

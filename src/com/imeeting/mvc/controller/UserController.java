@@ -14,9 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
+import com.richitec.vos.client.VOSClient;
+import com.richitec.vos.client.VOSHttpResponse;
 
 @Controller
 @RequestMapping("/user")
@@ -25,10 +27,14 @@ public class UserController extends ExceptionController {
 	private static Log log = LogFactory.getLog(UserController.class);
 
 	private UserDAO userDao;
+	private VOSClient vosClient;
+	private Configuration config;
 
 	@PostConstruct
 	public void init() {
 		userDao = ContextLoader.getUserDAO();
+		vosClient = ContextLoader.getVOSClient();
+		config = ContextLoader.getConfiguration();
 	}
 
 	@RequestMapping("/login")
@@ -50,7 +56,6 @@ public class UserController extends ExceptionController {
 			UserBean userBean = new UserBean();
 			userBean.setName(loginName);
 			session.setAttribute(UserBean.SESSION_BEAN, userBean);
-			
 		}
 		response.getWriter().print(jsonUser.toString());
 	}
@@ -96,21 +101,65 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "password1") String password1,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
+		
+		String result = "";
+		String phone = "";
+		if (null == session.getAttribute("phonenumber")){
+			result = "6"; // session过期
+		} else {
+			phone = (String) session.getAttribute("phonenumber");
+			result = userDao.regUser(phone, password, password1);
+		}
+		
+		if ("0".equals(result)){ //insert success
+			Integer vosphone = userDao.getVOSPhoneNumber(phone);
+			result = addUserToVOS(phone, vosphone.toString());
+		}
+		
 		JSONObject jsonUser = new JSONObject();
 		try {
-			String result = "";
-			String phone = "";
-			if (session.getAttribute("phonenumber") != null) {
-				phone = (String) session.getAttribute("phonenumber");
-				result = userDao.regUser(phone, password, password1);
-			} else {
-				result = "6"; // session过期
-			}
 			jsonUser.put("result", result);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		response.getWriter().print(jsonUser.toString());
+	}
+	
+	private String addUserToVOS(String username, String vosPhoneNumber){
+		//create new account in VOS
+		VOSHttpResponse addAccountResp = vosClient.addAccount(username);
+		if (addAccountResp.getHttpStatusCode() != 200 || 
+			!addAccountResp.isOperationSuccess()){
+			log.error("\nCannot create VOS accont for user : " + username +
+					  "\nVOS Http Response : " + addAccountResp.getHttpStatusCode() + 
+					  "\nVOS Status Code : " + addAccountResp.getVOSStatusCode() + 
+					  "\nVOS Response Info ：" + addAccountResp.getVOSResponseInfo());
+			return "2001";
+		}
+		
+		//create new phone in VOS
+		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(username, vosPhoneNumber);
+		if (addPhoneResp.getHttpStatusCode() != 200 || 
+			!addPhoneResp.isOperationSuccess()){
+			log.error("\nCannot create VOS phone <"+vosPhoneNumber+"> for user : " + username + 
+					  "\nVOS Http Response : " + addPhoneResp.getHttpStatusCode() + 
+					  "\nVOS Status Code : " + addPhoneResp.getVOSStatusCode() + 
+					  "\nVOS Response Info ：" + addPhoneResp.getVOSResponseInfo());
+			return "2002";
+		}		
+		
+		//add suite to account
+		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(username, config.getSuite0Id());
+		if (addSuiteResp.getHttpStatusCode() != 200 || 
+			!addSuiteResp.isOperationSuccess()){
+			log.error("\nCannot add VOS suite <"+config.getSuite0Id()+"> for user : " + username + 
+					  "\nVOS Http Response : " + addSuiteResp.getHttpStatusCode() + 
+					  "\nVOS Status Code : " + addSuiteResp.getVOSStatusCode() + 
+					  "\nVOS Response Info ：" + addSuiteResp.getVOSResponseInfo());
+			return "2003";
+		}			
+		
+		return "0";
 	}
 
 	@RequestMapping("/regToken")
