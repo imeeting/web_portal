@@ -1,0 +1,229 @@
+package com.richitec.vos.client;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+public class VOSClient {
+	
+	public static final String P_loginName = "loginName";
+	public static final String P_loginPassword = "loginPassword";
+	public static final String P_account = "account";
+	public static final String P_name = "name";
+	public static final String P_type = "type";
+	public static final String P_operationType = "operationType";
+	public static final String P_validTime = "validTime";
+	public static final String P_suiteId = "suiteId";
+	public static final String P_availableTime = "availableTime";
+	public static final String P_e164 = "e164";
+	public static final String P_dynamic = "dynamic";
+	public static final String P_protocol = "protocol";
+	public static final String P_money = "money";
+	
+	private HttpClient httpClient;
+	
+	private String baseURI;
+	private String loginName;
+	private String loginPassword;
+	
+	public VOSClient(){
+		this.httpClient = new DefaultHttpClient();
+	}
+	
+	public void setBaseUrl(String baseUrl){
+		this.baseURI = baseUrl;
+		if (!this.baseURI.endsWith("/")){
+			this.baseURI += "/";
+		}
+	}
+	
+	public void setLoginName(String loginName) {
+		this.loginName = loginName;
+	}
+	
+	public void setLoginPassword(String loginPassword){
+		this.loginPassword = loginPassword;
+	}
+	
+	private VOSHttpResponse execute(HttpUriRequest req){
+		VOSHttpResponse response = null;
+		try {
+			response = httpClient.execute(req, new ResponseHandler<VOSHttpResponse>() {
+				@Override
+				public VOSHttpResponse handleResponse(HttpResponse arg0)
+						throws ClientProtocolException, IOException {
+					return new VOSHttpResponse(arg0);
+				}
+			});
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	/**
+	 * 在VOS上创建一个账户
+	 * @param account
+	 */
+	public VOSHttpResponse addAccount(String account){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_account, account));
+		params.add(new BasicNameValuePair(P_type, "0"));
+		params.add(new BasicNameValuePair(P_validTime, "2020-01-01 00:00:00"));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "setcustomer.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
+	/**
+	 * 为账户设置套餐
+	 * @param account
+	 * @param suiteId
+	 */
+	public VOSHttpResponse addSuiteToAccount(String account, String suiteId){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_operationType, "0"));
+		params.add(new BasicNameValuePair(P_account, account));
+		params.add(new BasicNameValuePair(P_suiteId, suiteId));
+		params.add(new BasicNameValuePair(P_availableTime, "2020-01-01 00:00:00"));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "setsuiteorder.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
+	/**
+	 * 为账户添加话机
+	 * @param account
+	 * @param phoneNumber
+	 */
+	public VOSHttpResponse addPhoneToAccount(String account, String phoneNumber){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_type, "0"));
+		params.add(new BasicNameValuePair(P_account, account));
+		params.add(new BasicNameValuePair(P_e164, phoneNumber));
+		params.add(new BasicNameValuePair(P_dynamic, "0"));
+		params.add(new BasicNameValuePair(P_protocol, "1"));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "setphone.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
+	public VOSHttpResponse deposite(String account, Double money){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_account, account));
+		params.add(new BasicNameValuePair(P_money, money.toString()));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "pay.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
+	/**
+	 * 获取账户信息，包括账户余额，到期时间，透支额度等。
+	 * @param account
+	 * @return
+	 */
+	public AccountInfo getAccountInfo(String account){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_name, account));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "getcustomer.jsp");
+		post.setEntity(entity);
+		
+		VOSHttpResponse response = execute(post);
+		if (response.getHttpStatusCode() == 200 && 
+			response.isOperationSuccess()){
+			return new AccountInfo(response.getVOSResponseInfo());
+		}
+		return null;
+	}
+	
+	/**
+	 * 获取用户当前套餐信息
+	 * @param account
+	 * @return
+	 */
+	public CurrentSuiteInfo getCurrentSuite(String account) {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_account, account));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "getsuitecurrent.jsp");
+		post.setEntity(entity);
+		
+		VOSHttpResponse response = execute(post);
+		if (response.getHttpStatusCode() == 200 && 
+			response.isOperationSuccess()){
+			return new CurrentSuiteInfo(response.getVOSResponseInfo());
+		}
+		return null;		
+	}
+	
+	public static void main(String [] args){
+		VOSClient client = new VOSClient();
+		client.setBaseUrl("http://192.168.1.3/thirdparty/");
+		client.setLoginName("admin");
+		client.setLoginPassword("admin");
+		VOSHttpResponse resp = client.addAccount("123456");
+		System.out.println(resp.getHttpStatusCode());
+		System.out.println(resp.getVOSStatusCode());
+		System.out.println(resp.getVOSResponseInfo());
+		
+//		VOSHttpResponse depositeResp = client.deposite("123456", -100.123);
+//		System.out.println(depositeResp.getHttpStatusCode());
+//		System.out.println(depositeResp.getVOSStatusCode());
+//		System.out.println(depositeResp.getVOSResponseInfo());
+		
+		AccountInfo accountInfo = client.getAccountInfo("123456");
+		System.out.println(accountInfo.getAccountID());
+		System.out.println(accountInfo.getAccountName());
+		System.out.println(accountInfo.getExpireTime());
+		System.out.println(accountInfo.getBalance());
+		System.out.println(accountInfo.getOverdraft());
+		
+		CurrentSuiteInfo suiteInfo = client.getCurrentSuite("123456");
+		System.out.println("suiteId : " + suiteInfo.getSuiteId());
+		System.out.println("name : " + suiteInfo.getSuiteName());
+		System.out.println("gift : " + suiteInfo.getGiftBalance());
+		System.out.println("orderId : " + suiteInfo.getOrderId());
+	}
+}
