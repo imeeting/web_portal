@@ -22,7 +22,7 @@ public class DonkeyClientTest {
 
 	@Test
 	public void createNoControlConference(){
-		DonkeyHttpResponse response = client.createNoControlConference(confId, null, requestId);
+		DonkeyHttpResponse response = client.createNoControlConference(confId, null, null, requestId);
 		System.out.println(response.getEntityAsString());
 	}
 	
