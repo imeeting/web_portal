@@ -46,8 +46,8 @@ public class VOSClient {
 		this.httpClient = new DefaultHttpClient();
 	}
 	
-	public void setBaseUrl(String baseUrl){
-		this.baseURI = baseUrl;
+	public void setBaseUri(String baseUri){
+		this.baseURI = baseUri;
 		if (!this.baseURI.endsWith("/")){
 			this.baseURI += "/";
 		}
@@ -206,7 +206,7 @@ public class VOSClient {
 	
 	public static void main(String [] args){
 		VOSClient client = new VOSClient();
-		client.setBaseUrl("http://192.168.1.3/thirdparty/");
+		client.setBaseUri("http://192.168.1.3/thirdparty/");
 		client.setLoginName("admin");
 		client.setLoginPassword("admin");
 		VOSHttpResponse resp = client.addAccount("123456");
