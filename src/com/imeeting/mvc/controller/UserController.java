@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
