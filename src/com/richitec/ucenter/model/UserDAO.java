@@ -227,6 +227,12 @@ public class UserDAO {
 		Object[] params = new Object[] { phone };
 		return jdbc.queryForObject(sql, params, String.class);
 	}
+	
+	public int getVOSPhoneNumber(String username){
+		String sql = "SELECT vosphone FROM im_user WHERE username = ?";
+		Object[] params = new Object[] { username };
+		return jdbc.queryForInt(sql, params);
+	}
 
 	public String saveToken(String userName, String token) {
 		String retCode = "0";
