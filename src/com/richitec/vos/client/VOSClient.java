@@ -1,6 +1,9 @@
 package com.richitec.vos.client;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,7 +89,7 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_account, account));
 		params.add(new BasicNameValuePair(P_type, "0"));
-		params.add(new BasicNameValuePair(P_validTime, "2020-01-01 00:00:00"));
+//		params.add(new BasicNameValuePair(P_validTime, "2015-01-01 00:00:00"));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setcustomer.jsp");
@@ -107,7 +110,10 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_operationType, "0"));
 		params.add(new BasicNameValuePair(P_account, account));
 		params.add(new BasicNameValuePair(P_suiteId, suiteId));
-		params.add(new BasicNameValuePair(P_availableTime, "2020-01-01 00:00:00"));
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date now = new Date();
+		now.setTime(now.getTime() - 3600*1000);
+		params.add(new BasicNameValuePair(P_availableTime, df.format(now)));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setsuiteorder.jsp");
@@ -207,11 +213,24 @@ public class VOSClient {
 		System.out.println(resp.getHttpStatusCode());
 		System.out.println(resp.getVOSStatusCode());
 		System.out.println(resp.getVOSResponseInfo());
+		System.out.println();
 		
 //		VOSHttpResponse depositeResp = client.deposite("123456", -100.123);
 //		System.out.println(depositeResp.getHttpStatusCode());
 //		System.out.println(depositeResp.getVOSStatusCode());
 //		System.out.println(depositeResp.getVOSResponseInfo());
+		
+		VOSHttpResponse addPhoneResponse = client.addPhoneToAccount("123456", "10123456");
+		System.out.println(addPhoneResponse.getHttpStatusCode());
+		System.out.println(addPhoneResponse.getVOSStatusCode());
+		System.out.println(addPhoneResponse.getVOSResponseInfo());		
+		System.out.println();
+		
+		VOSHttpResponse addSuiteResponse = client.addSuiteToAccount("123456", "252");
+		System.out.println(addSuiteResponse.getHttpStatusCode());
+		System.out.println(addSuiteResponse.getVOSStatusCode());
+		System.out.println(addSuiteResponse.getVOSResponseInfo());		
+		System.out.println();
 		
 		AccountInfo accountInfo = client.getAccountInfo("123456");
 		System.out.println(accountInfo.getAccountID());
@@ -219,6 +238,7 @@ public class VOSClient {
 		System.out.println(accountInfo.getExpireTime());
 		System.out.println(accountInfo.getBalance());
 		System.out.println(accountInfo.getOverdraft());
+		System.out.println();
 		
 		CurrentSuiteInfo suiteInfo = client.getCurrentSuite("123456");
 		System.out.println("suiteId : " + suiteInfo.getSuiteId());
