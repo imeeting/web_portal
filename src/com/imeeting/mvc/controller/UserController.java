@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
 
 @Controller
@@ -43,6 +44,14 @@ public class UserController extends ExceptionController {
 			HttpServletResponse response, HttpSession session) throws Exception {
 		JSONObject jsonUser = userDao.login(loginName, loginPwd);
 		log.info("result: " + jsonUser.toString());
+		String result = jsonUser.getString("result");
+		if (result != null && result.equals("0")) {
+			// login success, add UserBean to Session
+			UserBean userBean = new UserBean();
+			userBean.setName(loginName);
+			session.setAttribute(UserBean.SESSION_BEAN, userBean);
+			
+		}
 		response.getWriter().print(jsonUser.toString());
 	}
 

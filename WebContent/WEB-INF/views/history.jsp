@@ -1,3 +1,4 @@
+<%@page import="com.imeeting.mvc.controller.IMeetingWebController"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <!DOCTYPE html>
@@ -6,30 +7,12 @@
     <title>智会-我的群聊</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
-
+	<%
+	String pageName = String.valueOf(request.getAttribute(IMeetingWebController.PAGE_NAME));
+	System.out.println("1 page name: " + pageName);
+	%>
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="#">智会</a>
-          <ul class="nav">
-          	<li><a href="#">退出登录</a></li>
-          </ul>
-          <div class="nav-collapse">
-            <ul class="nav pull-right">
-              <li><a href="account">充值账户</a></li>
-              <li class="active"><a href="history">我的群聊</a></li>
-              <li><a href="setting">系统设置</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
     	<div class="row">
@@ -75,7 +58,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
-    <script src="js/bootstrap.js"></script>
+    <script src="js/lib/bootstrap.js"></script>
 
   </body>
 </html>

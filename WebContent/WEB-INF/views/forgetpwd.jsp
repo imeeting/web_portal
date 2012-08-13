@@ -47,7 +47,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
-    <script src="js/bootstrap.js"></script>
+    <script src="js/lib/bootstrap.js"></script>
 
   </body>
 </html>

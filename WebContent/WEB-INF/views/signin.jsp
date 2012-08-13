@@ -33,9 +33,9 @@
     	<div class="row">
 			<form id="signin-form" action="" class="span4 offset4 well">
 				<label>手机号码</label>
-				<input class="span4" type="text" />
+				<input id="username" class="span4" type="text" />
 				<label>密码&nbsp;<small><a href="forgetpwd">（忘记密码）</a></small></label>
-				<input class="span4" type="password" />
+				<input id="password" class="span4" type="password" />
 				<button type="submit" class="btn btn-primary">登&nbsp;录</button>
 			</form>
     	</div>
@@ -47,7 +47,9 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
-    <script src="js/bootstrap.js"></script>
-
+    <script src="js/lib/bootstrap.js"></script>
+    <script src="js/lib/md5.js"></script>
+    <script src="js/applib/common.js"></script>
+	<script src="js/signin.js"></script>
   </body>
 </html>
