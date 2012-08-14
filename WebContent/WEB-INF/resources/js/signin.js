@@ -20,12 +20,10 @@ $(function() {
 				switch (result) {
 				case "0":
 					// login success
-					location.href = "history";
-					
+					location.href = "accountcharge";
 					break;
-
 				default:
-					alert("login failed");
+					alert("登录失败，用户名或者密码有误!");
 					break;
 				}
 			},
