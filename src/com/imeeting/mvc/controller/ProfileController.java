@@ -47,11 +47,11 @@ public class ProfileController {
 			@RequestParam(value="newPwdConfirm") String newPwdConfirm) throws IOException{
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		if (!oldPwd.equals(user.getPassword())){
-			return "403";
+			return "400";
 		}
 		
 		if (newPwd.isEmpty() || !newPwd.equals(newPwdConfirm)){
-			return "400";
+			return "403";
 		}
 		
 		String md5Password = MD5Util.md5(newPwd);
