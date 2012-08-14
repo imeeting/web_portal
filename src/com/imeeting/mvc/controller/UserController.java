@@ -13,11 +13,13 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
+import com.richitec.util.MD5Util;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
@@ -60,6 +62,53 @@ public class UserController extends ExceptionController {
 			session.setAttribute(UserBean.SESSION_BEAN, userBean);
 		}
 		response.getWriter().print(jsonUser.toString());
+	}
+	
+	@RequestMapping("/validatePhoneNumber")
+	public @ResponseBody String validatePhoneNumber(
+			HttpSession session,
+			@RequestParam(value = "phone") String phoneNumber){
+		String result = userDao.checkRegisterPhone(phoneNumber);
+		if ("3".equals(result)){
+			userDao.getPhoneCode(session, phoneNumber);
+			return "200";
+		} else {
+			return "404";
+		}
+	}
+	
+	@RequestMapping("/resetPassword")
+	public @ResponseBody String resetPassword(
+			HttpSession session,
+			@RequestParam(value="phone") String phoneNumber,
+			@RequestParam(value="code") String phoneCode,
+			@RequestParam(value="newPwd") String newPassword,
+			@RequestParam(value="newPwdConfirm") String newPasswordConfirm){
+		String sessionPhoneNumber = (String) session.getAttribute("phonenumber");
+		String sessionPhoneCode = (String) session.getAttribute("phonecode");
+		
+		if (null == sessionPhoneCode || null == sessionPhoneNumber){
+			return "410";
+		}
+		
+		if (!phoneNumber.equals(sessionPhoneNumber)) {
+			return "400";
+		}
+		
+		if (!phoneCode.equals(sessionPhoneCode)){
+			return "401";
+		}
+		
+		if (newPassword.isEmpty() || !newPassword.equals(newPasswordConfirm)){
+			return "403";
+		}
+		
+		String md5Password = MD5Util.md5(newPassword);
+		if (userDao.changePassword(phoneNumber, md5Password)<=0){
+			return "500";
+		}
+		
+		return "200";
 	}
 
 	@RequestMapping("/getPhoneCode")
