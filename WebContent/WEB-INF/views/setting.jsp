@@ -28,21 +28,23 @@
 					<div class="tab-pane active" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="profile/changepassword" method="post" >
+						<form action="profile/changepassword" method="post" id="formChangePwd" >
 							<label>输入当前使用的密码</label>
-							<input type="password" name="oldPwd" />
+							<input type="password" name="oldPwd" id="iptOldPwd" />
 							<label>输入新密码</label>
-							<input type="password" name="newPwd" />
+							<input type="password" name="newPwd" id="iptNewPwd" />
 							<label>再次输入新密码</label>
-							<input type="password" name="newPwdConfirm" />
+							<input type="password" name="newPwdConfirm" id="iptNewPwdConfirm" />
 							<br>
 							<button type="submit" class="btn btn-primary">确&nbsp;定</button>
 						</form>
 					</div>
 					<div class="tab-pane" id="pane-user-info">
+						<h3>基本信息</h3>
 						<p>我们正在紧张开发中，请耐心等待。。。</p>
 					</div>	
 					<div class="tab-pane" id="pane-user-avatar">
+						<h3>设置头像</h3>
 						<p>我们正在紧张开发中，请耐心等待。。。</p>
 					</div>	
 				</div>
@@ -54,8 +56,53 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script src="js/lib/bootstrap.js"></script>
-
+	<script type="text/javascript" src="js/lib/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$("#formChangePwd").submit(function(){
+				var oldPassword = $("#iptOldPwd").val();
+				var newPassword = $("#iptNewPwd").val();
+				var newPasswordConfirm = $("#iptNewPwdConfirm").val();
+				var jqxhr = $.post("profile/changepassword", 
+					{
+						oldPwd: md5(oldPassword),
+						newPwd: newPassword,
+						newPwdConfirm: newPasswordConfirm
+					},
+					function(data){
+						if ("200" == data){
+							alert("修改密码成功");
+						} else
+						if ("400" == data){
+							alert("原始密码输入错误");
+						} else
+						if ("403" == data){
+							alert("新密码两次输入不一致");
+						} else
+						if ("500" == data){
+							alert("服务器内部错误");
+						} else {
+							alert("未知错误：[" + data + "]");
+						}
+					}
+				);
+				jqxhr.fail(function(jqXHR, textStatus, errorThown){
+					if ("error" == textStatus){
+						alert("操作失败[" + jqXHR.status + "]");
+					} else {
+						alert(textStatus);
+					}
+				});
+				jqxhr.always(function(){
+					$("#iptOldPwd").val("");
+					$("#iptNewPwd").val("");
+					$("#iptNewPwdConfirm").val("");
+				});
+				return false;
+			});
+		});
+	</script>
   </body>
 </html>

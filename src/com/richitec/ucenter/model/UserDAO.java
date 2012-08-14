@@ -246,4 +246,10 @@ public class UserDAO {
 		}
 		return retCode;
 	}
+	
+	public int changePassword(String userName, String md5Password){
+		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=?";
+		String userkey = MD5Util.md5(userName + md5Password);
+		return jdbc.update(sql, md5Password, userkey, userName);
+	}
 }

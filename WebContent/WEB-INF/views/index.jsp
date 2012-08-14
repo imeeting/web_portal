@@ -20,7 +20,9 @@
           <div class="nav-collapse">
             <ul class="nav pull-right">
               <li class="active"><a href="home">首页</a></li>
+              <!-- 
               <li><a href="features">功能介绍</a></li>
+               -->
               <li><a href="deposite">在线充值</a></li>
               <li><a href="signin">登录</a></li>
             </ul>
@@ -77,7 +79,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script src="js/lib/bootstrap.js"></script>
 
   </body>
