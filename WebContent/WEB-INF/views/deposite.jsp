@@ -19,6 +19,7 @@
     <div class="container">
     	<div class="row">
     		<form action="" class="span6 offset3">
+    			<small>如需帮助请联系客服，QQ： 1622122511，电话： 0551-2379996</small>
 	    		<div class="page-header">
 	    			<h2>1.&nbsp;请输入要充值的账户名</h2>
 	    		</div>
@@ -40,11 +41,11 @@
 	    			</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="pane-alipay">
-							<label>充值金额</label>
+							<label>充值金额（RMB）</label>
 							<input type="text" />
 						</div>				
 						<div class="tab-pane" id="pane-bank">
-							<label>充值金额</label>
+							<label>充值金额（RMB）</label>
 							<input type="text" />
 						</div>
 						<div class="tab-pane" id="pane-zhihuicard">
