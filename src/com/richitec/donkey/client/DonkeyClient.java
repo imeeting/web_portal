@@ -170,6 +170,7 @@ public class DonkeyClient {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair("conference", confId));
 		params.add(new BasicNameValuePair("deleteWhen", "nocontrol"));
+		params.add(new BasicNameValuePair("caller", caller));
 		String sipuriJSONArray = getSIPUriJSONArray(phoneList);
 		if (null != sipuriJSONArray){
 			params.add(new BasicNameValuePair("sipuriList", sipuriJSONArray));
@@ -183,6 +184,7 @@ public class DonkeyClient {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair("conference", confId));
 		params.add(new BasicNameValuePair("deleteWhen", "nomedia"));
+		params.add(new BasicNameValuePair("caller", caller));
 		String attendeeJSONArray = getSIPUriJSONArray(attendeeList);
 		log.info("createNoMediaConference - attendeeJSONArray: " + attendeeJSONArray);
 		if (null != attendeeJSONArray){
