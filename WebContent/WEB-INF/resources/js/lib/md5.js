@@ -144,7 +144,7 @@ md5blks[i>>2] = s.charCodeAt(i)
 return md5blks;
 }
 
-var hex_chr = '0123456789abcdef'.split('');
+var hex_chr = '0123456789ABCDEF'.split('');
 
 function rhex(n)
 {
