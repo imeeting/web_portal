@@ -86,10 +86,10 @@
 							alert("重置密码成功");
 						} else 
 						if ("400" == data){
-							alert("手机号码错误");
+							alert("缺少参数");
 						} else
 						if ("401" == data){
-							alert("验证码错误");
+							alert("验证码与手机号码不匹配");
 						} else 
 						if ("403" == data) {
 							alert("新密码两次输入不一致");

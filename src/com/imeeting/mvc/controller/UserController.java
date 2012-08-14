@@ -77,6 +77,16 @@ public class UserController extends ExceptionController {
 		}
 	}
 	
+	/**
+	 * 用户忘记密码后重新设置密码
+	 * 
+	 * @param session
+	 * @param phoneNumber
+	 * @param phoneCode
+	 * @param newPassword
+	 * @param newPasswordConfirm
+	 * @return
+	 */
 	@RequestMapping("/resetPassword")
 	public @ResponseBody String resetPassword(
 			HttpSession session,
@@ -84,22 +94,22 @@ public class UserController extends ExceptionController {
 			@RequestParam(value="code") String phoneCode,
 			@RequestParam(value="newPwd") String newPassword,
 			@RequestParam(value="newPwdConfirm") String newPasswordConfirm){
+		if (phoneNumber.isEmpty() ||  phoneCode.isEmpty() || 
+			newPassword.isEmpty() || newPasswordConfirm.isEmpty()) {
+			return "400";
+		}
+		
 		String sessionPhoneNumber = (String) session.getAttribute("phonenumber");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		
 		if (null == sessionPhoneCode || null == sessionPhoneNumber){
 			return "410";
 		}
 		
-		if (!phoneNumber.equals(sessionPhoneNumber)) {
-			return "400";
-		}
-		
-		if (!phoneCode.equals(sessionPhoneCode)){
+		if (!phoneNumber.equals(sessionPhoneNumber) || !phoneCode.equals(sessionPhoneCode)){
 			return "401";
 		}
 		
-		if (newPassword.isEmpty() || !newPassword.equals(newPasswordConfirm)){
+		if (!newPassword.equals(newPasswordConfirm)){
 			return "403";
 		}
 		
