@@ -56,6 +56,7 @@ public class UserController extends ExceptionController {
 			// login success, add UserBean to Session
 			UserBean userBean = new UserBean();
 			userBean.setName(loginName);
+			userBean.setPassword(loginPwd);
 			session.setAttribute(UserBean.SESSION_BEAN, userBean);
 		}
 		response.getWriter().print(jsonUser.toString());
