@@ -76,10 +76,10 @@
 							alert("修改密码成功");
 						} else
 						if ("400" == data){
-							alert("新密码两次输入不一致");
+							alert("原始密码输入错误");
 						} else
 						if ("403" == data){
-							alert("原始密码输入错误");
+							alert("新密码两次输入不一致");
 						} else
 						if ("500" == data){
 							alert("服务器内部错误");
