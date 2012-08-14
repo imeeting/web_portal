@@ -1,3 +1,7 @@
+<%@page import="com.richitec.util.Pager"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.List"%>
+<%@page import="com.imeeting.constants.WebConstants"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <!DOCTYPE html>
@@ -9,11 +13,20 @@
 
   <body>
     <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
+	
+	<%
+		Double balance = (Double) request.getAttribute(WebConstants.balance.name());
+		String strBalance = String.format("%,.2f", balance.doubleValue());
+		
+		List<Map<String, Object>> chargeList = (List<Map<String, Object>>) request.getAttribute(WebConstants.charge_list.name());
+		Pager pager = (Pager) request.getAttribute(WebConstants.pager.name());
+	%>
+
 
     <div class="container">
     	<div class="row well">
 			<div class="span4 offset3">
-				<h1>账户余额：￥2,000.00</h1>
+				<h1>账户余额：￥<%=strBalance %></h1>
 			</div>
 			<a class="span1 btn btn-large btn-success" href="deposite">在线充值</a>
     	</div>
@@ -32,12 +45,18 @@
 						</tr>
 					</thead>
 					<tbody>
-					<% for(int i=0; i<10; i++) {%>
-						<tr>
-						<td>2012-08-11 16:02</td>
-						<td>￥100.00</td>
-						</tr>
-					<% } %>
+					<% 
+					if (chargeList != null) {
+						for(Map<String, Object> map : chargeList) {
+							String time = String.valueOf(map.get("charge_time"));
+							Integer money = (Integer) map.get("money");
+						%>
+							<tr>
+							<td><%=time %></td>
+							<td>￥<%=String.format("%,.2f", money.floatValue()) %></td>
+							</tr>
+						<% } 
+					}%>
 					</tbody>
 				</table>
 				<ul class="pager">

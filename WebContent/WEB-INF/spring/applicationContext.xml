@@ -123,6 +123,10 @@
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
 	
+	<bean id="charge_dao" class="com.imeeting.mvc.model.charge.ChargeDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
+	
 	<bean id="conference_dao" class="com.imeeting.mvc.model.conference.ConferenceDB">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>

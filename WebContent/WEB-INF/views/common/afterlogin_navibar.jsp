@@ -1,4 +1,4 @@
-<%@page import="com.imeeting.mvc.controller.IMeetingWebController"%>
+<%@page import="com.imeeting.constants.WebConstants"%>
 <%@page import="com.imeeting.web.user.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
@@ -10,8 +10,7 @@
 		return;
 	}
 	String pageName = String.valueOf(request
-			.getAttribute(IMeetingWebController.PAGE_NAME));
-	System.out.println("page name: " + pageName);
+			.getAttribute(WebConstants.page_name.name()));
 %>
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">

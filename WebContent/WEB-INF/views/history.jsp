@@ -7,10 +7,6 @@
     <title>智会-我的群聊</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
-	<%
-	String pageName = String.valueOf(request.getAttribute(IMeetingWebController.PAGE_NAME));
-	System.out.println("1 page name: " + pageName);
-	%>
   <body>
     <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 

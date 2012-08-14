@@ -22,7 +22,6 @@ import com.richitec.util.ValidatePattern;
 
 public class UserDAO {
 	private static Log log = LogFactory.getLog(UserDAO.class);
-	public static final String SESSION_BEAN = "userBean";
 	public static final String PASSWORD_STR = "huuguanghui";
 	
 	private JdbcTemplate jdbc;
@@ -90,6 +89,7 @@ public class UserDAO {
 	 */
 	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
 		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=?";
+		log.info("login pwd: " + loginPwd);
 		Object[] params = new Object[] { loginName, loginPwd };
 		String result = null;
 		JSONObject ret = new JSONObject();
