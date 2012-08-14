@@ -18,7 +18,7 @@
 
     <div class="container">
     	<div class="row">
-    		<form action="" class="span6 offset3">
+    		<form id="pay_form" action="" class="span6 offset3">
     			<small>如需帮助请联系客服，QQ： 1622122511，电话： 0551-2379996</small>
 	    		<div class="page-header">
 	    			<h2>1.&nbsp;请输入要充值的账户名</h2>
@@ -28,31 +28,31 @@
 	    			<h2>2.&nbsp;请选择你喜欢的充值方式</h2>
 	    		</div>
 	    		<div class="tabbable">
-	    			<ul class="nav nav-tabs">
-	    				<li class="active">
+	    			<ul id="pay_type" class="nav nav-tabs">
+	    				<li type="alipay" class="active">
 	    					<a href="#pane-alipay" data-toggle="tab">支付宝充值</a>
 	    				</li>
-	    				<li>
+	    				<li type="netbank">
 	    					<a href="#pane-bank" data-toggle="tab">网银充值</a>
 	    				</li>
-	    				<li>
+	    				<li type="card">
 	    					<a href="#pane-zhihuicard" data-toggle="tab">智会卡充值</a>
 	    				</li>
 	    			</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="pane-alipay">
 							<label>充值金额（RMB）</label>
-							<input type="text" />
+							<input id="alipay_input" type="text" />
 						</div>				
 						<div class="tab-pane" id="pane-bank">
 							<label>充值金额（RMB）</label>
-							<input type="text" />
+							<input id="netbank_input" type="text" />
 						</div>
 						<div class="tab-pane" id="pane-zhihuicard">
 							<label>卡号</label>
-							<input type="text" />
+							<input id="card_number" type="text" />
 							<label>密码</label>
-							<input type="text" />							
+							<input id="card_pwd" type="text" />							
 						</div>						
 					</div>	    			
 	    		</div>

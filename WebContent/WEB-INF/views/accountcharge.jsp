@@ -60,8 +60,8 @@
 					</tbody>
 				</table>
 				<ul class="pager">
-					<li class="previous"><a href=#>上一页</a></li>
-					<li class="next"><a href=#>下一页</a></li>
+					<li class="previous <%=pager.getHasPrevious() ? "" : "hidden" %>"><a href=<%=pager.getPreviousPage() %>>上一页</a></li>
+					<li class="next <%=pager.getHasNext() ? "" : "hidden" %>"><a href=<%=pager.getNextPage() %>>下一页</a></li>
 				</ul>
 			</div>
 		</div>
