@@ -28,7 +28,7 @@
 					<div class="tab-pane active" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="profile/changepassword" method="post" id="formChangePwd" >
+						<form action="setting/changepassword" method="post" id="formChangePwd" >
 							<label>输入当前使用的密码</label>
 							<input type="password" name="oldPwd" id="iptOldPwd" />
 							<label>输入新密码</label>
@@ -67,7 +67,7 @@
 				var oldPassword = $("#iptOldPwd").val();
 				var newPassword = $("#iptNewPwd").val();
 				var newPasswordConfirm = $("#iptNewPwdConfirm").val();
-				var jqxhr = $.post("profile/changepassword", 
+				var jqxhr = $.post("setting/changepassword", 
 					{
 						oldPwd: md5(oldPassword),
 						newPwd: newPassword,

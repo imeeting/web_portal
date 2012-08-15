@@ -15,7 +15,7 @@ import com.imeeting.constants.WebConstants;
 @Controller
 public class IMeetingWebController {
 	private static Log log = LogFactory.getLog(IMeetingWebController.class);
-
+	
 	@RequestMapping("/")
 	public String index(HttpSession session, HttpServletRequest request) {
 		return "index";
@@ -48,13 +48,4 @@ public class IMeetingWebController {
 		view.addObject(WebConstants.page_name.name(), "history");
 		return view;
 	}
-
-	@RequestMapping(value = "/setting", method = RequestMethod.GET)
-	public ModelAndView setting() {
-		ModelAndView view = new ModelAndView();
-		view.setViewName("setting");
-		view.addObject(WebConstants.page_name.name(), "setting");
-		return view;
-	}
-
 }

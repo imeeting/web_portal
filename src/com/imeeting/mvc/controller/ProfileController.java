@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
@@ -24,7 +26,7 @@ import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
 
 @Controller
-@RequestMapping(value="/profile")
+@RequestMapping(value="/setting")
 public class ProfileController {
 	
 	private static Log log = LogFactory.getLog(ProfileController.class);
@@ -36,6 +38,14 @@ public class ProfileController {
 	public void init(){
 		config = ContextLoader.getConfiguration();
 		userDao = ContextLoader.getUserDAO();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public ModelAndView index() {
+		ModelAndView view = new ModelAndView();
+		view.setViewName("setting");
+		view.addObject(WebConstants.page_name.name(), "setting");
+		return view;
 	}
 	
 	@RequestMapping(value="/changepassword", method=RequestMethod.POST)
