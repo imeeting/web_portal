@@ -27,3 +27,7 @@ footer span {
 	margin-top: 50px;
 	margin-bottom: 200px;
 }
+
+.hidden {
+	display: none;	
+}

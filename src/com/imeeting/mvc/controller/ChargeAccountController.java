@@ -77,4 +77,11 @@ public class ChargeAccountController {
 		view.addObject(WebConstants.charge_list.name(), chargeList);
 		return view;
 	}
+	
+	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
+	public String aliPay(HttpSession session) throws Exception {
+		log.info("****** prepaid alipay ******");
+		return "account/alipay";
+	}
+	
 }

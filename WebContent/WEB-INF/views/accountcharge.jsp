@@ -62,8 +62,8 @@
 					</tbody>
 				</table>
 				<ul class="pager">
-					<li class="previous"><a href=#>上一页</a></li>
-					<li class="next"><a href=#>下一页</a></li>
+					<li class="previous <%=pager.getHasPrevious() ? "" : "hidden" %>"><a href=<%=pager.getPreviousPage() %>>上一页</a></li>
+					<li class="next <%=pager.getHasNext() ? "" : "hidden" %>"><a href=<%=pager.getNextPage() %>>下一页</a></li>
 				</ul>
 			</div>
 		</div>
@@ -74,7 +74,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script src="js/lib/jquery-1.8.0.min.js"></script>
     <script src="js/lib/bootstrap.js"></script>
 
   </body>
