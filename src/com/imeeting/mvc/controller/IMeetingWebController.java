@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.imeeting.web.user.UserBean;
+
 
 @Controller
 public class IMeetingWebController {
@@ -35,4 +37,11 @@ public class IMeetingWebController {
 	public String forgetpwd() {
 		return "forgetpwd";
 	}
+	
+	@RequestMapping(value = "/signout", method = RequestMethod.GET)
+	public String signout(HttpSession session) {
+		session.removeAttribute(UserBean.SESSION_BEAN);
+		return "redirect:/";
+	}
+	
 }

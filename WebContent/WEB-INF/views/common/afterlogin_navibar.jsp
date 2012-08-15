@@ -21,7 +21,7 @@
 			</a> <a class="brand" href="#">智会</a>
 			<ul class="nav">
 				<li><a id="username"><%=userBean.getName()%></a></li>
-				<li><a id="logout" href="#">退出登录</a></li>
+				<li><a id="logout" href="signout">退出登录</a></li>
 			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
