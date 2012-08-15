@@ -20,7 +20,7 @@
 					<!-- 
 		              <li><a href="features">功能介绍</a></li>
 		            -->
-					<li><a href="deposite">在线充值</a>
+					<li><a href="deposite" target="blank">在线充值</a>
 					</li>
 					<li>
 					<%
