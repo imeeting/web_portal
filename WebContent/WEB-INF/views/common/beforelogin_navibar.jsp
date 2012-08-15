@@ -37,7 +37,9 @@
 						}
 					%>
 					</li>
+					<!-- 
 					<li class="<%="forgetpwd".equals(pageName) ? "active" : ""%>"><a href="forgetpwd">忘记密码</a></li>
+					-->
 				</ul>
 			</div>
 		</div>
