@@ -176,8 +176,10 @@ public class ChargeAccountController {
 				// 判断该笔订单是否在商户网站中已经做过处理（可参考“集成教程”中“3.4返回数据处理”）
 				// 如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
 				// 如果有做过处理，不执行商户的业务程序
-				ChargeUtil.finishCharge(order_no, total_fee);
+				String accountName = ChargeUtil.finishCharge(order_no, total_fee);
 				mv.addObject("result", "0");
+				mv.addObject(WebConstants.charge_money.name(), total_fee);
+				mv.addObject(WebConstants.pay_account_name.name(), accountName);
 			} else {
 				mv.addObject("result", "1");
 			}

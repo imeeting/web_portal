@@ -52,7 +52,13 @@
 								<option value="50.00">50</option>
 								<option value="100.00">100</option>
 								<option value="200.00">200</option>
+								<option value="300.00">300</option>
+								<option value="400.00">400</option>
 								<option value="500.00">500</option>
+								<option value="600.00">600</option>
+								<option value="700.00">700</option>
+								<option value="800.00">800</option>
+								<option value="900.00">900</option>
 								<option value="1000.00">1000</option>
 							</select>
 						</div>		
