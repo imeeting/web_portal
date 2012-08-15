@@ -21,8 +21,8 @@
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 	   <mvc:interceptor>
-			<mvc:mapping path="/history"/>
 			<mvc:mapping path="/accountcharge"/>
+			<mvc:mapping path="/accountcharge/**"/>
 			<mvc:mapping path="/setting"/>
 			<mvc:mapping path="/setting/**"/>
 			<mvc:mapping path="/myconference"/>

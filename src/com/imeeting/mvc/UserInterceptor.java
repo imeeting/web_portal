@@ -32,7 +32,13 @@ public class UserInterceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession();
 		UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
 		if (null == userBean ){
-			response.sendRedirect("");
+			response.sendRedirect(request.getContextPath());
+			log.debug("\nContextPath : " + request.getContextPath() +
+					"\nPathInfo : " + request.getPathInfo() +
+					"\nPathTranslated : " + request.getPathTranslated() +
+					"\nRequestURI : " + request.getRequestURI() +
+					"\nServletPath : " + request.getServletPath() +
+					"\nRequestURL : " + request.getRequestURL()	);
 			return false;
 		}
 		
