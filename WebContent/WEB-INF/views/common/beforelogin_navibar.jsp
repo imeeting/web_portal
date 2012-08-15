@@ -22,7 +22,7 @@
 					<!-- 
 		              <li ><a href="features">功能介绍</a></li>
 		            -->
-					<li class="<%="deposite".equals(pageName) ? "active" : ""%>"><a href="deposite">在线充值</a>
+					<li class="<%="deposite".equals(pageName) ? "active" : ""%>"><a href="deposite" target="blank">在线充值</a>
 					</li>
 					<li class="<%="signin".equals(pageName) ? "active" : ""%>">
 					<%

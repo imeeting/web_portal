@@ -28,7 +28,7 @@
 			<div class="span4 offset3">
 				<h1>账户余额：￥<%=strBalance %></h1>
 			</div>
-			<a class="span1 btn btn-large btn-success" href="deposite">在线充值</a>
+			<a class="span1 btn btn-large btn-success" href="deposite" target="blank">在线充值</a>
     	</div>
 		<div class="row">
 			<div class="page-header span6 offset3">

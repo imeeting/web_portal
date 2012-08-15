@@ -31,6 +31,11 @@ public class IMeetingWebController {
 		return view;
 	}
 
+	@RequestMapping(value = "/mobile", method = RequestMethod.GET)
+	public String mobile(HttpSession session, HttpServletRequest request) {
+		return "index_mobile";
+	}	
+
 	@RequestMapping(value = "/signin", method = RequestMethod.GET)
 	public ModelAndView signin() {
 		ModelAndView view = new ModelAndView();

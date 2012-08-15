@@ -30,7 +30,8 @@
 	    			<li><h2><small>操作方便快捷</small></h2></li>
     			</ul>
     			<hr>
-    			<h3>现在注册就送<strong>100元</strong>话费<br>&nbsp;</h3>
+    			<!-- <h3>现在注册就送<strong>100元</strong>话费<br>&nbsp;</h3>-->
+    			<!-- <h3>立刻下载开始你的智会之旅<br>&nbsp;</h3> -->
     			<div>
     				<a class="btn">
     					<div>
@@ -49,6 +50,13 @@
     					</div>
     				</a>    				
     			</div>
+    			<hr>
+    			<form id="formGetDownlaodUrl" action="">
+    				<label>输入手机号码，短信获取下载地址</label>
+    				<input type="text" name="phoneNumber" id="iptPhoneNumber" pattern="[0-9]{11}" maxlength="11" />
+    				<br>
+	    			<button type="submit" class="btn btn-success" id="btnGetDownloadURL" >获取下载地址</button>
+    			</form>    			
     		</div>
     	</div>
     	
@@ -60,6 +68,16 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/lib/jquery-1.8.0.min.js"></script>
     <script src="js/lib/bootstrap.js"></script>
-
+	<script type="text/javascript">
+		$("#formGetDownlaodUrl").submit(function(){
+			var phoneNumber = $("#iptPhoneNumber").val();
+			$.post("getDownloadURL", 
+				{phone: phoneNumber},
+				function(data){
+					alert(data);
+				});
+			return false;
+		});
+	</script>
   </body>
 </html>
