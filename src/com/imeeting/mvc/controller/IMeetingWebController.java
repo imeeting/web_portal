@@ -66,4 +66,14 @@ public class IMeetingWebController {
 		return "redirect:/";
 	}
 	
+	@RequestMapping(value="/404")
+	public String page404(){
+		return "error/404";
+	}
+	
+	@RequestMapping(value="/500")
+	public String page500(){
+		return "error/500";
+	}	
+	
 }

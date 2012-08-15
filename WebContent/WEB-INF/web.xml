@@ -16,7 +16,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 	    	/WEB-INF/spring/applicationContext.xml
-	</param-value>
+		</param-value>
 	</context-param>
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
@@ -86,4 +86,13 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
 	</servlet-mapping>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/500</location>
+	</error-page>	
 </web-app>
