@@ -1,9 +1,9 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
 <%@page import="com.richitec.util.Pager"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.List"%>
 <%@page import="com.imeeting.constants.WebConstants"%>
-<%@ page language="java" contentType="text/html; charset=utf-8"
-    pageEncoding="utf-8"%>
 <!DOCTYPE html>
 <html lang="zh">
   <head>
@@ -45,18 +45,20 @@
 						</tr>
 					</thead>
 					<tbody>
-					<% 
-					if (chargeList != null) {
-						for(Map<String, Object> map : chargeList) {
-							String time = String.valueOf(map.get("charge_time"));
-							Integer money = (Integer) map.get("money");
-						%>
-							<tr>
+					<% for (int i=0; i<10; i++) {
+						  String time = "&nbsp;";
+						  String money = "&nbsp;";
+						  if (null != chargeList && i<chargeList.size()) {
+							  Map<String, Object> m = chargeList.get(i);
+							  time = String.valueOf(m.get("charge_time"));
+							  money = "￥" +  String.format("%,.2f", m.get("money"));
+						  }
+					%>
+						<tr>
 							<td><%=time %></td>
-							<td>￥<%=String.format("%,.2f", money.floatValue()) %></td>
-							</tr>
-						<% } 
-					}%>
+							<td><%=money %></td>
+						</tr>						
+					<% }//end of for %>
 					</tbody>
 				</table>
 				<ul class="pager">
