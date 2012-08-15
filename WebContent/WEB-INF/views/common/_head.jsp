@@ -10,7 +10,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <style>
       body {
-        padding-top: 100px; /* 100px to make the container go all the way to the bottom of the topbar */
+        padding-top: 80px; /* 80px to make the container go all the way to the bottom of the topbar */
       }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
