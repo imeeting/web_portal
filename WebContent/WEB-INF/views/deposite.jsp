@@ -9,13 +9,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="#">智会</a>
-        </div>
-      </div>
-    </div>
+    <jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 	
 	<%
 		UserBean userBean = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);

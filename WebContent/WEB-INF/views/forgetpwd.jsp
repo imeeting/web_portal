@@ -8,13 +8,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="home">智会</a>
-        </div>
-      </div>
-    </div>
+  	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
     	<div class="row">

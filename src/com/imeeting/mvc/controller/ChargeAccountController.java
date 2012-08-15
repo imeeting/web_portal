@@ -48,6 +48,7 @@ public class ChargeAccountController {
 	public ModelAndView deposite() {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("deposite");
+		view.addObject(WebConstants.page_name.name(), "deposite");
 		return view;
 	}
 

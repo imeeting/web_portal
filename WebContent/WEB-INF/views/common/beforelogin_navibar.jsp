@@ -5,6 +5,8 @@
 <%
 	UserBean userBean = (UserBean) session
 			.getAttribute(UserBean.SESSION_BEAN);
+	String pageName = String.valueOf(request
+			.getAttribute(WebConstants.page_name.name()));
 %>
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
@@ -15,14 +17,14 @@
 				class="brand" href="home">智会</a>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="active"><a href="home">首页</a>
+					<li class="<%="home".equals(pageName) ? "active" : ""%>"><a href="home">首页</a>
 					</li>
 					<!-- 
-		              <li><a href="features">功能介绍</a></li>
+		              <li ><a href="features">功能介绍</a></li>
 		            -->
-					<li><a href="deposite">在线充值</a>
+					<li class="<%="deposite".equals(pageName) ? "active" : ""%>"><a href="deposite">在线充值</a>
 					</li>
-					<li>
+					<li class="<%="signin".equals(pageName) ? "active" : ""%>">
 					<%
 						if (userBean == null) {
 					%>
@@ -35,6 +37,7 @@
 						}
 					%>
 					</li>
+					<li class="<%="forgetpwd".equals(pageName) ? "active" : ""%>"><a href="forgetpwd">忘记密码</a></li>
 				</ul>
 			</div>
 		</div>
