@@ -13,7 +13,7 @@
     <div class="container">
     	<div class="row">
 	    	<div class="hero-unit">
-				<h1>404&nbsp;你请求的资源不存在</h1>
+				<h1>404&nbsp;你找的页面，他不在。</h1>
 				<hr>
 				<p>你见&nbsp;或者不见我</p>
 				<p>我就在那里&nbsp;不悲不喜</p>
