@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.web.user.UserBean;
 
 @Controller
 @RequestMapping("/myconference")
@@ -29,10 +30,14 @@ public class MyConferenceController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView index() {
+	public ModelAndView index(HttpSession session) {
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		int confCount = confDao.getAllConferenceCount(user.getName());
+		
 		ModelAndView view = new ModelAndView();
 		view.setViewName("myconference");
 		view.addObject(WebConstants.page_name.name(), "myconference");
+		view.addObject("confCount", confCount);
 		return view;
 	}
 	
@@ -40,8 +45,12 @@ public class MyConferenceController {
 	public ModelAndView list(
 			HttpSession session,
 			@RequestParam(value = "offset", defaultValue="1") int offset){
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		int confCount = confDao.getAllConferenceCount(user.getName());
+	
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("common/_conflist");
+		mv.addObject("confCount", confCount);
 		return mv;
 	}
 }

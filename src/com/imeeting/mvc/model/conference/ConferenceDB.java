@@ -98,6 +98,26 @@ public class ConferenceDB {
 				status.name(), conferenceId);
 	}
 
+	/**
+	 * 获取所有的会议
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public int getAllConferenceCount(String username){
+		String sql = "SELECT COUNT(c.conferenceId) FROM im_conference AS c " +
+				"INNER JOIN im_attendee AS a ON c.conferenceId=a.conferenceId " +
+				"AND a.username=? ORDER BY c.created DESC";
+		return jdbc.queryForInt(sql, username);
+	}
+	
+	/**
+	 * 获取VISIBLE状态的会议
+	 * 
+	 * @param username
+	 * @return
+	 * @throws DataAccessException
+	 */
 	public int getConferenceTotalCount(String username)
 			throws DataAccessException {
 		// query the total count of conference list related to username

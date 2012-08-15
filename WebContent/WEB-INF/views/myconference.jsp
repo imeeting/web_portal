@@ -1,6 +1,9 @@
-<%@page import="com.imeeting.mvc.controller.IMeetingWebController"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@page import="com.imeeting.mvc.controller.IMeetingWebController"%>
+<%
+	Integer confCount = (Integer)request.getAttribute("confCount");
+%>   
 <!DOCTYPE html>
 <html lang="zh">
   <head>
@@ -13,11 +16,15 @@
     <div class="container">
     	<div class="row">
     		<div class="span8 offset2 page-header">
-    			<h2>我参加过的群聊</h2>
+    			<% if (null == confCount || confCount<=0) { %>
+    			<h2>您还没有参加过任何群聊</h2>
+    			<% } else { %>
+    			<h2>我参加过<%=confCount %>个群聊</h2>
+    			<% } %>
     		</div>
     	</div>
 		<div class="row">
-			<div class="span8 offset2">
+			<div id="divConfListContainer" class="span8 offset2">
 				<small>正在加载数据...</small>
 			</div>
 		</div>    	
@@ -30,7 +37,7 @@
     <script src="js/lib/jquery-1.8.0.min.js"></script>
     <script src="js/lib/bootstrap.js"></script>
     <script type="text/javascript">
-    
+    	$("#divConfListContainer").load("myconference/list");
     </script>
     
   </body>
