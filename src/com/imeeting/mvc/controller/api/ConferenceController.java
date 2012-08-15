@@ -191,7 +191,7 @@ public class ConferenceController extends ExceptionController {
 			throws IOException, DataAccessException, JSONException {
 
 		int count = conferenceDao.getConferenceTotalCount(username);
-		JSONArray confs = conferenceDao.getConferenceList(username, offset,
+		JSONArray confs = conferenceDao.getConferenceWithAttendeesList(username, offset,
 				PageSize);
 
 		String url = "/api/conference/list" + "?";

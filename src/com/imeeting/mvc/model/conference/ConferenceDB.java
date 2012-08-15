@@ -127,8 +127,28 @@ public class ConferenceDB {
 				+ "ORDER BY c.created DESC";
 		return jdbc.queryForInt(sql, username, UserConfStatus.VISIABLE.name());
 	}
+	
+	public List<ConferenceBean> getConferenceList(String userName, int offset, int pageSize){
+		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
+			+ "FROM im_conference AS c INNER JOIN im_attendee AS a "
+			+ "ON c.conferenceId = a.conferenceId AND a.username = ? "
+			+ "ORDER BY c.created DESC LIMIT ?, ?";
+		
+		int startIndex = (offset - 1) * pageSize;
+		List<Map<String, Object>> confResultList = 
+			jdbc.queryForList(sql, userName, startIndex, pageSize);
+		ArrayList<ConferenceBean> beanList = new ArrayList<ConferenceBean>();
+		for (Map<String, Object> c : confResultList){
+			ConferenceBean bean = new ConferenceBean();
+			bean.setId((String)c.get("id"));
+			bean.setTitle((String)c.get("title"));
+			bean.setCreatedTimeStamp((Long)c.get("created"));
+			beanList.add(bean);
+		}
+		return beanList;
+	}
 
-	public JSONArray getConferenceList(String userName, int offset, int pageSize)
+	public JSONArray getConferenceWithAttendeesList(String userName, int offset, int pageSize)
 			throws DataAccessException {
 		// query conference list related to username
 		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
