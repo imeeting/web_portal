@@ -11,7 +11,7 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="#">智会</a>
+          <a class="brand" href="home">智会</a>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@
 			<a class="btn btn-navbar" data-toggle="collapse"
 				data-target=".nav-collapse"> <span class="icon-bar"></span> <span
 				class="icon-bar"></span> <span class="icon-bar"></span>
-			</a> <a class="brand" href="#">智会</a>
+			</a> <a class="brand" href="home">智会</a>
 			<ul class="nav">
 				<li><a id="username"><%=userBean.getName()%></a></li>
 				<li><a id="logout" href="#">退出登录</a></li>

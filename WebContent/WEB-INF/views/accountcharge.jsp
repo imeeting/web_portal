@@ -49,7 +49,7 @@
 					if (chargeList != null) {
 						for(Map<String, Object> map : chargeList) {
 							String time = String.valueOf(map.get("charge_time"));
-							Integer money = (Integer) map.get("money");
+							Float money = (Float) map.get("money");
 						%>
 							<tr>
 							<td><%=time %></td>

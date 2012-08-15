@@ -31,3 +31,9 @@ footer span {
 .hidden {
 	display: none;	
 }
+
+.pay_result_center {
+	position: relative;
+	width: 400px;
+	height: 400px;
+	margin: 50 auto;

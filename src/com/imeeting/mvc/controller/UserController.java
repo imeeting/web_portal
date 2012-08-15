@@ -1,6 +1,7 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -63,20 +64,20 @@ public class UserController extends ExceptionController {
 		}
 		response.getWriter().print(jsonUser.toString());
 	}
-	
+
 	@RequestMapping("/validatePhoneNumber")
-	public @ResponseBody String validatePhoneNumber(
-			HttpSession session,
-			@RequestParam(value = "phone") String phoneNumber){
+	public @ResponseBody
+	String validatePhoneNumber(HttpSession session,
+			@RequestParam(value = "phone") String phoneNumber) {
 		String result = userDao.checkRegisterPhone(phoneNumber);
-		if ("3".equals(result)){
+		if ("3".equals(result)) {
 			userDao.getPhoneCode(session, phoneNumber);
 			return "200";
 		} else {
 			return "404";
 		}
 	}
-	
+
 	/**
 	 * 用户忘记密码后重新设置密码
 	 * 
@@ -88,36 +89,38 @@ public class UserController extends ExceptionController {
 	 * @return
 	 */
 	@RequestMapping("/resetPassword")
-	public @ResponseBody String resetPassword(
-			HttpSession session,
-			@RequestParam(value="phone") String phoneNumber,
-			@RequestParam(value="code") String phoneCode,
-			@RequestParam(value="newPwd") String newPassword,
-			@RequestParam(value="newPwdConfirm") String newPasswordConfirm){
-		if (phoneNumber.isEmpty() ||  phoneCode.isEmpty() || 
-			newPassword.isEmpty() || newPasswordConfirm.isEmpty()) {
+	public @ResponseBody
+	String resetPassword(HttpSession session,
+			@RequestParam(value = "phone") String phoneNumber,
+			@RequestParam(value = "code") String phoneCode,
+			@RequestParam(value = "newPwd") String newPassword,
+			@RequestParam(value = "newPwdConfirm") String newPasswordConfirm) {
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
+				|| newPassword.isEmpty() || newPasswordConfirm.isEmpty()) {
 			return "400";
 		}
-		
-		String sessionPhoneNumber = (String) session.getAttribute("phonenumber");
+
+		String sessionPhoneNumber = (String) session
+				.getAttribute("phonenumber");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		if (null == sessionPhoneCode || null == sessionPhoneNumber){
+		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
 			return "410";
 		}
-		
-		if (!phoneNumber.equals(sessionPhoneNumber) || !phoneCode.equals(sessionPhoneCode)){
+
+		if (!phoneNumber.equals(sessionPhoneNumber)
+				|| !phoneCode.equals(sessionPhoneCode)) {
 			return "401";
 		}
-		
-		if (!newPassword.equals(newPasswordConfirm)){
+
+		if (!newPassword.equals(newPasswordConfirm)) {
 			return "403";
 		}
-		
+
 		String md5Password = MD5Util.md5(newPassword);
-		if (userDao.changePassword(phoneNumber, md5Password)<=0){
+		if (userDao.changePassword(phoneNumber, md5Password) <= 0) {
 			return "500";
 		}
-		
+
 		return "200";
 	}
 
@@ -162,21 +165,21 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "password1") String password1,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
-		
+
 		String result = "";
 		String phone = "";
-		if (null == session.getAttribute("phonenumber")){
+		if (null == session.getAttribute("phonenumber")) {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
 			result = userDao.regUser(phone, password, password1);
 		}
-		
-		if ("0".equals(result)){ //insert success
+
+		if ("0".equals(result)) { // insert success
 			Integer vosphone = userDao.getVOSPhoneNumber(phone);
 			result = addUserToVOS(phone, vosphone.toString());
 		}
-		
+
 		JSONObject jsonUser = new JSONObject();
 		try {
 			jsonUser.put("result", result);
@@ -185,41 +188,48 @@ public class UserController extends ExceptionController {
 		}
 		response.getWriter().print(jsonUser.toString());
 	}
-	
-	private String addUserToVOS(String username, String vosPhoneNumber){
-		//create new account in VOS
+
+	private String addUserToVOS(String username, String vosPhoneNumber) {
+		// create new account in VOS
 		VOSHttpResponse addAccountResp = vosClient.addAccount(username);
-		if (addAccountResp.getHttpStatusCode() != 200 || 
-			!addAccountResp.isOperationSuccess()){
-			log.error("\nCannot create VOS accont for user : " + username +
-					  "\nVOS Http Response : " + addAccountResp.getHttpStatusCode() + 
-					  "\nVOS Status Code : " + addAccountResp.getVOSStatusCode() + 
-					  "\nVOS Response Info ：" + addAccountResp.getVOSResponseInfo());
+		if (addAccountResp.getHttpStatusCode() != 200
+				|| !addAccountResp.isOperationSuccess()) {
+			log.error("\nCannot create VOS accont for user : " + username
+					+ "\nVOS Http Response : "
+					+ addAccountResp.getHttpStatusCode()
+					+ "\nVOS Status Code : "
+					+ addAccountResp.getVOSStatusCode()
+					+ "\nVOS Response Info ："
+					+ addAccountResp.getVOSResponseInfo());
 			return "2001";
 		}
-		
-		//create new phone in VOS
-		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(username, vosPhoneNumber);
-		if (addPhoneResp.getHttpStatusCode() != 200 || 
-			!addPhoneResp.isOperationSuccess()){
-			log.error("\nCannot create VOS phone <"+vosPhoneNumber+"> for user : " + username + 
-					  "\nVOS Http Response : " + addPhoneResp.getHttpStatusCode() + 
-					  "\nVOS Status Code : " + addPhoneResp.getVOSStatusCode() + 
-					  "\nVOS Response Info ：" + addPhoneResp.getVOSResponseInfo());
+
+		// create new phone in VOS
+		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(username,
+				vosPhoneNumber);
+		if (addPhoneResp.getHttpStatusCode() != 200
+				|| !addPhoneResp.isOperationSuccess()) {
+			log.error("\nCannot create VOS phone <" + vosPhoneNumber
+					+ "> for user : " + username + "\nVOS Http Response : "
+					+ addPhoneResp.getHttpStatusCode() + "\nVOS Status Code : "
+					+ addPhoneResp.getVOSStatusCode() + "\nVOS Response Info ："
+					+ addPhoneResp.getVOSResponseInfo());
 			return "2002";
-		}		
-		
-		//add suite to account
-		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(username, config.getSuite0Id());
-		if (addSuiteResp.getHttpStatusCode() != 200 || 
-			!addSuiteResp.isOperationSuccess()){
-			log.error("\nCannot add VOS suite <"+config.getSuite0Id()+"> for user : " + username + 
-					  "\nVOS Http Response : " + addSuiteResp.getHttpStatusCode() + 
-					  "\nVOS Status Code : " + addSuiteResp.getVOSStatusCode() + 
-					  "\nVOS Response Info ：" + addSuiteResp.getVOSResponseInfo());
+		}
+
+		// add suite to account
+		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(username,
+				config.getSuite0Id());
+		if (addSuiteResp.getHttpStatusCode() != 200
+				|| !addSuiteResp.isOperationSuccess()) {
+			log.error("\nCannot add VOS suite <" + config.getSuite0Id()
+					+ "> for user : " + username + "\nVOS Http Response : "
+					+ addSuiteResp.getHttpStatusCode() + "\nVOS Status Code : "
+					+ addSuiteResp.getVOSStatusCode() + "\nVOS Response Info ："
+					+ addSuiteResp.getVOSResponseInfo());
 			return "2003";
-		}			
-		
+		}
+
 		return "0";
 	}
 
@@ -232,5 +242,15 @@ public class UserController extends ExceptionController {
 		String result = userDao.saveToken(userName, token);
 		resultJson.put("result", result);
 		response.getWriter().print(resultJson.toString());
+	}
+
+	@RequestMapping("/checkUserExist")
+	public void checkUserExist(
+			@RequestParam(value = "username", required = true) String userName,
+			HttpServletResponse response) throws JSONException, SQLException, IOException {
+		JSONObject ret = new JSONObject();
+		boolean isExist = userDao.isExistsLoginName(userName);
+		ret.put("result", isExist);
+		response.getWriter().print(ret.toString());
 	}
 }
