@@ -14,7 +14,7 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyEvent;
 
@@ -107,11 +107,11 @@ public class DonkeyEventController {
 		// notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		AttendeeModel attendee = conference.getAttendee(attendeeName);
 		
 		if (attendee == null) {
 			log.info("onAttendeeCallEstablished - attendee is null, add to conference");
-			attendee = new AttendeeBean(attendeeName);
+			attendee = new AttendeeModel(attendeeName);
 			conference.addAttendee(attendee);
 			
 			conferenceDao.saveAttendee(requestId, attendeeName);
@@ -136,7 +136,7 @@ public class DonkeyEventController {
 		//TODO: notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		AttendeeModel attendee = conference.getAttendee(attendeeName);
 		
 		if (attendee == null) {
 			log.info("onAttendeeCallFailed - attendee is null");
@@ -154,7 +154,7 @@ public class DonkeyEventController {
 		//TODO: notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
-		AttendeeBean attendee = conference.getAttendee(attendeeName);
+		AttendeeModel attendee = conference.getAttendee(attendeeName);
 		
 		if (attendee == null) {
 			log.info("onAttendeeCallTerminated - attendee is null");

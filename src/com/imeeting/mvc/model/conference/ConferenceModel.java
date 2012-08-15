@@ -15,9 +15,9 @@ import org.json.JSONObject;
 
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean.VideoStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.VideoStatus;
 import com.richitec.notify.Notifier;
 
 public class ConferenceModel {
@@ -27,12 +27,12 @@ public class ConferenceModel {
 	private String conferenceId;
 	private String ownerName;
 	private String audioConfId;
-	private Map<String, AttendeeBean> attendeeMap;
+	private Map<String, AttendeeModel> attendeeMap;
 
 	public ConferenceModel(String conferenceId, String ownerName) {
 		this.conferenceId = conferenceId;
 		this.ownerName = ownerName;
-		this.attendeeMap = new ConcurrentHashMap<String, AttendeeBean>();
+		this.attendeeMap = new ConcurrentHashMap<String, AttendeeModel>();
 	}
 
 	public String getConferenceId() {
@@ -51,24 +51,24 @@ public class ConferenceModel {
 		return this.audioConfId;
 	}
 
-	public final Collection<AttendeeBean> getAllAttendees() {
+	public final Collection<AttendeeModel> getAllAttendees() {
 		return attendeeMap.values();
 	}
 
 	public Collection<String> getAllAttendeeName() {
 		List<String> list = new LinkedList<String>();
-		for (AttendeeBean a : getAllAttendees()) {
+		for (AttendeeModel a : getAllAttendees()) {
 			list.add(a.getUsername());
 		}
 		return list;
 	}
 
-	public AttendeeBean getAttendee(String userName) {
+	public AttendeeModel getAttendee(String userName) {
 		return attendeeMap.get(userName);
 	}
 
-	public AttendeeBean removeAttendee(String userName) {
-		AttendeeBean ab = attendeeMap.remove(userName);
+	public AttendeeModel removeAttendee(String userName) {
+		AttendeeModel ab = attendeeMap.remove(userName);
 		return ab;
 	}
 
@@ -76,13 +76,13 @@ public class ConferenceModel {
 		return attendeeMap.containsKey(userName);
 	}
 
-	public void addAttendee(AttendeeBean attendee) {
+	public void addAttendee(AttendeeModel attendee) {
 		attendeeMap.put(attendee.getUsername(), attendee);
 	}
 
 	public List<String> getTokensFromAttendees() {
 		StringBuffer userNames = new StringBuffer();
-		for (AttendeeBean ab : this.attendeeMap.values()) {
+		for (AttendeeModel ab : this.attendeeMap.values()) {
 			if (!ab.getUsername().equals(ownerName)) {
 				userNames.append(ab.getUsername()).append(',');
 			}
@@ -125,7 +125,7 @@ public class ConferenceModel {
 				payload);
 	}
 
-	public void broadcastAttendeeStatus(AttendeeBean attendee) {
+	public void broadcastAttendeeStatus(AttendeeModel attendee) {
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("conferenceId", getConferenceId());
@@ -165,7 +165,7 @@ public class ConferenceModel {
 
 	public void updateAttendeeStatus(String username, String onlineStatus,
 			String videoStatus) {
-		AttendeeBean attendee = getAttendee(username);
+		AttendeeModel attendee = getAttendee(username);
 		if (attendee == null) {
 			return;
 		}

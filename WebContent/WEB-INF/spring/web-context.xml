@@ -21,10 +21,12 @@
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 	   <mvc:interceptor>
-			<mvc:mapping path="/history"/>
 			<mvc:mapping path="/accountcharge"/>
+			<mvc:mapping path="/accountcharge/**"/>
 			<mvc:mapping path="/setting"/>
-			<mvc:mapping path="/profile/**"/>
+			<mvc:mapping path="/setting/**"/>
+			<mvc:mapping path="/myconference"/>
+			<mvc:mapping path="/myconference/**"/>
 			<bean class="com.imeeting.mvc.UserInterceptor" />
 		</mvc:interceptor>	
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
