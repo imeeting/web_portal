@@ -26,7 +26,7 @@
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
 					<li class="<%="accountcharge".equals(pageName) ? "active" : ""%>"><a href="accountcharge">充值账户</a></li>
-					<li class="<%="history".equals(pageName) ? "active" : ""%>"><a href="history">我的群聊</a></li>
+					<li class="<%="myconference".equals(pageName) ? "active" : ""%>"><a href="myconference">我的群聊</a></li>
 					<li class="<%="setting".equals(pageName) ? "active" : ""%>"><a href="setting">系统设置</a></li>
 				</ul>
 			</div>
