@@ -12,8 +12,8 @@ import org.springframework.dao.DataAccessException;
 
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 
 public class ConferenceManager {
 
@@ -42,9 +42,9 @@ public class ConferenceManager {
 			return null;
 		}
 
-		AttendeeBean attendee = conference.getAttendee(userName);
+		AttendeeModel attendee = conference.getAttendee(userName);
 		if (attendee != null) {
-			attendee.setOnlineStatus(AttendeeBean.OnlineStatus.online);
+			attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
 		}
 		return conference;
 	}
@@ -69,9 +69,9 @@ public class ConferenceManager {
 	public synchronized void removeConferenceIfEmpty(String conferenceId) throws DataAccessException {
 		ConferenceModel conference = getConference(conferenceId);
 		if (conference != null) {
-			Collection<AttendeeBean> attendees = conference.getAllAttendees();
+			Collection<AttendeeModel> attendees = conference.getAllAttendees();
 			boolean isEmpty = true;
-			for (AttendeeBean ab : attendees) {
+			for (AttendeeModel ab : attendees) {
 				if (ab.getOnlineStatus() == OnlineStatus.online) {
 					isEmpty = false;
 					break;

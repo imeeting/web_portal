@@ -1,5 +1,10 @@
 package com.imeeting.mvc.controller;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 
@@ -13,13 +18,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.ConferenceBean;
 import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.web.user.UserBean;
+import com.richitec.util.Pager;
 
 @Controller
 @RequestMapping("/myconference")
 public class MyConferenceController {
-	
+	public static final int PageSize = 20;
 	private static Log log = LogFactory.getLog(MyConferenceController.class);
 	
 	private ConferenceDB confDao;
@@ -46,11 +54,32 @@ public class MyConferenceController {
 			HttpSession session,
 			@RequestParam(value = "offset", defaultValue="1") int offset){
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		int confCount = confDao.getAllConferenceCount(user.getName());
+		List<ConferenceBean> confList = 
+			confDao.getConferenceList(user.getName(), offset, PageSize);
+		
+		List<String> confIdList = new ArrayList<String>();
+		for (ConferenceBean b : confList){
+			confIdList.add(b.getId());
+		}
 	
+		List<AttendeeBean> attendeeList = confDao.getConferenceAttendees(confIdList);
+		
+		for (AttendeeBean attendee : attendeeList){
+			for(ConferenceBean conf : confList){
+				if (attendee.getConfId().equals(conf.getId())){
+					conf.addAttendee(attendee);
+					break;
+				}
+			}
+		}
+		
+		int count = confDao.getAllConferenceCount(user.getName());
+		Pager pager = new Pager(offset, PageSize, count, "myconference/list?");
+		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("common/_conflist");
-		mv.addObject("confCount", confCount);
+		mv.addObject(WebConstants.pager.name(), pager);
+		mv.addObject(WebConstants.conf_list.name(), confList);
 		return mv;
 	}
 }

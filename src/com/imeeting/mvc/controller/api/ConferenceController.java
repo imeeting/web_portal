@@ -25,9 +25,9 @@ import com.imeeting.mvc.controller.ExceptionController;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean.OnlineStatus;
-import com.imeeting.mvc.model.conference.attendee.AttendeeBean.VideoStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.VideoStatus;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;
@@ -87,7 +87,7 @@ public class ConferenceController extends ExceptionController {
 		ConferenceModel conference = conferenceManager.creatConference(
 				conferenceId, userName);
 
-		AttendeeBean owner = new AttendeeBean(userName, OnlineStatus.online);
+		AttendeeModel owner = new AttendeeModel(userName, OnlineStatus.online);
 		conference.addAttendee(owner);
 
 		if (attendeeList != null && attendeeList.length() > 0) {
@@ -95,7 +95,7 @@ public class ConferenceController extends ExceptionController {
 				JSONArray attendeesJsonArray = new JSONArray(attendeeList);
 				for (int i = 0; i < attendeesJsonArray.length(); i++) {
 					String name = attendeesJsonArray.getString(i);
-					AttendeeBean attendee = new AttendeeBean(name);
+					AttendeeModel attendee = new AttendeeModel(name);
 					conference.addAttendee(attendee);
 				}
 			} catch (JSONException e) {
@@ -224,10 +224,10 @@ public class ConferenceController extends ExceptionController {
 	public void attendeeList(HttpServletResponse response,
 			@RequestParam String conferenceId) throws IOException {
 		ConferenceModel model = conferenceManager.getConference(conferenceId);
-		Collection<AttendeeBean> attendees = model.getAllAttendees();
+		Collection<AttendeeModel> attendees = model.getAllAttendees();
 		JSONArray ret = new JSONArray();
 		if (attendees != null && attendees.size() > 0) {
-			for (AttendeeBean att : attendees) {
+			for (AttendeeModel att : attendees) {
 				ret.put(att.toJson());
 			}
 		} else {
@@ -264,7 +264,7 @@ public class ConferenceController extends ExceptionController {
 		for (int i = 0; i < attendeesJsonArray.length(); i++) {
 			String name = attendeesJsonArray.getString(i);
 			if (!conference.containsAttendee(name)) {
-				AttendeeBean attendee = new AttendeeBean(name);
+				AttendeeModel attendee = new AttendeeModel(name);
 				conference.addAttendee(attendee);
 				addedAttendeeList.add(name);
 			}
@@ -307,7 +307,7 @@ public class ConferenceController extends ExceptionController {
 				+ "conferenceId: " + conferenceId);
 		ConferenceModel conferenceModel = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conferenceModel.getAttendee(dstUserName);
+		AttendeeModel attendee = conferenceModel.getAttendee(dstUserName);
 		if (attendee == null) {
 			// user are prohibited to join the conference for he isn't in it
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
@@ -362,7 +362,7 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 
-		AttendeeBean attendee = conference.getAttendee(userName);
+		AttendeeModel attendee = conference.getAttendee(userName);
 		if (attendee == null) {
 			log.error("Cannot join <" + userName + "> to conference <"
 					+ conferenceId + "> beacause the he is not invited.");
@@ -401,7 +401,7 @@ public class ConferenceController extends ExceptionController {
 				+ "conferenceId: " + conferenceId);
 		ConferenceModel conferenceModel = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conferenceModel.getAttendee(userName);
+		AttendeeModel attendee = conferenceModel.getAttendee(userName);
 		if (attendee == null) {
 			// user are prohibited to join the conference for he isn't in it
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
@@ -466,7 +466,7 @@ public class ConferenceController extends ExceptionController {
 			throws IOException {
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		AttendeeModel attendee = conference.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
 			return;
@@ -517,7 +517,7 @@ public class ConferenceController extends ExceptionController {
 			throws IOException {
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		AttendeeModel attendee = conference.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
@@ -565,7 +565,7 @@ public class ConferenceController extends ExceptionController {
 			throws IOException {
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		AttendeeModel attendee = conference.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
@@ -604,7 +604,7 @@ public class ConferenceController extends ExceptionController {
 			throws IOException {
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		AttendeeBean attendee = conference.getAttendee(dstUserName);
+		AttendeeModel attendee = conference.getAttendee(dstUserName);
 		if (attendee == null) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;

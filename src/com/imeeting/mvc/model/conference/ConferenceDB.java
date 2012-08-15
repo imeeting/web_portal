@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.RowMapper;
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 
 public class ConferenceDB {
 	private static Log log = LogFactory.getLog(ConferenceDB.class);
@@ -45,17 +47,17 @@ public class ConferenceDB {
 		insert(conference.getConferenceId());
 		editConferenceTitle(conference.getConferenceId(),
 				"群聊号: " + conference.getConferenceId()); // temporary use only
-		Collection<AttendeeBean> attendeeCollection = conference
+		Collection<AttendeeModel> attendeeCollection = conference
 				.getAllAttendees();
 		saveAttendeeBeans(conference.getConferenceId(), attendeeCollection);
 	}
 
 	public void saveAttendeeBeans(String conferenceId,
-			Collection<AttendeeBean> attendeeCollection)
+			Collection<AttendeeModel> attendeeCollection)
 			throws DataAccessException {
 		String sql = "INSERT INTO im_attendee(conferenceId, username) VALUES(?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
-		for (AttendeeBean attendee : attendeeCollection) {
+		for (AttendeeModel attendee : attendeeCollection) {
 			params.add(new Object[] { conferenceId, attendee.getUsername() });
 		}
 		jdbc.batchUpdate(sql, params);
@@ -142,7 +144,7 @@ public class ConferenceDB {
 			ConferenceBean bean = new ConferenceBean();
 			bean.setId((String)c.get("id"));
 			bean.setTitle((String)c.get("title"));
-			bean.setCreatedTimeStamp((Long)c.get("created"));
+			bean.setCreatedTimeStamp((Long)c.get("created")*1000);
 			beanList.add(bean);
 		}
 		return beanList;
@@ -252,15 +254,26 @@ public class ConferenceDB {
 	 * @return List<Map<String, Object>>
 	 * @throws SQLException
 	 */
-	public List<AttendeeBean> getConferenceAttendees(String conferenceId)
+	public List<AttendeeBean> getConferenceAttendees(List<String> confIdList)
 			throws DataAccessException {
+		String confIdString = "";
+		for (int i=0; i<confIdList.size(); i++){
+			confIdString += confIdList.get(i);
+			if (i + 1 < confIdList.size()){
+				confIdString += ", ";
+			}
+		}
 		return jdbc.query(
-				"SELECT username FROM im_attendee WHERE conferenceId = ?",
-				new Object[] { conferenceId }, new RowMapper<AttendeeBean>() {
+				"SELECT conferenceId, username FROM im_attendee " +
+				"WHERE conferenceId IN (" + confIdString + ")",
+				new RowMapper<AttendeeBean>() {
 					@Override
 					public AttendeeBean mapRow(ResultSet rs, int rowNum)
 							throws SQLException {
-						return new AttendeeBean(rs.getString("username"));
+						AttendeeBean bean = new AttendeeBean();
+						bean.setConferenceId(rs.getString("conferenceId"));
+						bean.setUserName(rs.getString("username"));
+						return bean;
 					}
 				});
 	}
