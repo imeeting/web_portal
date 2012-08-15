@@ -1,9 +1,7 @@
 package com.imeeting.mvc.controller;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
@@ -27,7 +25,7 @@ import com.richitec.util.Pager;
 @Controller
 @RequestMapping("/myconference")
 public class MyConferenceController {
-	public static final int PageSize = 20;
+	public static final int PageSize = 5;
 	private static Log log = LogFactory.getLog(MyConferenceController.class);
 	
 	private ConferenceDB confDao;
@@ -52,7 +50,7 @@ public class MyConferenceController {
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public ModelAndView list(
 			HttpSession session,
-			@RequestParam(value = "offset", defaultValue="1") int offset){
+			@RequestParam(value="offset", defaultValue="1") int offset){
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		List<ConferenceBean> confList = 
 			confDao.getConferenceList(user.getName(), offset, PageSize);

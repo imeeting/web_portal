@@ -57,7 +57,28 @@
 			<% } %>
 			<% if (pager.getHasPrevious() || pager.getHasNext()) { %>
 			<ul class="pager">
-				<li class="previous"><a href="<%=pager.getPreviousPage() %>">上一页</a></li>
-				<li class="next"><a href="<%=pager.getNextPage() %>">下一页</a></li>
+				<% if (pager.getHasPrevious()) {%>
+				<li class="previous">
+					<a href="<%=pager.getPreviousPage() %>">上一页</a>
+				</li>
+				<% } %>
+				<li>
+					<span><%=pager.getOffset() + "/" + pager.getPageNumber() %></span>
+				</li>
+				<% if (pager.getHasNext()) {%>
+				<li class="next">
+					<a href="<%=pager.getNextPage() %>">下一页</a>
+				</li>
+				<% } %>
 			</ul>
+			<script type="text/javascript">
+		    	$(".pager li a").click(function(){
+		    		var $this = $(this);
+		    		var href = $this.attr("href");
+		    		if (href.length > 0){
+		    			$("#divConfListContainer").load(href);
+		    		}
+		    		return false;
+		    	});
+			</script>
 			<% } %>
