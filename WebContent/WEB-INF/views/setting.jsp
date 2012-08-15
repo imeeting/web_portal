@@ -41,10 +41,12 @@
 					</div>
 					<div class="tab-pane" id="pane-user-info">
 						<h3>基本信息</h3>
+						<hr>
 						<p>我们正在紧张开发中，请耐心等待。。。</p>
 					</div>	
 					<div class="tab-pane" id="pane-user-avatar">
 						<h3>设置头像</h3>
+						<hr>
 						<p>我们正在紧张开发中，请耐心等待。。。</p>
 					</div>	
 				</div>
