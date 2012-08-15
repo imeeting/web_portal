@@ -35,17 +35,17 @@ public class AlipayConfig {
 	
 	// 支付宝服务器通知的页面 要用 http://格式的完整路径，不允许加?id=123这类自定义参数
 	// 必须保证其地址能够在互联网中访问的到
-	public static String notify_url = "http://www.walkwork.net/alipay/complete";
+	public static String notify_url = "http://zh.richitec.com:8000/imeeting/alipayComplete";
 	
 	// 当前页面跳转后的页面 要用 http://格式的完整路径，不允许加?id=123这类自定义参数
 	// 域名不能写成http://localhost/create_direct_pay_by_user_jsp_utf8/return_url.jsp ，否则会导致return_url执行无效
-	public static String return_url = "http://www.walkwork.net/alipay/return";
+	public static String return_url = "http://zh.richitec.com:8000/imeeting/alipayReturn";
 
 	//↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 	
 
 	// 调试用，创建TXT日志路径
-	public static String log_path = "D:\\alipay_log_" + System.currentTimeMillis()+".txt";
+	public static String log_path = "./alipay_log_" + System.currentTimeMillis()+".txt";
 
 	// 字符编码格式 目前支持 gbk 或 utf-8
 	public static String input_charset = "UTF-8";

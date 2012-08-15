@@ -209,7 +209,7 @@ public class UserDAO {
 	 * @return
 	 * @throws SQLException
 	 */
-	private boolean isExistsLoginName(String loginName)
+	public boolean isExistsLoginName(String loginName)
 			throws SQLException {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
