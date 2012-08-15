@@ -5,4 +5,5 @@ public enum WebConstants {
 	pager,
 	charge_list,
 	balance,
+	conf_list
 }
