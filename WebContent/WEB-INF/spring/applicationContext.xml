@@ -27,6 +27,9 @@
 		<property name="suite10Id">
 			<value>${vos_suite10_id}</value>
 		</property>
+		<property name="appDonwloadPageUrl">
+		    <value>${app_download_page_url}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

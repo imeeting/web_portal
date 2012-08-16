@@ -12,6 +12,7 @@ public class Configuration {
 	private String suite0Id;
 	private String suite5Id;
 	private String suite10Id;
+	private String appDonwloadPageUrl;
 	
 	public void setUploadDir(String uploadDir){
 		this.uploadDir = uploadDir;
@@ -43,6 +44,14 @@ public class Configuration {
 	
 	public void setSuite10Id(String id){
 		this.suite10Id = id;
+	}
+
+	public String getAppDonwloadPageUrl() {
+		return appDonwloadPageUrl;
+	}
+
+	public void setAppDonwloadPageUrl(String appDonwloadPageUrl) {
+		this.appDonwloadPageUrl = appDonwloadPageUrl;
 	}
 	
 }

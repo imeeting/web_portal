@@ -54,7 +54,7 @@
     				</a>    				
     			</div>
     			<hr>
-    			<form id="formGetDownlaodUrl" action="">
+    			<form id="formGetDownlaodUrl" action="#">
     				<label>输入手机号码，短信获取下载地址</label>
     				<input type="text" name="phoneNumber" id="iptPhoneNumber" pattern="[0-9]{11}" maxlength="11" />
     				<br>
@@ -74,10 +74,26 @@
 	<script type="text/javascript">
 		$("#formGetDownlaodUrl").submit(function(){
 			var phoneNumber = $("#iptPhoneNumber").val();
-			$.post("getDownloadURL", 
-				{phone: phoneNumber},
+			if (phoneNumber == null || phoneNumber == "") {
+				alert("还没有输入手机号码呢！");
+				return false;
+			}
+			$.post("/imeeting/getDownloadPageUrl", 
+				{phoneNumber: phoneNumber},
 				function(data){
-					alert(data);
+					var result = data.result;
+					switch (result) {
+					case "ok":
+						alert("短信成功发送到手机啦，快去下载吧！");
+						break;
+					case "fail":
+						alert("短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
+						break;
+					
+					}
+				}, "json")
+				.error(function() {
+					alert("服务器或者网络出现现在有点困难，等会儿再试吧！");
 				});
 			return false;
 		});
