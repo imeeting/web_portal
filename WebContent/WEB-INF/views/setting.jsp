@@ -58,9 +58,9 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/lib/jquery-1.8.0.min.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
-	<script type="text/javascript" src="js/lib/md5.js"></script>
+    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeeting/js/lib/bootstrap.js"></script>
+	<script type="text/javascript" src="/imeeting/js/lib/md5.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			$("#formChangePwd").submit(function(){

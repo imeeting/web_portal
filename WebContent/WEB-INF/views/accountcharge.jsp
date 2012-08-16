@@ -28,7 +28,7 @@
 			<div class="span4 offset3">
 				<h1>账户余额：￥<%=strBalance %></h1>
 			</div>
-			<a class="span1 btn btn-large btn-success" href="deposite">在线充值</a>
+			<a class="span1 btn btn-large btn-success" href="deposite" target="blank">在线充值</a>
     	</div>
 		<div class="row">
 			<div class="page-header span6 offset3">
@@ -74,8 +74,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/lib/jquery-1.8.0.min.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
+    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeeting/js/lib/bootstrap.js"></script>
 
   </body>
 </html>

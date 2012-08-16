@@ -32,19 +32,19 @@ public class ChargeUtil {
 				+ RandomString.validateCode();
 	}
 	
-	public static boolean finishCharge(String chargeId, String money) {
+	public static String finishCharge(String chargeId, String money) {
 		ChargeDAO chargeDao = ContextLoader.getChargeDAO();
 		Map<String, Object> chargeInfo = chargeDao.getChargeInfoById(chargeId);
 		if (chargeInfo == null) {
-			return false;
+			return null;
 		}
 		String userName = (String) chargeInfo.get("username");
 		if (userName == null) {
-			return false;
+			return null;
 		}
 		String status = (String) chargeInfo.get("status");
 		if (ChargeStatus.success.name().equals(status)) {
-			return true;
+			return userName;
 		}
 		
 		Double amount = Double.valueOf(money);
@@ -53,11 +53,11 @@ public class ChargeUtil {
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
-			return true;
+			return userName;
 		} else {
 			log.info("vos deposite fail");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.vos_fail);
-			return false;
+			return null;
 		}
 	}
 }

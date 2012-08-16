@@ -10,26 +10,26 @@
 <%
 	List<ConferenceBean> confList = 
 		(List<ConferenceBean>)request.getAttribute(WebConstants.conf_list.name());
-	Pager pager = (Pager)request.getAttribute(WebConstants.pager.name());
-	SimpleDateFormat yearf = new SimpleDateFormat("yyyy");
-	SimpleDateFormat monthf = new SimpleDateFormat("MM");
-	SimpleDateFormat dayf = new SimpleDateFormat("dd");
-	SimpleDateFormat hmf = new SimpleDateFormat("HH:mm");
-	SimpleDateFormat apmf = new SimpleDateFormat("a");
-	SimpleDateFormat ef = new SimpleDateFormat("E");
-%>    
-			<% for (int i=0; i<confList.size(); i++) { 
-					ConferenceBean conf = confList.get(i);
-					Date date = new Date(conf.getCreatedTimeStamp());
-					String year = yearf.format(date);
-					String month = monthf.format(date);
-					String day = dayf.format(date);
-					String hour = hmf.format(date);
-					String ap = apmf.format(date);
-					String week = ef.format(date);
-					
-					List<AttendeeBean> attendeeList = conf.getAttendeeList();
-			%>
+	if (confList.size() >0 ){
+		Pager pager = (Pager)request.getAttribute(WebConstants.pager.name());
+		SimpleDateFormat yearf = new SimpleDateFormat("yyyy");
+		SimpleDateFormat monthf = new SimpleDateFormat("MM");
+		SimpleDateFormat dayf = new SimpleDateFormat("dd");
+		SimpleDateFormat hmf = new SimpleDateFormat("HH:mm");
+		SimpleDateFormat apmf = new SimpleDateFormat("a");
+		SimpleDateFormat ef = new SimpleDateFormat("E");
+		for (int i=0; i<confList.size(); i++) { 
+			ConferenceBean conf = confList.get(i);
+			Date date = new Date(conf.getCreatedTimeStamp());
+			String year = yearf.format(date);
+			String month = monthf.format(date);
+			String day = dayf.format(date);
+			String hour = hmf.format(date);
+			String ap = apmf.format(date);
+			String week = ef.format(date);
+			
+			List<AttendeeBean> attendeeList = conf.getAttendeeList();
+%>
 			
 			<div class="well clearfix">
 				<div class="pull-left">
@@ -54,8 +54,9 @@
 					</small></h3>
 				</div>
 			</div>
-			<% } %>
-			<% if (pager.getHasPrevious() || pager.getHasNext()) { %>
+<% } //End of FOR%>
+			
+<% if (pager.getHasPrevious() || pager.getHasNext()) { %>
 			<ul class="pager">
 				<% if (pager.getHasPrevious()) {%>
 				<li class="previous">
@@ -81,4 +82,7 @@
 		    		return false;
 		    	});
 			</script>
-			<% } %>
+<% 		} //End of IF %>
+<% } else { // END if (confList.size() >0 ) %>
+	<small>你还没有参加任何群聊</small>	
+<% } %>

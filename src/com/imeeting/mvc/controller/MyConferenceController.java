@@ -55,18 +55,20 @@ public class MyConferenceController {
 		List<ConferenceBean> confList = 
 			confDao.getConferenceList(user.getName(), offset, PageSize);
 		
-		List<String> confIdList = new ArrayList<String>();
-		for (ConferenceBean b : confList){
-			confIdList.add(b.getId());
-		}
-	
-		List<AttendeeBean> attendeeList = confDao.getConferenceAttendees(confIdList);
-		
-		for (AttendeeBean attendee : attendeeList){
-			for(ConferenceBean conf : confList){
-				if (attendee.getConfId().equals(conf.getId())){
-					conf.addAttendee(attendee);
-					break;
+		if (confList.size() > 0){
+			List<String> confIdList = new ArrayList<String>();
+			for (ConferenceBean b : confList){
+				confIdList.add(b.getId());
+			}
+			
+			List<AttendeeBean> attendeeList = confDao.getConferenceAttendees(confIdList);
+			
+			for (AttendeeBean attendee : attendeeList){
+				for(ConferenceBean conf : confList){
+					if (attendee.getConfId().equals(conf.getId())){
+						conf.addAttendee(attendee);
+						break;
+					}
 				}
 			}
 		}

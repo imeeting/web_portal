@@ -9,13 +9,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="#">智会</a>
-        </div>
-      </div>
-    </div>
+    <jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 	
 	<%
 		UserBean userBean = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
@@ -52,7 +46,13 @@
 								<option value="50.00">50</option>
 								<option value="100.00">100</option>
 								<option value="200.00">200</option>
+								<option value="300.00">300</option>
+								<option value="400.00">400</option>
 								<option value="500.00">500</option>
+								<option value="600.00">600</option>
+								<option value="700.00">700</option>
+								<option value="800.00">800</option>
+								<option value="900.00">900</option>
 								<option value="1000.00">1000</option>
 							</select>
 						</div>		
@@ -75,10 +75,10 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/lib/jquery-1.8.0.min.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
-    <script src="js/applib/common.js"></script>
-    <script src="js/deposite.js"></script>
+    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeeting/js/lib/bootstrap.js"></script>
+    <script src="/imeeting/js/applib/common.js"></script>
+    <script src="/imeeting/js/deposite.js"></script>
 
   </body>
 </html>

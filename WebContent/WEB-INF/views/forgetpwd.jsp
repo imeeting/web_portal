@@ -8,13 +8,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="home">智会</a>
-        </div>
-      </div>
-    </div>
+  	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
     	<div class="row">
@@ -47,8 +41,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/lib/jquery-1.8.0.min.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
+    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeeting/js/lib/bootstrap.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			$("#btnGetPhoneCode").click(function(){
