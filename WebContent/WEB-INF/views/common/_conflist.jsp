@@ -33,14 +33,13 @@
 			
 			<div class="well clearfix">
 				<div class="pull-left">
-					<h3><%=conf.getTitle()%></h3>
+					<h3 class="im-conf-title"><%=conf.getTitle()%></h3>
 					<div class="clearfix">
 						<% for (int j=0; j<attendeeList.size(); j++) {
 								AttendeeBean attendee = attendeeList.get(j);
 						%>
-						<div class="pull-left">
-							<img alt="avatar" src="img/avatar.jpg">
-							<p><%=attendee.getUserName() %></p>
+						<div class="im-conf-attendee im-attendee-name pull-left">
+							<i class="icon-user"></i>&nbsp;<%=attendee.getUserName() %>
 						</div>
 						<% } %>
 					</div>

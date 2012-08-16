@@ -3,12 +3,6 @@
 body {
 	font-family: 微软雅黑;
 }
-/*
-.navbar .brand {
-	font-size: 40px;
-	padding: 5px 20px;
-}
-*/
 
 footer {
 	color: #999;
@@ -54,4 +48,19 @@ footer span {
 .pay_result_center > div .link_region {
 	position: relative;
 	top: 20px;
+}
+
+.im-conf-title {
+	margin-bottom: 5px;
+}
+
+.im-attendee-name {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.im-conf-attendee {
+	padding: 5px;
+	margin: 0 5px 5px 0;
+	background-color: #D9EDF7;
+	border: solid 1px #BCE8F1;
 }
