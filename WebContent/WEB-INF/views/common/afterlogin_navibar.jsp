@@ -20,7 +20,7 @@
 				class="icon-bar"></span> <span class="icon-bar"></span>
 			</a> <a class="brand" href="/imeeting/home">智会</a>
 			<ul class="nav">
-				<li><a id="username"><%=userBean.getName()%></a></li>
+				<li><a id="username" class="im-attendee-name"><i class="icon-user icon-white"></i>&nbsp;<%=userBean.getName()%></a></li>
 				<li><a id="logout" href="/imeeting/signout">退出登录</a></li>
 			</ul>
 			<div class="nav-collapse">
