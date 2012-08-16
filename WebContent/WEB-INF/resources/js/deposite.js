@@ -4,7 +4,7 @@ $(function() {
 	$("#pay_submit_bt").click(function() {
 		var accountName = $("#account_name_input").val();
 		if (accountName == null || accountName == "") {
-			alert("请输入充值账户名");
+			alert("请输入您的充值账户名哟！");
 			return false;
 		}
 
@@ -28,11 +28,11 @@ $(function() {
 					break;
 				}
 			} else {
-				alert("充值账户名不存在，请检查！");
+				alert("呀，这个账号不存在耶！");
 			}
 		}, "json")
 		.error(function() {
-			alert("服务器通信故障，请稍后重试！");
+			alert("啊哦，貌似现在有些故障，请稍后再试哦！");
 		});
 		return false;
 	});

@@ -23,12 +23,12 @@ $(function() {
 					location.href = "accountcharge";
 					break;
 				default:
-					alert("登录失败，用户名或者密码有误!");
+					alert("额，登陆失败了，检查一下您的用户名和密码吧!");
 					break;
 				}
 			},
 			error : function(jqXHR) {
-				alert("login error");
+				alert("⊙﹏⊙b 网络故障了～～");
 			}
 			
 		});

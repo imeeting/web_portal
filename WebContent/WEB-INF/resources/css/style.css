@@ -32,6 +32,16 @@ footer span {
 	display: none;	
 }
 
+.app_demo_view {
+	position: relative;
+}
+
+.app_demo_img {
+	position: absolute;
+	top: 85px;
+	left: 18px;
+}
+
 .pay_result_center {
 	position: relative;
 	width: 500px;

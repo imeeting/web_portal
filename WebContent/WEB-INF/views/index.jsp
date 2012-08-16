@@ -15,7 +15,10 @@
     		<div class="span4 offset2">
     			<div class="row">
     				<div class="span3 offset1">
-	    				<img alt="iphone" src="./img/iphone_frame.png">
+    					<div class="app_demo_view">
+		    				<img alt="iphone" src="./img/iphone_frame.png"/>
+		    				<img class="app_demo_img" src="./img/app_demo.jpg"/>
+	    				</div>
     				</div>
     			</div>
     		</div>
