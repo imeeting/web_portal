@@ -29,20 +29,29 @@ public class UserInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object arg2) throws Exception {
+		log.debug("\nContextPath : " + request.getContextPath() +
+				"\nPathInfo : " + request.getPathInfo() +
+				"\nPathTranslated : " + request.getPathTranslated() +
+				"\nRequestURI : " + request.getRequestURI() +
+				"\nServletPath : " + request.getServletPath() +
+				"\nRequestURL : " + request.getRequestURL()	);
+		
 		HttpSession session = request.getSession();
 		UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
-		if (null == userBean ){
-			response.sendRedirect(request.getContextPath() + "/signin");
-			log.debug("\nContextPath : " + request.getContextPath() +
-					"\nPathInfo : " + request.getPathInfo() +
-					"\nPathTranslated : " + request.getPathTranslated() +
-					"\nRequestURI : " + request.getRequestURI() +
-					"\nServletPath : " + request.getServletPath() +
-					"\nRequestURL : " + request.getRequestURL()	);
+		if (null != userBean) {
+			return true;
+		}
+		
+		//AJAX request
+		String xmlHttpRequest = request.getHeader("X-Requested-With");
+		if ("XMLHttpRequest".equals(xmlHttpRequest)){
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return false;
 		}
 		
-		return true;
+		//Common request
+		response.sendRedirect(request.getContextPath() + "/signin");
+		return false;
 	}
 
 }
