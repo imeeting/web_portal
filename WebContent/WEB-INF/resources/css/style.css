@@ -6,15 +6,13 @@ body {
 
 footer {
 	color: #999;
-	border-top-style: solid;
-	border-top-color: #999;
-	border-top-width: 1px;
+	border-top: #999 solid 1px;
 	padding: 10px 0px 50px; 
 	margin-top: 50px;
 }
 
 footer span {
-	margin-right: 40px;
+	padding: 0 5px;
 }
 
 #signin-form {
