@@ -31,12 +31,15 @@
 	    				<li type="alipay" class="active">
 	    					<a href="#pane-pay" data-toggle="tab">支付宝充值</a>
 	    				</li>
+	    				<!--  
 	    				<li type="netbank">
 	    					<a href="#pane-pay" data-toggle="tab">网银充值</a>
 	    				</li>
+	    				
 	    				<li type="card">
 	    					<a href="#pane-zhihuicard" data-toggle="tab">智会卡充值</a>
 	    				</li>
+	    				-->
 	    			</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="pane-pay">
