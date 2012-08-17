@@ -56,7 +56,7 @@
 								<option value="1000.00">1000</option>
 							</select>
 							<hr>
-							<button id="btnGoToAlipay" type="submit" class="btn btn-primary">去支付宝充值</button>
+							<button id="btnGoToAlipay" type="submit" class="btn btn-warning">去支付宝充值</button>
 			    		</form>
 					</div>		
 					<div class="tab-pane" id="pane-zhihuicard">
