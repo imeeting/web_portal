@@ -30,7 +30,7 @@
     				<li><h2><small>多人同时通话</small></h2></li>
 	    			<li><h2><small>高清语音质量</small></h2></li>
 	    			<li><h2><small>多路视频随意切换</small></h2></li>
-	    			<li><h2><small>操作方便快捷</small></h2></li>
+	    			<li><h2><small>操作快捷方便</small></h2></li>
     			</ul>
     			<hr>
     			<!-- <h3>现在注册就送<strong>100元</strong>话费<br>&nbsp;</h3>-->
