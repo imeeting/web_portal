@@ -34,6 +34,8 @@ public class VOSClient {
 	public static final String P_dynamic = "dynamic";
 	public static final String P_protocol = "protocol";
 	public static final String P_money = "money";
+	public static final String P_pin = "pin";
+	public static final String P_password = "password";
 	
 	private HttpClient httpClient;
 	
@@ -143,6 +145,13 @@ public class VOSClient {
 		return execute(post);
 	}
 	
+	/**
+	 * 向账户充值
+	 * 
+	 * @param account
+	 * @param money
+	 * @return
+	 */
 	public VOSHttpResponse deposite(String account, Double money){
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
@@ -156,6 +165,31 @@ public class VOSClient {
 		
 		return execute(post);
 	}
+	
+	/**
+	 * 使用充值卡进行充值
+	 * 
+	 * @param account
+	 * @param pin
+	 * @param password
+	 * @return
+	 */
+	public VOSHttpResponse depositeByCard(String account, String pin, String password){
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+//		params.add(new BasicNameValuePair(P_loginName, loginName));
+//		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_name, account));
+		params.add(new BasicNameValuePair(P_type, "3"));//账户类型: 0:话机; 1:网关; 2:绑定号码; 3:账户名称
+		params.add(new BasicNameValuePair(P_pin, pin));
+		params.add(new BasicNameValuePair(P_password, password));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "paybyphonecard.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
 	
 	/**
 	 * 获取账户信息，包括账户余额，到期时间，透支额度等。

@@ -28,7 +28,9 @@ public class ChargeDAO {
 
 	public List<Map<String, Object>> getChargeList(String userName, int offset,
 			int pageSize) {
-		String sql = "SELECT money, DATE_FORMAT(time, '%Y-%m-%d %H:%i') as charge_time FROM im_charge_history WHERE username = ? AND status = ? ORDER BY time DESC LIMIT ?, ?";
+		String sql = "SELECT chargeId, money, DATE_FORMAT(time, '%Y-%m-%d %H:%i') as charge_time " +
+				"FROM im_charge_history WHERE username = ? AND status = ? " +
+				"ORDER BY time DESC LIMIT ?, ?";
 		int startIndex = (offset - 1) * pageSize;
 		List<Map<String, Object>> list = null;
 		try {
@@ -39,8 +41,13 @@ public class ChargeDAO {
 		}
 		return list;
 	}
+	
+	public void addChargeRecord(String chargeId, String userName, Double money, ChargeStatus status) {
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status) VALUES(?, ?, ?, ?)";
+		jdbc.update(sql, chargeId, userName, money, status.name());
+	}	
 
-	public void addChargeRecord(String chargeId, String userName, Float money) {
+	public void addChargeRecord(String chargeId, String userName, Double money) {
 		String sql = "INSERT INTO im_charge_history(chargeId, username, money) VALUES(?, ?, ?)";
 		jdbc.update(sql, chargeId, userName, money);
 	}

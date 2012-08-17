@@ -1,5 +1,7 @@
 package com.imeeting.mvc.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,10 +28,14 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.charge.ChargeUtil;
 import com.imeeting.web.user.UserBean;
+import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
+import com.richitec.util.RandomString;
 import com.richitec.vos.client.AccountInfo;
 import com.richitec.vos.client.CurrentSuiteInfo;
+import com.richitec.vos.client.DepositeCardInfo;
 import com.richitec.vos.client.VOSClient;
+import com.richitec.vos.client.VOSHttpResponse;
 
 @Controller
 public class ChargeAccountController {
@@ -37,11 +43,13 @@ public class ChargeAccountController {
 	
 	private VOSClient vosClient;
 	private ChargeDAO chargeDao;
+	private UserDAO userDao;
 	
 	@PostConstruct
 	public void init() {
 		vosClient = ContextLoader.getVOSClient();
 		chargeDao = ContextLoader.getChargeDAO();
+		userDao = ContextLoader.getUserDAO();
 	}
 
 	@RequestMapping(value = "/deposite", method = RequestMethod.GET)
@@ -50,6 +58,72 @@ public class ChargeAccountController {
 		view.setViewName("deposite");
 		view.addObject(WebConstants.page_name.name(), "deposite");
 		return view;
+	}
+	
+	/**
+	 * 充值卡号前四位表示该卡的面额
+	 * 
+	 * @param response
+	 * @param account
+	 * @param pin
+	 * @param password
+	 * @return
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	@RequestMapping(value="/zhihuicard", method=RequestMethod.POST)
+	public ModelAndView zhihuiCard(
+			HttpServletResponse response,
+			@RequestParam(value="account_name") String account,
+			@RequestParam(value="pin") String pin,
+			@RequestParam(value="password") String password) throws IOException, SQLException{
+		ModelAndView mv = new ModelAndView();
+		boolean isExist = userDao.isExistsLoginName(account);
+		if (!isExist){
+			mv.setViewName("accountcharge/invalidAccount");
+			return mv;
+		}
+		
+		if (pin.length() < 4){
+			mv.setViewName("accountcharge/invalidPin");
+			return mv;			
+		}
+		
+		Double value = 0.0;
+		String cardValue = pin.substring(0, 4);
+		try {
+			value = Double.parseDouble(cardValue);
+		} catch (NumberFormatException e) {
+			mv.setViewName("accountcharge/invalidPin");
+			return mv;	
+		}
+		
+		String chargeId = pin + "_" + RandomString.genRandomChars(10);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin, password);
+		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()){
+			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.vos_fail);
+			log.error("\nCannot deposite to account <" + account + "> with card <" + pin + ">" 
+					+ "<" + password +">"
+					+ "\nVOS Http Response : "
+					+ vosResp.getHttpStatusCode()
+					+ "\nVOS Status Code : "
+					+ vosResp.getVOSStatusCode()
+					+ "\nVOS Response Info ："
+					+ vosResp.getVOSResponseInfo());
+		}
+		
+		mv.addObject("vosResponse", vosResp);
+		if (vosResp.isOperationSuccess()){
+			/*
+			log.info("VOS INFO : " + vosResp.getVOSResponseInfo());
+			DepositeCardInfo info = new DepositeCardInfo(vosResp.getVOSResponseInfo());
+			mv.addObject("despositeInfo", info);
+			*/
+			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.success);
+		}
+		
+		mv.setViewName("accountcharge/vosComplete");
+		return mv;
 	}
 
 	@RequestMapping(value = "/accountcharge", method = RequestMethod.GET)
@@ -89,9 +163,19 @@ public class ChargeAccountController {
 	}
 	
 	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
-	public String aliPay(HttpSession session) throws Exception {
+	public ModelAndView aliPay(
+			HttpSession session,
+			@RequestParam(value="account_name") String accountName,
+			@RequestParam(value="charge_amount") String chargeAmount) throws Exception {
 		log.info("****** prepay alipay ******");
-		return "accountcharge/alipay";
+		boolean isExist = userDao.isExistsLoginName(accountName);
+		ModelAndView mv = new ModelAndView();
+		if (isExist){
+			mv.setViewName("accountcharge/alipay");
+		} else {
+			mv.setViewName("accountcharge/invalidAccount");
+		}
+		return mv;
 	}
 	
 	/**
