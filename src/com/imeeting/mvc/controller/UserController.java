@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
@@ -178,6 +179,21 @@ public class UserController extends ExceptionController {
 		if ("0".equals(result)) { // insert success
 			Integer vosphone = userDao.getVOSPhoneNumber(phone);
 			result = addUserToVOS(phone, vosphone.toString());
+			
+			if ("0".equals(result)) {
+				int affectedRows = userDao.updateUserAccountStatus(phone, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			} else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_suite_error);
+			}
 		}
 
 		JSONObject jsonUser = new JSONObject();

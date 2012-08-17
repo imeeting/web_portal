@@ -1,4 +1,4 @@
-package com.imeeting.mvc.controller.api;
+package com.imeeting.mvc.controller;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.controller.ExceptionController;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;

@@ -14,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.ContextLoader;
 import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
@@ -88,9 +89,9 @@ public class UserDAO {
 	 * @throws JSONException
 	 */
 	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
-		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=?";
+		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=? AND status = ?";
 		log.info("login pwd: " + loginPwd);
-		Object[] params = new Object[] { loginName, loginPwd };
+		Object[] params = new Object[] { loginName, loginPwd, UserAccountStatus.success.name() };
 		String result = null;
 		JSONObject ret = new JSONObject();
 		try {
@@ -251,5 +252,10 @@ public class UserDAO {
 		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=?";
 		String userkey = MD5Util.md5(userName + md5Password);
 		return jdbc.update(sql, md5Password, userkey, userName);
+	}
+	
+	public int updateUserAccountStatus(String userName, UserAccountStatus status) {
+		String sql = "UPDATE im_user SET status = ? WHERE username = ?";
+		return jdbc.update(sql, status.name(), userName);
 	}
 }
