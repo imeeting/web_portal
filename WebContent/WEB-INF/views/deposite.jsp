@@ -54,6 +54,8 @@
 								<option value="800.00">800</option>
 								<option value="900.00">900</option>
 								<option value="1000.00">1000</option>
+								<option value="2000.00">2000</option>
+								<option value="3000.00">3000</option>
 							</select>
 							<hr>
 							<button id="btnGoToAlipay" type="submit" class="btn btn-warning">去支付宝充值</button>
