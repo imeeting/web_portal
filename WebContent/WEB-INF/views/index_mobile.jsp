@@ -28,7 +28,7 @@
     				<li><h2><small>多人同时通话</small></h2></li>
 	    			<li><h2><small>高清语音质量</small></h2></li>
 	    			<li><h2><small>多路视频随意切换</small></h2></li>
-	    			<li><h2><small>操作方便快捷</small></h2></li>
+	    			<li><h2><small>操作快捷方便</small></h2></li>
     			</ul>
     			<hr>
     			<h3>立刻下载开始你的智会之旅<br>&nbsp;</h3>
