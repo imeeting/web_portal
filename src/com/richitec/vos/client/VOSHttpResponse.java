@@ -12,8 +12,8 @@ public class VOSHttpResponse {
 	private HttpResponse httpResponse;
 	private byte [] entityBytes;
 	
-	private int httpStatusCode;
-	private int vosStatusCode;
+	private Integer httpStatusCode;
+	private Integer vosStatusCode;
 	private String vosResponseInfo;
 	
 	public VOSHttpResponse(HttpResponse response){
