@@ -176,9 +176,10 @@ public class VOSClient {
 	 */
 	public VOSHttpResponse depositeByCard(String account, String pin, String password){
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
-		params.add(new BasicNameValuePair(P_loginName, loginName));
-		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+//		params.add(new BasicNameValuePair(P_loginName, loginName));
+//		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_name, account));
+		params.add(new BasicNameValuePair(P_type, "3"));//账户类型: 0:话机; 1:网关; 2:绑定号码; 3:账户名称
 		params.add(new BasicNameValuePair(P_pin, pin));
 		params.add(new BasicNameValuePair(P_password, password));
 		

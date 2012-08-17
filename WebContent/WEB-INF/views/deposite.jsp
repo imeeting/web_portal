@@ -68,7 +68,7 @@
 							<label>请输入智会卡密码</label>
 							<input id="iptCardPassword" type="text" name="password" />
 							<hr>
-							<button id="btnCardSubmit" type="submit" class="btn btn-primary">确&nbsp;定</button>						
+							<button id="btnCardSubmit" type="submit" class="btn btn-success">确&nbsp;定</button>						
 						</form>
 					</div>						
 				</div>    			
