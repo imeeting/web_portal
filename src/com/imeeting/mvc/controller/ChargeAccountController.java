@@ -30,8 +30,10 @@ import com.imeeting.mvc.model.charge.ChargeUtil;
 import com.imeeting.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
+import com.richitec.util.RandomString;
 import com.richitec.vos.client.AccountInfo;
 import com.richitec.vos.client.CurrentSuiteInfo;
+import com.richitec.vos.client.DepositeCardInfo;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
@@ -70,9 +72,10 @@ public class ChargeAccountController {
 			mv.setViewName("accountcharge/invalidAccount");
 			return mv;
 		}
-		
+		String chargeId = pin + "_" + RandomString.genRandomChars(10);
 		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()){
+			chargeDao.addChargeRecord(chargeId, account, 0.0, ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + account + "> with card <" + pin + ">" 
 					+ "<" + password +">"
 					+ "\nVOS Http Response : "
@@ -83,8 +86,17 @@ public class ChargeAccountController {
 					+ vosResp.getVOSResponseInfo());
 		}
 		
-		mv.setViewName("accountcharge/vosComplete");
 		mv.addObject("vosResponse", vosResp);
+		if (vosResp.isOperationSuccess()){
+			/*
+			log.info("VOS INFO : " + vosResp.getVOSResponseInfo());
+			DepositeCardInfo info = new DepositeCardInfo(vosResp.getVOSResponseInfo());
+			mv.addObject("despositeInfo", info);
+			*/
+			chargeDao.addChargeRecord(chargeId, account, 0.0, ChargeStatus.success);
+		}
+		
+		mv.setViewName("accountcharge/vosComplete");
 		return mv;
 	}
 

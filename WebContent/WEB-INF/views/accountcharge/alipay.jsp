@@ -40,7 +40,7 @@
 	//订单总金额，显示在支付宝收银台里的“应付总额”里
 	String total_fee = request.getParameter("charge_amount");
 	
-	ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, accountName, Float.valueOf(total_fee));
+	ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, accountName, Double.valueOf(total_fee));
 	
 	//把请求参数打包成数组
 	Map<String, String> sParaTemp = new HashMap<String, String>();

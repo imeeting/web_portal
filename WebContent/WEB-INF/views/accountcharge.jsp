@@ -42,21 +42,30 @@
 						<tr>
 						<th>充值日期</th>
 						<th>充值金额</th>
+						<th>充值方式</th>
 						</tr>
 					</thead>
 					<tbody>
 					<% for (int i=0; i<10; i++) {
 						  String time = "&nbsp;";
 						  String money = "&nbsp;";
+						  String type = "&nbsp;";
 						  if (null != chargeList && i<chargeList.size()) {
 							  Map<String, Object> m = chargeList.get(i);
 							  time = String.valueOf(m.get("charge_time"));
 							  money = "￥" +  String.format("%,.2f", m.get("money"));
+							  String chargeId = String.valueOf(m.get("chargeId"));
+							  if (chargeId.startsWith("alipay")){
+								  type = "支付宝";
+							  } else {
+								  type = "智会卡";
+							  }
 						  }
 					%>
 						<tr>
 							<td><%=time %></td>
 							<td><%=money %></td>
+							<td><%=type %></td>
 						</tr>						
 					<% }//end of for %>
 					</tbody>
