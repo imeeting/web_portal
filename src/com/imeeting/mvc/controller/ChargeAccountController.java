@@ -60,6 +60,17 @@ public class ChargeAccountController {
 		return view;
 	}
 	
+	/**
+	 * 充值卡号前四位表示该卡的面额
+	 * 
+	 * @param response
+	 * @param account
+	 * @param pin
+	 * @param password
+	 * @return
+	 * @throws IOException
+	 * @throws SQLException
+	 */
 	@RequestMapping(value="/zhihuicard", method=RequestMethod.POST)
 	public ModelAndView zhihuiCard(
 			HttpServletResponse response,
@@ -72,10 +83,25 @@ public class ChargeAccountController {
 			mv.setViewName("accountcharge/invalidAccount");
 			return mv;
 		}
+		
+		if (pin.length() < 4){
+			mv.setViewName("accountcharge/invalidPin");
+			return mv;			
+		}
+		
+		Double value = 0.0;
+		String cardValue = pin.substring(0, 4);
+		try {
+			value = Double.parseDouble(cardValue);
+		} catch (NumberFormatException e) {
+			mv.setViewName("accountcharge/invalidPin");
+			return mv;	
+		}
+		
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
 		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()){
-			chargeDao.addChargeRecord(chargeId, account, 0.0, ChargeStatus.vos_fail);
+			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + account + "> with card <" + pin + ">" 
 					+ "<" + password +">"
 					+ "\nVOS Http Response : "
@@ -93,7 +119,7 @@ public class ChargeAccountController {
 			DepositeCardInfo info = new DepositeCardInfo(vosResp.getVOSResponseInfo());
 			mv.addObject("despositeInfo", info);
 			*/
-			chargeDao.addChargeRecord(chargeId, account, 0.0, ChargeStatus.success);
+			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.success);
 		}
 		
 		mv.setViewName("accountcharge/vosComplete");
