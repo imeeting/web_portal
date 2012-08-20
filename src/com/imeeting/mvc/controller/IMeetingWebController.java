@@ -42,9 +42,14 @@ public class IMeetingWebController {
 	}
 
 	@RequestMapping(value = "/mobile", method = RequestMethod.GET)
-	public String mobile(HttpSession session, HttpServletRequest request) {
+	public String mobile() {
 		return "index_mobile";
-	}	
+	}
+	
+	@RequestMapping(value = "/help", method = RequestMethod.GET)
+	public String help() {
+		return "help";
+	}		
 
 	@RequestMapping(value = "/signin", method = RequestMethod.GET)
 	public ModelAndView signin() {
