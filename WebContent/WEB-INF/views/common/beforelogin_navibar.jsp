@@ -19,7 +19,6 @@
 				<ul class="nav pull-right">
 					<li class="<%="home".equals(pageName) ? "active" : ""%>"><a href="/imeeting/home">首页</a>
 					</li>
-		            <li ><a href="/imeeting/webconf">加入群聊</a></li>
 					<li class="<%="deposite".equals(pageName) ? "active" : ""%>"><a href="/imeeting/deposite">在线充值</a>
 					</li>
 					<li class="<%="signin".equals(pageName) ? "active" : ""%>">
