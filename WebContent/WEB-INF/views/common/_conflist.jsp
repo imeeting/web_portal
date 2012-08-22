@@ -32,7 +32,7 @@
 %>
 			
 			<div class="well clearfix">
-				<div class="pull-left">
+				<div class="im-conf-info pull-left">
 					<h3 class="im-conf-title"><%=conf.getTitle()%></h3>
 					<div class="clearfix">
 						<% for (int j=0; j<attendeeList.size(); j++) {
