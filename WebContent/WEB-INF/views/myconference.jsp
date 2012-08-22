@@ -15,19 +15,25 @@
 
     <div class="container">
     	<div class="row">
-    		<div class="span8 offset2 page-header">
-    			<% if (null == confCount || confCount<=0) { %>
-    			<h2>您还没有参加过任何群聊</h2>
-    			<% } else { %>
-    			<h2>我参加过<%=confCount %>个群聊</h2>
-    			<% } %>
+    		<div class="span8 offset2">
+		    	<div class="clearfix page-header">
+		    		<div class="pull-left">
+		    			<% if (null == confCount || confCount<=0) { %>
+		    			<h2>您还没有参加过任何群聊</h2>
+		    			<% } else { %>
+		    			<h2>我参加过<%=confCount %>个群聊</h2>
+		    			<% } %>
+		    		</div>
+		    		<div class="pull-right">
+			    		<a class="btn btn-success btn-large" href="#" target="blank">创建新的群聊</a>
+			    		<a class="btn btn-success btn-large" href="./webconf" target="blank">加入群聊</a>
+		    		</div>
+		    	</div>
+				<div id="divConfListContainer">
+					<small>正在加载数据...</small>
+				</div>
     		</div>
     	</div>
-		<div class="row">
-			<div id="divConfListContainer" class="span8 offset2">
-				<small>正在加载数据...</small>
-			</div>
-		</div>    	
 		<jsp:include page="common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
 

@@ -16,7 +16,7 @@
   </head>
 
   <body>
-    <jsp:include page="../common/beforelogin_navibar.jsp"></jsp:include>
+    <jsp:include page="../common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
     	<div>
