@@ -28,6 +28,7 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.charge.ChargeUtil;
 import com.imeeting.web.user.UserBean;
+import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
@@ -43,12 +44,14 @@ public class ChargeAccountController {
 	private VOSClient vosClient;
 	private ChargeDAO chargeDao;
 	private UserDAO userDao;
+	private SMSClient smsClient;
 	
 	@PostConstruct
 	public void init() {
 		vosClient = ContextLoader.getVOSClient();
 		chargeDao = ContextLoader.getChargeDAO();
 		userDao = ContextLoader.getUserDAO();
+		smsClient = ContextLoader.getSMSClient();
 	}
 
 	@RequestMapping(value = "/deposite", method = RequestMethod.GET)
@@ -119,6 +122,7 @@ public class ChargeAccountController {
 			mv.addObject("despositeInfo", info);
 			*/
 			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.success);
+			smsClient.sendTextMessage(account, "您的智会账户已成功充值" + value + "元，谢谢！");
 		}
 		
 		mv.setViewName("accountcharge/vosComplete");
