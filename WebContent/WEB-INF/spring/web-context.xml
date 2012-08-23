@@ -27,6 +27,8 @@
 			<mvc:mapping path="/setting/**"/>
 			<mvc:mapping path="/myconference"/>
 			<mvc:mapping path="/myconference/**"/>
+			<mvc:mapping path="/webconf"/>
+			<mvc:mapping path="/webconf/**"/>
 			<bean class="com.imeeting.mvc.UserInterceptor" />
 		</mvc:interceptor>	
 		<mvc:interceptor>
