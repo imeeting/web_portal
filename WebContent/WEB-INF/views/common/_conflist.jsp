@@ -38,7 +38,7 @@
 						<% for (int j=0; j<attendeeList.size(); j++) {
 								AttendeeBean attendee = attendeeList.get(j);
 						%>
-						<div class="im-conf-attendee im-attendee-name pull-left">
+						<div class="im-attendee im-attendee-history im-attendee-name pull-left">
 							<i class="icon-user"></i>&nbsp;<%=attendee.getUserName() %>
 						</div>
 						<% } %>

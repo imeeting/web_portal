@@ -70,9 +70,23 @@ footer span {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.im-conf-attendee {
+.im-attendee {
 	padding: 5px;
 	margin: 0 5px 5px 0;
+	border: solid 1px;
+}
+
+.im-attendee-history {
 	background-color: #D9EDF7;
-	border: solid 1px #BCE8F1;
+	border-color: #BCE8F1;
+}
+
+.im-attendee-online {
+	background-color: #DFF0D8;
+	border-color: #D6E9C6;
+}
+
+.im-attendee-offline {
+	background-color: #F2DEDE;
+	border-color: #EED3D7;
 }

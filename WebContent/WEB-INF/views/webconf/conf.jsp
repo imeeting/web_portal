@@ -24,8 +24,10 @@
 		<div class="clearfix">
 			<% 
 				for(AttendeeModel attendee : attendeeCollection) {
+					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
+					String onlineClass = "im-attendee-" + onlineStatus.name();
 			%>
-			<div class="im-conf-attendee im-attendee-name pull-left">
+			<div class="<%=onlineClass %> im-attendee im-attendee-name pull-left">
 				<i class="icon-user"></i>&nbsp;<%=attendee.getUsername() %>
 			</div>
 			<% } %>
