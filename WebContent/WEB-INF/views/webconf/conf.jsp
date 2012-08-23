@@ -6,7 +6,6 @@
 <% 
 	ConferenceModel conference = (ConferenceModel)request.getAttribute("conference"); 
 	Collection<AttendeeModel> attendeeCollection = conference.getAllAttendees();
-//	AttendeeModel [] attendeeList = (AttendeeModel [])attendeeCollection.toArray();
 %>
 <!DOCTYPE html>
 <html lang="zh">
@@ -24,8 +23,6 @@
     	</div>
 		<div class="clearfix">
 			<% 
-				//for (int i=0; i<attendeeList.length; i++) {
-					//AttendeeModel attendee = attendeeList[i];
 				for(AttendeeModel attendee : attendeeCollection) {
 			%>
 			<div class="im-conf-attendee im-attendee-name pull-left">
