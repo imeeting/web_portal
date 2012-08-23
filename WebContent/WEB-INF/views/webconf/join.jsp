@@ -2,7 +2,6 @@
     pageEncoding="utf-8"%>
 <% 
 	String confId = request.getParameter("confId"); 
-	String attendeeName = request.getParameter("attendeeName");
 %>        
 <!DOCTYPE html>
 <html lang="zh">
@@ -25,9 +24,6 @@
 					<p>该群聊不存在，请仔细检查你输入的群聊号是否正确</p>
 				</div>
 				<% } %>
-				<label>请输入您的姓名</label>
-				<input id="iptAttendeeName" name="attendeeName" class="span4" type="text" 
-					value="<%=(null==attendeeName ? "" : attendeeName) %>" />
 				<button type="submit" class="btn btn-primary">加入群聊</button>
 			</form>
     	</div>

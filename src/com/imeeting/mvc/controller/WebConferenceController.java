@@ -1,6 +1,7 @@
 package com.imeeting.mvc.controller;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.web.user.UserBean;
 
 @Controller
 @RequestMapping(value="/webconf")
@@ -30,11 +32,12 @@ public class WebConferenceController {
 
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView conference(
-			@RequestParam(value="confId") String confId,
-			@RequestParam(value="attendeeName") String attendeeName){
+			HttpSession session,
+			@RequestParam(value="confId") String confId){
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		ModelAndView mv = new ModelAndView();
 		ConferenceModel conference = 
-			conferenceManager.checkConferenceModel(confId, attendeeName);
+			conferenceManager.checkConferenceModel(confId, user.getName());
 		if (null == conference){
 			mv.setViewName("webconf/join");
 			return mv;
