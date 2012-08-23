@@ -44,4 +44,11 @@ public class WebConferenceController {
 		mv.setViewName("webconf/conf");
 		return mv;
 	}
+	
+	@RequestMapping(value="create")
+	public ModelAndView create(){
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("webconf/create");
+		return mv;
+	}
 }
