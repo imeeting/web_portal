@@ -2,7 +2,6 @@ package com.imeeting.mvc.model.conference;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 
