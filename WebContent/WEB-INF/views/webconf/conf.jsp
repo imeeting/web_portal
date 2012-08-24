@@ -40,6 +40,9 @@
 		<div class="clearfix">
 			<% 
 				for(AttendeeModel attendee : attendeeCollection) {
+					if (user.getName().equals(attendee.getUsername())){
+						continue;
+					}
 					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
 					String onlineClass = "im-attendee-" + onlineStatus.name();
 			%>
