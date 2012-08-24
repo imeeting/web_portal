@@ -90,3 +90,11 @@ footer span {
 	background-color: #F2DEDE;
 	border-color: #EED3D7;
 }
+
+.im-video {
+	width: 270px;
+	height: 360px;
+	margin: 10px 1px 10px 0;
+	background: #999;
+	float: left;
+}
