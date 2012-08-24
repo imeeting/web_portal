@@ -19,7 +19,10 @@
 
     <div class="container">
     	<div>
-			<h1><%=conference.getConferenceId() %></h1>    	
+			<h1>
+				<%=conference.getConferenceId() %>&nbsp;
+				<a class="btn btn-danger btn-large" href="webconf/unjoin?confId=<%=conference.getConferenceId() %>">离开群聊</a>
+			</h1>  	
     	</div>
 		<div class="clearfix">
 			<% 
