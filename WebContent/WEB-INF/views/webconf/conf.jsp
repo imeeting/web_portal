@@ -46,18 +46,22 @@
 					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
 					String onlineClass = "im-attendee-" + onlineStatus.name();
 			%>
-			<div class="<%=onlineClass %> im-attendee im-attendee-name pull-left">
+			<div id="div<%=attendee.getUsername() %>" class="<%=onlineClass %> im-attendee im-attendee-name pull-left">
 				<p><i class="icon-user"></i>&nbsp;<%=attendee.getUsername() %></p>
 				<% if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())) { %>
-				<p><button class="btn btn-info"><i class="icon-facetime-video btn-white"></i>&nbsp;观看视频</button></p>
+				<p><button class="im-btn-video btn btn-info"><i class="icon-facetime-video btn-white"></i>&nbsp;观看视频</button></p>
 				<% } else { %>
-				<p><button class="btn"><i class="icon-facetime-video"></i>&nbsp;没有视频</button></p>
+				<p><button class="im-btn-video btn"><i class="icon-facetime-video"></i>&nbsp;没有视频</button></p>
 				<% } %>
 			</div>
 			<% } %>
 		</div>
 		<jsp:include page="../common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
+    <div>
+        <input id="iptConfId" type="hidden" value="<%=conference.getConferenceId() %>">
+        <input id="iptUserId" type="hidden" value="<%=user.getName() %>">
+    </div>
 
     <!-- Le javascript
     ================================================== -->
@@ -65,5 +69,6 @@
     <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
     <script src="/imeeting/js/lib/bootstrap.min.js"></script>
     <script src="http://msg.walkwork.net/socket.io/socket.io.js"></script>
+    <script src="/imeeting/js/conference.js"></script>
   </body>
 </html>
