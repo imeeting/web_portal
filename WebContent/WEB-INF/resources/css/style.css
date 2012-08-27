@@ -70,31 +70,62 @@ footer span {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.im-attendee {
-	padding: 5px;
-	margin: 0 5px 5px 0;
-	border: solid 1px;
-}
-
+.im-attendee-conf,
 .im-attendee-history {
 	background-color: #D9EDF7;
-	border-color: #BCE8F1;
-}
-
-.im-attendee-online {
-	background-color: #DFF0D8;
-	border-color: #D6E9C6;
-}
-
-.im-attendee-offline {
-	background-color: #F2DEDE;
-	border-color: #EED3D7;
+	border: solid 1px #BCE8F1;
 }
 
 .im-video {
-	width: 270px;
-	height: 360px;
-	margin: 10px 1px 10px 0;
-	background: #999;
-	float: left;
+    width: 270px;
+    height: 360px;
+    margin: 10px 1px 10px 0;
+    background: #999;
+    float: left;
+}
+
+.im-attendee {
+    padding: 5px;
+    margin: 0 5px 5px 0;
+}
+
+.im-icon {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+	vertical-align: text-top;
+	background-repeat: no-repeat;
+}
+
+.im-icon-signin-online {
+	background-image: url("../img/online_flag.png");
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+}
+
+.im-icon-signin-offline {
+	background-image: url("../img/offline_flag.png");
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+}
+
+.im-icon-phone-Terminated {
+    background-image: url("../img/hangedup.png");
+}
+
+.im-icon-phone-CallWait {
+    background-image: url("../img/calling.png");
+}
+
+.im-icon-phone-Established {
+    background-image: url("../img/intalking.png");
+}
+
+.im-icon-phone-Failed {
+    background-image: url("../img/call_failed.png");
+}
+
+.im-icon-video-off {
+	background-image: url("../img/video_off.png");
 }

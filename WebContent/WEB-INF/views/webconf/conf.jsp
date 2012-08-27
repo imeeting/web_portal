@@ -44,14 +44,19 @@
 						continue;
 					}
 					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
-					String onlineClass = "im-attendee-" + onlineStatus.name();
+					String onlineClass = "im-icon-signin-" + onlineStatus.name();
+					String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
+					String videoClass = "im-icon-video-" + attendee.getVideoStatus().name();
 			%>
-			<div id="div<%=attendee.getUsername() %>" class="<%=onlineClass %> im-attendee im-attendee-name pull-left">
-				<p><i class="icon-user"></i>&nbsp;<%=attendee.getUsername() %></p>
+			<div id="div<%=attendee.getUsername() %>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
+				<p><i class="<%=onlineClass %> im-icon"></i>&nbsp;<%=attendee.getUsername() %></p>
+				<p>
+				    <i class="<%=telephoneClass %> im-icon"></i>&nbsp;<%=attendee.getPhoneCallStatus().name() %>
+				</p>
 				<% if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())) { %>
 				<p><button class="im-btn-video btn btn-info"><i class="icon-facetime-video btn-white"></i>&nbsp;观看视频</button></p>
 				<% } else { %>
-				<p><button class="im-btn-video btn"><i class="icon-facetime-video"></i>&nbsp;没有视频</button></p>
+				<p><i class="im-icon-video-off im-icon"></i>&nbsp;没有视频</p>
 				<% } %>
 			</div>
 			<% } %>
