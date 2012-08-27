@@ -49,9 +49,10 @@
 					String videoClass = "im-icon-video-" + attendee.getVideoStatus().name();
 			%>
 			<div id="div<%=attendee.getUsername() %>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
-				<p><i class="<%=onlineClass %> im-icon"></i>&nbsp;<%=attendee.getUsername() %></p>
+				<p><i class="<%=onlineClass %> im-icon im-signin-icon"></i>&nbsp;<%=attendee.getUsername() %></p>
 				<p>
-				    <i class="<%=telephoneClass %> im-icon"></i>&nbsp;<%=attendee.getPhoneCallStatus().name() %>
+				    <i class="<%=telephoneClass %> im-icon im-phone-icon"></i>
+				    <span class="im-phone-text">&nbsp;<%=attendee.getPhoneCallStatus().name() %></span>
 				</p>
 				<% if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())) { %>
 				<p><button class="im-btn-video btn btn-info"><i class="icon-facetime-video btn-white"></i>&nbsp;观看视频</button></p>

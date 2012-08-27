@@ -89,11 +89,33 @@ $(function() {
 	function updateAttendeeStatus(attendee){
 		var attendeeId = attendee.username;
 		$div = $("#div" + attendeeId);
-		alert(attendee.username + "\n"
-				+ "\nOnline:" + attendee.online_status
-				+ "\nTel:" + attendee.telephone_status
-				+ "\nVideo:" + attendee.video_status);
+		
+		$signinIcon = $div.find(".im-signin-icon");
+		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
+		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
+		
+		$phoneIcon = $div.find(".im-phone-icon");
+		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
+				+ " im-icon-phone-CallWait im-icon-phone-Established");
+		$phoneIcon.addClass("im-icon-phone-" + attendee.telephone_status);
+		
+		$phoneText = $div.find(".im-phone-text");
+		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
 	};
+	
+	function getPhoneStatusText(status){
+		if (status == "CallWait"){
+			return "正在呼叫";
+		} else if (status == "Terminated"){
+			return "未接通";
+		} else if (status == "Failed") {
+			return "呼叫失败";
+		} else if (status == "Established"){
+			return "已接通";
+		} else {
+			return status;
+		}
+	}
 	
 	SocketIOClient.setup(_confId, _userId, onNotify);
 });
