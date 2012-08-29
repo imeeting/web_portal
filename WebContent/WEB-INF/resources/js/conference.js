@@ -3,6 +3,7 @@ $(function() {
 	
 	var _confId = $("#iptConfId").val();
 	var _userId = $("#iptUserId").val();
+	var $_btnPhoneCall = $("#btnPhoneCall");
 	
 	var SocketIOClient = {
 			socket : null,
@@ -83,7 +84,22 @@ $(function() {
 	};
 	
 	function updateSelfStatus(attendee){
-		
+		switch(attendee.telephone_status){
+		case "CallWait":
+			$_btnPhoneCall.html("取消呼叫");
+			break;
+		case "Terminated":
+			$_btnPhoneCall.html("Call Me");
+			break;
+		case "Failed":
+			$_btnPhoneCall.html("Call Me");
+			break;
+		case "Established":
+			$_btnPhoneCall.html("挂 断");
+			break;
+		default:
+			break;
+		}
 	};
 	
 	function updateAttendeeStatus(attendee){
@@ -116,6 +132,34 @@ $(function() {
 			return status;
 		}
 	}
+	
+	$_btnPhoneCall.click(function(){
+		var currentPhoneCallStatus = $("#iptMyPhoneCallStatus").val();
+		if ("Terminated" == currentPhoneCallStatus ||
+			"Failed" == currentPhoneCallStatus){
+			$.post("webconf/call", 
+					{
+						conferenceId: _confId,
+						dstUserName: _userId
+					}, 
+					function(){
+						$("#iptMyPhoneCallStatus").val("CallWait");
+					});
+		} else 
+		if ("CallWait" == currentPhoneCallStatus ||
+			"Established" == currentPhoneCallStatus){
+			$.post("webconf/hangup", 
+					{
+						conferenceId: _confId,
+						dstUserName: _userId
+					}, 
+					function(){
+						$("#iptMyPhoneCallStatus").val("TermWait");
+					});
+		} else {
+			//do nothing
+		}
+	});
 	
 	SocketIOClient.setup(_confId, _userId, onNotify);
 });
