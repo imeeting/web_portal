@@ -8,6 +8,7 @@
 	UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 	ConferenceModel conference = (ConferenceModel)request.getAttribute("conference"); 
 	Collection<AttendeeModel> attendeeCollection = conference.getAllAttendees();
+	AttendeeModel myself = null;
 %>
 <!DOCTYPE html>
 <html lang="zh">
@@ -26,7 +27,7 @@
 			</h1>
 			<h1>
 				欢迎您：<%=user.getName() %>
-				<a class="btn btn-success btn-large">Call&nbsp;Me</a>
+				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>
 				<a class="btn btn-info btn-large">打开摄像头</a>
 				<a class="btn btn-danger btn-large" href="webconf/unjoin?confId=<%=conference.getConferenceId() %>">离开群聊</a>
 			</h1>  	
@@ -41,6 +42,7 @@
 			<% 
 				for(AttendeeModel attendee : attendeeCollection) {
 					if (user.getName().equals(attendee.getUsername())){
+						myself = attendee;
 						continue;
 					}
 					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
@@ -65,6 +67,7 @@
 		<jsp:include page="../common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
     <div>
+        <input id="iptMyPhoneCallStatus" type="hidden" value="<%=myself.getPhoneCallStatus() %>">
         <input id="iptConfId" type="hidden" value="<%=conference.getConferenceId() %>">
         <input id="iptUserId" type="hidden" value="<%=user.getName() %>">
     </div>
