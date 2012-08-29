@@ -84,6 +84,7 @@ $(function() {
 	};
 	
 	function updateSelfStatus(attendee){
+		$("#iptMyPhoneCallStatus").val(attendee.telephone_status);
 		switch(attendee.telephone_status){
 		case "CallWait":
 			$_btnPhoneCall.html("取消呼叫");
