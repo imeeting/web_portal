@@ -21,9 +21,9 @@ public class AttendeeModel {
 	}
 
 	private String username;
-	private OnlineStatus onlineStatus;
 	private VideoStatus videoStatus;
 	private PhoneCallStatus phoneCallStatus;
+	private Integer joinCount = 0;
 
 	public AttendeeModel(String name) {
 		this(name, OnlineStatus.offline);
@@ -31,9 +31,9 @@ public class AttendeeModel {
 
 	public AttendeeModel(String userName, OnlineStatus status) {
 		this.username = userName;
-		this.onlineStatus = status;
 		this.videoStatus = VideoStatus.off;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
+		setOnlineStatus(status);
 	}
 
 	public String getUsername() {
@@ -45,11 +45,15 @@ public class AttendeeModel {
 	}
 
 	public OnlineStatus getOnlineStatus() {
-		return onlineStatus;
+		return joinCount > 0 ? OnlineStatus.online : OnlineStatus.offline;
 	}
 
 	public void setOnlineStatus(OnlineStatus onlineStatus) {
-		this.onlineStatus = onlineStatus;
+		if (onlineStatus.equals(OnlineStatus.online)){
+			this.joinCount += 1;
+		} else {
+			this.joinCount -= 1;
+		}
 	}
 
 	public VideoStatus getVideoStatus() {
@@ -144,7 +148,7 @@ public class AttendeeModel {
 		JSONObject obj = new JSONObject();
 		try {
 			obj.put("username", username);
-			obj.put("online_status", onlineStatus.name());
+			obj.put("online_status", getOnlineStatus().name());
 			obj.put("video_status", videoStatus.name());
 			obj.put("telephone_status", phoneCallStatus.name());
 		} catch (JSONException e) {
