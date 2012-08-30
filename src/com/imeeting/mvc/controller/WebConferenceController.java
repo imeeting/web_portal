@@ -2,6 +2,7 @@ package com.imeeting.mvc.controller;
 
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -221,4 +223,20 @@ public class WebConferenceController {
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}	
+	
+	@RequestMapping(value = "/attendeeList")
+	public void attendeeList(HttpServletResponse response,
+			@RequestParam String conferenceId) throws IOException {
+		ConferenceModel model = conferenceManager.getConference(conferenceId);
+		Collection<AttendeeModel> attendees = model.getAllAttendees();
+		JSONArray ret = new JSONArray();
+		if (attendees != null && attendees.size() > 0) {
+			for (AttendeeModel att : attendees) {
+				ret.put(att.toJson());
+			}
+		} else {
+			log.error("no attendees in conference <" + conferenceId + ">");
+		}
+		response.getWriter().print(ret.toString());
+	}
 }
