@@ -63,7 +63,8 @@ $(function() {
 					} else if ("update_attendee_list" == event.action){
 						onUpdateAttendeeList(event);
 					} else if ("kickout" == event.action) {
-						
+						onUpdateAttendeeList(event);
+						onKickout();
 					} else {
 						//error action
 					}
@@ -77,7 +78,16 @@ $(function() {
 	
 	function onUpdateAttendeeList(event){
 		$_divAttendeeList.load("webconf/attendeeList", 
-				{conferenceId: _confId});
+				{conferenceId: _confId}, 
+				function() {
+					bindClickToBtnAttendeePhoneCall();
+				});
+	}
+	
+	function onKickout(event){
+		if (_userId == event.username){
+			alert("您已被主持人移出群聊！");
+		}
 	}
 	
 	function onUpdateStatus(event){
@@ -193,39 +203,42 @@ $(function() {
 		}
 	});
 	
-	$(".divAttendeePhone").each(function(){
-		var $this = $(this);
-		var $iptStatus = $this.find(".iptAttendeePhoneCallStatus");
-		var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
-		var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
-		$btnPhoneCall.click(function(){
-			var phoneStatus = $iptStatus.val();
-			if ("Terminated" == phoneStatus ||
-					"Failed" == phoneStatus){
+	function bindClickToBtnAttendeePhoneCall(){
+		$(".divAttendeePhone").each(function(){
+			var $this = $(this);
+			var $iptStatus = $this.find(".iptAttendeePhoneCallStatus");
+			var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
+			var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
+			$btnPhoneCall.click(function(){
+				var phoneStatus = $iptStatus.val();
+				if ("Terminated" == phoneStatus ||
+						"Failed" == phoneStatus){
 					$.post("webconf/call", 
 							{
-								conferenceId: _confId,
-								dstUserName: attendeeId
+						conferenceId: _confId,
+						dstUserName: attendeeId
 							}, 
 							function(){
 								$iptStatus.val("CallWait");
 							});
 				} else 
-				if ("CallWait" == phoneStatus ||
-					"Established" == phoneStatus){
-					$.post("webconf/hangup", 
-							{
-								conferenceId: _confId,
-								dstUserName: attendeeId
-							}, 
-							function(){
-								$iptStatus.val("TermWait");
-							});
-				} else {
-					//do nothing
-				}
+					if ("CallWait" == phoneStatus ||
+							"Established" == phoneStatus){
+						$.post("webconf/hangup", 
+								{
+							conferenceId: _confId,
+							dstUserName: attendeeId
+								}, 
+								function(){
+									$iptStatus.val("TermWait");
+								});
+					} else {
+						//do nothing
+					}
+			});
 		});
-	});
+	}
 	
+	bindClickToBtnAttendeePhoneCall();
 	SocketIOClient.setup(_confId, _userId, onNotify);
 });
