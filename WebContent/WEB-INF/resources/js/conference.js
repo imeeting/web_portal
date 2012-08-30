@@ -107,11 +107,6 @@ $(function() {
 		var attendeeId = attendee.username;
 		var $div = $("#div" + attendeeId);
 		
-		var $phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
-		if ($phoneCallStatus){
-			$phoneCallStatus.val(attendee.telephone_status);
-		}
-		
 		var $signinIcon = $div.find(".im-signin-icon");
 		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
 		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
@@ -123,6 +118,17 @@ $(function() {
 		
 		var $phoneText = $div.find(".im-phone-text");
 		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
+		
+		//moderator UI
+		var $phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
+		if ($phoneCallStatus){
+			$phoneCallStatus.val(attendee.telephone_status);
+		}
+		
+		var $btnPhoneCall = $div.find(".btnAttendeePhoneCall");
+		if ($btnPhoneCall){
+			$btnPhoneCall.html(getPhoneCallButtonText(attendee.telephone_status));
+		}
 	};
 	
 	function getPhoneStatusText(status){
@@ -134,6 +140,20 @@ $(function() {
 			return "呼叫失败";
 		} else if (status == "Established"){
 			return "已接通";
+		} else {
+			return status;
+		}
+	}
+	
+	function getPhoneCallButtonText(status){
+		if (status == "CallWait"){
+			return "取消呼叫";
+		} else if (status == "Terminated"){
+			return "呼叫";
+		} else if (status == "Failed") {
+			return "重新呼叫";
+		} else if (status == "Established"){
+			return "挂断";
 		} else {
 			return status;
 		}
