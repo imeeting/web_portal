@@ -105,23 +105,23 @@ $(function() {
 	
 	function updateAttendeeStatus(attendee){
 		var attendeeId = attendee.username;
-		$div = $("#div" + attendeeId);
+		var $div = $("#div" + attendeeId);
 		
-		$phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
+		var $phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
 		if ($phoneCallStatus){
 			$phoneCallStatus.val(attendee.telephone_status);
 		}
 		
-		$signinIcon = $div.find(".im-signin-icon");
+		var $signinIcon = $div.find(".im-signin-icon");
 		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
 		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
 		
-		$phoneIcon = $div.find(".im-phone-icon");
+		var $phoneIcon = $div.find(".im-phone-icon");
 		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
 				+ " im-icon-phone-CallWait im-icon-phone-Established");
 		$phoneIcon.addClass("im-icon-phone-" + attendee.telephone_status);
 		
-		$phoneText = $div.find(".im-phone-text");
+		var $phoneText = $div.find(".im-phone-text");
 		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
 	};
 	
@@ -168,8 +168,8 @@ $(function() {
 	});
 	
 	$(".divAttendeePhone").each(function(){
-		$this = $(this);
-		$iptStatus = $this.find(".iptAttendeePhoneCallStatus");
+		var $this = $(this);
+		var $iptStatus = $this.find(".iptAttendeePhoneCallStatus");
 		var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
 		var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
 		$btnPhoneCall.click(function(){
