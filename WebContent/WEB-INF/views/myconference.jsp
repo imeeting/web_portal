@@ -21,7 +21,7 @@
 		    			<% if (null == confCount || confCount<=0) { %>
 		    			<h2>您还没有参加过任何群聊</h2>
 		    			<% } else { %>
-		    			<h2>我参加过<%=confCount %>个群聊</h2>
+		    			<h2>我参加过<%=confCount %>次群聊</h2>
 		    			<% } %>
 		    		</div>
 		    		<div class="pull-right">
