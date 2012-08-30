@@ -38,7 +38,7 @@
     		<div class="im-video"></div>
     		<div class="im-video"></div>
     	</div>
-		<div class="clearfix">
+		<div id="divAttendeeList" class="clearfix">
 			<% 
 				for(AttendeeModel attendee : attendeeCollection) {
 					if (user.getName().equals(attendee.getUsername())){

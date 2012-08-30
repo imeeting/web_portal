@@ -4,6 +4,7 @@ $(function() {
 	var _confId = $("#iptConfId").val();
 	var _userId = $("#iptUserId").val();
 	var $_btnPhoneCall = $("#btnPhoneCall");
+	var $_divAttendeeList = $("#divAttendeeList");
 	
 	var SocketIOClient = {
 			socket : null,
@@ -59,8 +60,8 @@ $(function() {
 					var event = noticeArray[i];
 					if ("update_status" == event.action){
 						onUpdateStatus(event);
-					} else if ("update_list" == event.action){
-						
+					} else if ("update_attendee_list" == event.action){
+						onUpdateAttendeeList(event);
 					} else if ("kickout" == event.action) {
 						
 					} else {
@@ -73,6 +74,11 @@ $(function() {
 			break;
 		}
 	};
+	
+	function onUpdateAttendeeList(event){
+		$_divAttendeeList.load("webconf/attendeeList", 
+				{conferenceId: _confId});
+	}
 	
 	function onUpdateStatus(event){
 		var attendeeId = event.attendee.username;

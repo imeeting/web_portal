@@ -225,18 +225,12 @@ public class WebConferenceController {
 	}	
 	
 	@RequestMapping(value = "/attendeeList")
-	public void attendeeList(HttpServletResponse response,
+	public ModelAndView attendeeList(
 			@RequestParam String conferenceId) throws IOException {
-		ConferenceModel model = conferenceManager.getConference(conferenceId);
-		Collection<AttendeeModel> attendees = model.getAllAttendees();
-		JSONArray ret = new JSONArray();
-		if (attendees != null && attendees.size() > 0) {
-			for (AttendeeModel att : attendees) {
-				ret.put(att.toJson());
-			}
-		} else {
-			log.error("no attendees in conference <" + conferenceId + ">");
-		}
-		response.getWriter().print(ret.toString());
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("conference", conference);
+		mv.setViewName("webconf/attendeelist");
+		return mv;
 	}
 }
