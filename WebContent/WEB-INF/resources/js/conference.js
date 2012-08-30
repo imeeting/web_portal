@@ -107,6 +107,11 @@ $(function() {
 		var attendeeId = attendee.username;
 		$div = $("#div" + attendeeId);
 		
+		$phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
+		if ($phoneCallStatus){
+			$phoneCallStatus.val(attendee.telephone_status);
+		}
+		
 		$signinIcon = $div.find(".im-signin-icon");
 		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
 		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
@@ -160,6 +165,40 @@ $(function() {
 		} else {
 			//do nothing
 		}
+	});
+	
+	$(".divAttendeePhone").each(function(){
+		$this = $(this);
+		$iptStatus = $this.find(".iptAttendeePhoneCallStatus");
+		var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
+		var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
+		$btnPhoneCall.click(function(){
+			var phoneStatus = $iptStatus.val();
+			if ("Terminated" == phoneStatus ||
+					"Failed" == phoneStatus){
+					$.post("webconf/call", 
+							{
+								conferenceId: _confId,
+								dstUserName: attendeeId
+							}, 
+							function(){
+								$iptStatus.val("CallWait");
+							});
+				} else 
+				if ("CallWait" == phoneStatus ||
+					"Established" == phoneStatus){
+					$.post("webconf/hangup", 
+							{
+								conferenceId: _confId,
+								dstUserName: attendeeId
+							}, 
+							function(){
+								$iptStatus.val("TermWait");
+							});
+				} else {
+					//do nothing
+				}
+		});
 	});
 	
 	SocketIOClient.setup(_confId, _userId, onNotify);
