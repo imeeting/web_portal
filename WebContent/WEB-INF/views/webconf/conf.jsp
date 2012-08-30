@@ -84,7 +84,7 @@
 				<div class="divAttendeePhone">
 				    <input class="iptAttendeePhoneNumber" type="hidden" value="<%=attendee.getUsername() %>" />
 				    <input class="iptAttendeePhoneCallStatus" type="hidden" value="<%=attendee.getPhoneCallStatus() %>" />
-				    <button class="btnAttendeePhoneCall" class="btn"><%=btnValue %></button>	
+				    <button class="btnAttendeePhoneCall btn" class="btn"><%=btnValue %></button>	
 				</div>
 				<% } %>
 			</div>
