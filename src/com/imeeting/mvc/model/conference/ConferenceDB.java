@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -162,7 +161,7 @@ public class ConferenceDB {
 		List<Map<String, Object>> confResultList = jdbc.queryForList(sql,
 				userName, UserConfStatus.VISIABLE.name(), startIndex, pageSize);
 
-		log.info("confResultList size: " + confResultList.size());
+		log.debug("confResultList size: " + confResultList.size());
 
 		if (confResultList.size() <= 0) {
 			return new JSONArray();
@@ -178,10 +177,10 @@ public class ConferenceDB {
 			Long createdTime = (Long) confMap.get("created");
 			String status = (String) confMap.get("status");
 			String title = (String) confMap.get("title");
-			log.info("conferenceId: " + confId);
-			log.info("created time: " + createdTime.longValue());
-			log.info("status: " + status);
-			log.info("title: " + title);
+			log.debug("conferenceId: " + confId);
+			log.debug("created time: " + createdTime.longValue());
+			log.debug("status: " + status);
+			log.debug("title: " + title);
 
 			JSONObject conference = new JSONObject();
 			try {
@@ -294,7 +293,7 @@ public class ConferenceDB {
 	 */
 	public int updateStatus(String conferenceId, ConferenceStatus status)
 			throws DataAccessException {
-		log.info("updateStatus - " + " conferenceId: " + conferenceId);
+		log.debug("updateStatus - " + " conferenceId: " + conferenceId);
 		return setStatus(conferenceId, status);
 	}
 
