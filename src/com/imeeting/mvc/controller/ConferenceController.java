@@ -223,7 +223,7 @@ public class ConferenceController extends ExceptionController {
 	public void attendeeList(HttpServletResponse response,
 			@RequestParam String conferenceId) throws IOException {
 		ConferenceModel model = conferenceManager.getConference(conferenceId);
-		Collection<AttendeeModel> attendees = model.getAllAttendees();
+		Collection<AttendeeModel> attendees = model.getAvaliableAttendees();
 		JSONArray ret = new JSONArray();
 		if (attendees != null && attendees.size() > 0) {
 			for (AttendeeModel att : attendees) {
@@ -334,7 +334,6 @@ public class ConferenceController extends ExceptionController {
 
 		conferenceModel.removeAttendee(dstUserName);
 		conferenceModel.notifyAttendeeKickOut(dstUserName);
-
 	}
 
 	/**

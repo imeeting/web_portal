@@ -9,7 +9,7 @@ public class AttendeeModel {
 	private static Log log = LogFactory.getLog(AttendeeModel.class);
 
 	public enum OnlineStatus {
-		online, offline
+		online, offline, kickout
 	}
 
 	public enum PhoneCallStatus {

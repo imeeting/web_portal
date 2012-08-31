@@ -54,6 +54,20 @@ public class ConferenceModel {
 	public final Collection<AttendeeModel> getAllAttendees() {
 		return attendeeMap.values();
 	}
+	
+	/**
+	 * get all attendees in conference that status is not kickout.
+	 */
+	public final Collection<AttendeeModel> getAvaliableAttendees() {
+		List<AttendeeModel> result = new LinkedList<AttendeeModel>();
+		for (AttendeeModel attendee : attendeeMap.values()){
+			if (attendee.getOnlineStatus().equals(OnlineStatus.kickout)){
+				continue;
+			}
+			result.add(attendee);
+		}
+		return result;
+	}
 
 	public Collection<String> getAllAttendeeName() {
 		List<String> list = new LinkedList<String>();
