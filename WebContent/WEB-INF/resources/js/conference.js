@@ -54,7 +54,7 @@ $(function() {
 	function onNotify(code, notice){
 		switch (code) {
 		case 200:
-			if (notice && notice.notice_list) {
+			if (notice && notice.cmd=="notify" && notice.notice_list) {
 				var noticeArray = notice.notice_list;
 				for ( var i = 0; i < noticeArray.length; i++) {
 					var event = noticeArray[i];
