@@ -53,6 +53,7 @@ public class AttendeeModel {
 	
 	public void invite(){
 		isKickout = false;
+		joinCount = 0;
 	}
 	
 	public boolean isKickout(){
@@ -64,6 +65,10 @@ public class AttendeeModel {
 	}
 
 	public void setOnlineStatus(OnlineStatus onlineStatus) {
+		if (isKickout()){
+			return;
+		}
+		
 		if (onlineStatus.equals(OnlineStatus.online)){
 			this.joinCount += 1;
 		} else {
