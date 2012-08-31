@@ -49,6 +49,7 @@ public class AttendeeModel {
 	
 	public void kickout(){
 		isKickout = true;
+		joinCount = 0;
 	}
 	
 	public void invite(){
