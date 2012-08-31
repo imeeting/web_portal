@@ -64,7 +64,7 @@ $(function() {
 						onUpdateAttendeeList(event);
 					} else if ("kickout" == event.action) {
 						onUpdateAttendeeList(event);
-						onKickout();
+						onKickout(event);
 					} else {
 						//error action
 					}
@@ -87,6 +87,7 @@ $(function() {
 	function onKickout(event){
 		if (_userId == event.username){
 			alert("您已被主持人移出群聊！");
+			window.close();
 		}
 	}
 	
