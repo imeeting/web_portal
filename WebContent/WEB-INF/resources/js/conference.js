@@ -87,7 +87,7 @@ $(function() {
 	function onKickout(event){
 		if (_userId == event.username){
 			alert("您已被主持人移出群聊！");
-			window.close();
+			window.location = "myconference";
 		}
 	}
 	
