@@ -2,7 +2,6 @@ package com.imeeting.mvc.controller;
 
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,6 +56,7 @@ public class WebConferenceController {
 		ModelAndView mv = new ModelAndView();
 		ConferenceModel conference = conferenceManager.getConference(confId);
 		if (null == conference){
+			mv.addObject("errorInfo", "noconference");
 			mv.setViewName("webconf/join");
 			return mv;
 		}
@@ -79,9 +78,16 @@ public class WebConferenceController {
 						+ (null == donkeyResp ? "NULL Response" : donkeyResp
 								.getStatusCode()));
 				//TODO: join conference failed
+				mv.addObject("errorInfo", "donkeyFailed");
 				mv.setViewName("webconf/join");
 				return mv;
 			}	
+		}
+		
+		if (attendee.isKickout()){
+			mv.addObject("errorInfo", "kickout");
+			mv.setViewName("webconf/join");
+			return mv;
 		}
 		
 		attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);

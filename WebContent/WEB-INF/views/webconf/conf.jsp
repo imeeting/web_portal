@@ -7,7 +7,7 @@
 <% 
 	UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 	ConferenceModel conference = (ConferenceModel)request.getAttribute("conference"); 
-	Collection<AttendeeModel> attendeeCollection = conference.getAllAttendees();
+	Collection<AttendeeModel> attendeeCollection = conference.getAvaliableAttendees();
 	AttendeeModel myself = null;
 %>
 <!DOCTYPE html>

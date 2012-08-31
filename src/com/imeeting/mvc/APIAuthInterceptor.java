@@ -47,22 +47,22 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 			HttpServletResponse response, Object obj) throws Exception {
 		// validate the request
 		String uri = request.getRequestURI().toString();
-		log.info("uri: " + uri);
+		log.debug("uri: " + uri);
 
 		String username = request.getParameter(AuthConstant.username.name());
 		String sig = request.getParameter(AuthConstant.sig.name());
 		
-		log.info("username: " + username + " sig: " + sig);
+		log.debug("username: " + username + " sig: " + sig);
 		
 		if (username == null || sig == null || username.equals("")
 				|| sig.equals("")) {
-			log.info("username or sig is null");
+			log.debug("username or sig is null");
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Request Parameters!");
 			return false;
 		}
 
 		boolean flag = isValidSignature(request, username, sig);
-		log.info("isValidSignature: " + flag);
+		log.debug("isValidSignature: " + flag);
 		if (!flag) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 		}
