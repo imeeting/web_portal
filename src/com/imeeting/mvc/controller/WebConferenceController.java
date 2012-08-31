@@ -2,6 +2,7 @@ package com.imeeting.mvc.controller;
 
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -65,6 +67,21 @@ public class WebConferenceController {
 			attendee = new AttendeeModel(user.getName());
 			conference.addAttendee(attendee);
 			conferenceDao.saveAttendee(confId, user.getName());
+			
+			// add attendees to audio conference
+			DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(
+					conference.getAudioConfId(), attendee.getUsername(), 
+					conference.getConferenceId());
+			if (null == donkeyResp || !donkeyResp.isAccepted()) {
+				log.error("Add attenddes to audio conference <"
+						+ conference.getAudioConfId()
+						+ "> error : "
+						+ (null == donkeyResp ? "NULL Response" : donkeyResp
+								.getStatusCode()));
+				//TODO: join conference failed
+				mv.setViewName("webconf/join");
+				return mv;
+			}	
 		}
 		
 		attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
@@ -98,6 +115,22 @@ public class WebConferenceController {
 			// update the status
 			attendee.setOnlineStatus(OnlineStatus.offline);
 			attendee.setVideoStatus(VideoStatus.off);
+			
+			// update phone call status and hang up this call
+			if (attendee.statusHangup()) {
+				String sipUri = DonkeyClient.generateSipUriFromPhone(user.getName());
+				DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
+						conferenceModel.getAudioConfId(), sipUri, conferenceModel.getConferenceId());
+				if (null == donkeyResp || !donkeyResp.isAccepted()) {
+					log.error("Hangup <"
+							+ user.getName()
+							+ "> in conference <"
+							+ conferenceModel.getConferenceId()
+							+ "> failed : "
+							+ (null == donkeyResp ? "NULL Response" : donkeyResp
+									.getStatusCode()));
+				}
+			}			
 			
 			// notify other people that User has unjoined
 			conferenceModel.broadcastAttendeeStatus(attendee);
@@ -190,4 +223,14 @@ public class WebConferenceController {
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}	
+	
+	@RequestMapping(value = "/attendeeList")
+	public ModelAndView attendeeList(
+			@RequestParam String conferenceId) throws IOException {
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("conference", conference);
+		mv.setViewName("webconf/attendeelist");
+		return mv;
+	}
 }

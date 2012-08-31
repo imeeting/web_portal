@@ -33,7 +33,9 @@ public class AttendeeModel {
 		this.username = userName;
 		this.videoStatus = VideoStatus.off;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
-		setOnlineStatus(status);
+		if (status.equals(OnlineStatus.online)){
+			this.joinCount = 1;
+		}
 	}
 
 	public String getUsername() {

@@ -4,6 +4,7 @@ $(function() {
 	var _confId = $("#iptConfId").val();
 	var _userId = $("#iptUserId").val();
 	var $_btnPhoneCall = $("#btnPhoneCall");
+	var $_divAttendeeList = $("#divAttendeeList");
 	
 	var SocketIOClient = {
 			socket : null,
@@ -59,8 +60,8 @@ $(function() {
 					var event = noticeArray[i];
 					if ("update_status" == event.action){
 						onUpdateStatus(event);
-					} else if ("update_list" == event.action){
-						
+					} else if ("update_attendee_list" == event.action){
+						onUpdateAttendeeList(event);
 					} else if ("kickout" == event.action) {
 						
 					} else {
@@ -73,6 +74,11 @@ $(function() {
 			break;
 		}
 	};
+	
+	function onUpdateAttendeeList(event){
+		$_divAttendeeList.load("webconf/attendeeList", 
+				{conferenceId: _confId});
+	}
 	
 	function onUpdateStatus(event){
 		var attendeeId = event.attendee.username;
@@ -105,19 +111,30 @@ $(function() {
 	
 	function updateAttendeeStatus(attendee){
 		var attendeeId = attendee.username;
-		$div = $("#div" + attendeeId);
+		var $div = $("#div" + attendeeId);
 		
-		$signinIcon = $div.find(".im-signin-icon");
+		var $signinIcon = $div.find(".im-signin-icon");
 		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
 		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
 		
-		$phoneIcon = $div.find(".im-phone-icon");
+		var $phoneIcon = $div.find(".im-phone-icon");
 		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
 				+ " im-icon-phone-CallWait im-icon-phone-Established");
 		$phoneIcon.addClass("im-icon-phone-" + attendee.telephone_status);
 		
-		$phoneText = $div.find(".im-phone-text");
+		var $phoneText = $div.find(".im-phone-text");
 		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
+		
+		//moderator UI
+		var $phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
+		if ($phoneCallStatus){
+			$phoneCallStatus.val(attendee.telephone_status);
+		}
+		
+		var $btnPhoneCall = $div.find(".btnAttendeePhoneCall");
+		if ($btnPhoneCall){
+			$btnPhoneCall.html(getPhoneCallButtonText(attendee.telephone_status));
+		}
 	};
 	
 	function getPhoneStatusText(status){
@@ -129,6 +146,20 @@ $(function() {
 			return "呼叫失败";
 		} else if (status == "Established"){
 			return "已接通";
+		} else {
+			return status;
+		}
+	}
+	
+	function getPhoneCallButtonText(status){
+		if (status == "CallWait"){
+			return "取消呼叫";
+		} else if (status == "Terminated"){
+			return "呼叫";
+		} else if (status == "Failed") {
+			return "重新呼叫";
+		} else if (status == "Established"){
+			return "挂断";
 		} else {
 			return status;
 		}
@@ -160,6 +191,40 @@ $(function() {
 		} else {
 			//do nothing
 		}
+	});
+	
+	$(".divAttendeePhone").each(function(){
+		var $this = $(this);
+		var $iptStatus = $this.find(".iptAttendeePhoneCallStatus");
+		var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
+		var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
+		$btnPhoneCall.click(function(){
+			var phoneStatus = $iptStatus.val();
+			if ("Terminated" == phoneStatus ||
+					"Failed" == phoneStatus){
+					$.post("webconf/call", 
+							{
+								conferenceId: _confId,
+								dstUserName: attendeeId
+							}, 
+							function(){
+								$iptStatus.val("CallWait");
+							});
+				} else 
+				if ("CallWait" == phoneStatus ||
+					"Established" == phoneStatus){
+					$.post("webconf/hangup", 
+							{
+								conferenceId: _confId,
+								dstUserName: attendeeId
+							}, 
+							function(){
+								$iptStatus.val("TermWait");
+							});
+				} else {
+					//do nothing
+				}
+		});
 	});
 	
 	SocketIOClient.setup(_confId, _userId, onNotify);
