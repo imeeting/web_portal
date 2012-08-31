@@ -56,6 +56,7 @@ public class WebConferenceController {
 		ModelAndView mv = new ModelAndView();
 		ConferenceModel conference = conferenceManager.getConference(confId);
 		if (null == conference){
+			mv.addObject("errorInfo", "noconference");
 			mv.setViewName("webconf/join");
 			return mv;
 		}
@@ -77,9 +78,16 @@ public class WebConferenceController {
 						+ (null == donkeyResp ? "NULL Response" : donkeyResp
 								.getStatusCode()));
 				//TODO: join conference failed
+				mv.addObject("errorInfo", "donkeyFailed");
 				mv.setViewName("webconf/join");
 				return mv;
 			}	
+		}
+		
+		if (attendee.isKickout()){
+			mv.addObject("errorInfo", "kickout");
+			mv.setViewName("webconf/join");
+			return mv;
 		}
 		
 		attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);

@@ -61,7 +61,7 @@ public class ConferenceModel {
 	public final Collection<AttendeeModel> getAvaliableAttendees() {
 		List<AttendeeModel> result = new LinkedList<AttendeeModel>();
 		for (AttendeeModel attendee : attendeeMap.values()){
-			if (attendee.getOnlineStatus().equals(OnlineStatus.kickout)){
+			if (attendee.isKickout()){
 				continue;
 			}
 			result.add(attendee);

@@ -266,23 +266,30 @@ public class ConferenceController extends ExceptionController {
 				AttendeeModel attendee = new AttendeeModel(name);
 				conference.addAttendee(attendee);
 				addedAttendeeList.add(name);
+			} else {
+				AttendeeModel attendee = conference.getAttendee(name);
+				if (attendee.isKickout()){
+					attendee.invite();
+				}
 			}
 		}
-
-		conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
-
-		// add attendees to audio conference
-		DonkeyHttpResponse donkeyResp = donkeyClient.addMoreAttendee(
-				conference.getAudioConfId(), addedAttendeeList, conferenceId);
-		if (null == donkeyResp || !donkeyResp.isAccepted()) {
-			log.error("Add attenddes to audio conference <"
-					+ conference.getAudioConfId()
-					+ "> error : "
-					+ (null == donkeyResp ? "NULL Response" : donkeyResp
-							.getStatusCode()));
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Cannot add attendees to audio conference");
-			return;
+		
+		if (addedAttendeeList.size() > 0){
+			conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
+			
+			// add attendees to audio conference
+			DonkeyHttpResponse donkeyResp = donkeyClient.addMoreAttendee(
+					conference.getAudioConfId(), addedAttendeeList, conferenceId);
+			if (null == donkeyResp || !donkeyResp.isAccepted()) {
+				log.error("Add attenddes to audio conference <"
+						+ conference.getAudioConfId()
+						+ "> error : "
+						+ (null == donkeyResp ? "NULL Response" : donkeyResp
+								.getStatusCode()));
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				"Cannot add attendees to audio conference");
+				return;
+			}
 		}
 
 		// notify all attendees to update attendee list
@@ -313,6 +320,7 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 		// update the status
+		attendee.kickout();
 		attendee.setOnlineStatus(OnlineStatus.offline);
 		attendee.setVideoStatus(VideoStatus.off);
 
@@ -332,7 +340,6 @@ public class ConferenceController extends ExceptionController {
 			}
 		}
 
-		conferenceModel.removeAttendee(dstUserName);
 		conferenceModel.notifyAttendeeKickOut(dstUserName);
 	}
 
@@ -363,7 +370,14 @@ public class ConferenceController extends ExceptionController {
 		AttendeeModel attendee = conference.getAttendee(userName);
 		if (attendee == null) {
 			log.error("Cannot join <" + userName + "> to conference <"
-					+ conferenceId + "> beacause the he is not invited.");
+					+ conferenceId + "> beacause it is not invited.");
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+		
+		if (attendee.isKickout()){
+			log.warn("Cannot join <" + userName + "> to conference <"
+					+ conferenceId + "> beacause it is kicked out.");
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}

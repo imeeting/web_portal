@@ -9,7 +9,7 @@ public class AttendeeModel {
 	private static Log log = LogFactory.getLog(AttendeeModel.class);
 
 	public enum OnlineStatus {
-		online, offline, kickout
+		online, offline
 	}
 
 	public enum PhoneCallStatus {
@@ -19,11 +19,12 @@ public class AttendeeModel {
 	public enum VideoStatus {
 		on, off
 	}
-
+	
 	private String username;
 	private VideoStatus videoStatus;
 	private PhoneCallStatus phoneCallStatus;
 	private Integer joinCount = 0;
+	private Boolean isKickout = false;
 
 	public AttendeeModel(String name) {
 		this(name, OnlineStatus.offline);
@@ -44,6 +45,18 @@ public class AttendeeModel {
 
 	public void setUsername(String name) {
 		this.username = name;
+	}
+	
+	public void kickout(){
+		isKickout = true;
+	}
+	
+	public void invite(){
+		isKickout = false;
+	}
+	
+	public boolean isKickout(){
+		return isKickout;
 	}
 
 	public OnlineStatus getOnlineStatus() {
