@@ -64,9 +64,6 @@ public class APNSProviderClient {
 		this.notifyThreadsMaxNumber = notifyThreadsMaxNumber;
 	}
 
-	/**
-	 * private constructor
-	 */
 	public APNSProviderClient() {
 	}
 

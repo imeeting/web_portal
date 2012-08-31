@@ -13,6 +13,9 @@ public class Configuration {
 	private String suite5Id;
 	private String suite10Id;
 	private String appDonwloadPageUrl;
+	private String mongoServerAddress;
+	private int mongoServerPort;
+	private String mongoDBName;
 	
 	public void setUploadDir(String uploadDir){
 		this.uploadDir = uploadDir;
@@ -52,6 +55,30 @@ public class Configuration {
 
 	public void setAppDonwloadPageUrl(String appDonwloadPageUrl) {
 		this.appDonwloadPageUrl = appDonwloadPageUrl;
+	}
+
+	public String getMongoServerAddress() {
+		return mongoServerAddress;
+	}
+
+	public void setMongoServerAddress(String mongoServerAddress) {
+		this.mongoServerAddress = mongoServerAddress;
+	}
+
+	public int getMongoServerPort() {
+		return mongoServerPort;
+	}
+
+	public void setMongoServerPort(int mongoServerPort) {
+		this.mongoServerPort = mongoServerPort;
+	}
+
+	public String getMongoDBName() {
+		return mongoDBName;
+	}
+
+	public void setMongoDBName(String mongoDBName) {
+		this.mongoDBName = mongoDBName;
 	}
 	
 }

@@ -7,10 +7,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.imeeting.mvc.model.addressbook.AddressBookDAO;
 import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.notify.APNSProviderClient;
 import com.richitec.notify.Notifier;
@@ -70,6 +73,13 @@ public class ContextLoader extends ContextLoaderListener {
 
 	public static ChargeDAO getChargeDAO() {
 		return (ChargeDAO) appContext.getBean("charge_dao");
+	}
+	
+	public static AddressBookDAO getAddressBookDAO() {
+		AddressBookDAO dao = (AddressBookDAO) appContext.getBean("addressbook_dao");
+		DB db = MongoDBManager.getInstance().getImeetingDB();
+		dao.setDb(db);
+		return dao;
 	}
 
 	public static APNSProviderClient getDevAPNSProviderClient() {

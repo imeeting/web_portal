@@ -30,6 +30,12 @@
 		<property name="appDonwloadPageUrl">
 		    <value>${app_download_page_url}</value>
 		</property>
+		<property name="mongoServerAddress">
+		    <value>${mongo.server.address}</value>
+		</property>
+		<property name="mongoServerPort">
+		    <value>${mongo.server.port}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
@@ -138,6 +144,9 @@
 		<property name="conferenceDao" ref="conference_dao"></property>
 	</bean>
 
+	<bean id="addressbook_dao" class="com.imeeting.mvc.model.addressbook.AddressBookDAO">
+	</bean>
+	
 	<bean id="apns_provider_dev" class="com.richitec.notify.APNSProviderClient">
 		<property name="notifyThreadsMaxNumber">
 			<value>${notifyThreadsMaxNumber}</value>
