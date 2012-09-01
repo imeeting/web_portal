@@ -39,6 +39,7 @@ public class UserInterceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession();
 		UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
 		if (null != userBean) {
+			session.setMaxInactiveInterval(30*60);
 			return true;
 		}
 		
