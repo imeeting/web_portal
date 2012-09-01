@@ -82,4 +82,21 @@ public class ConferenceManager {
 			}
 		}
 	}
+	
+	public void checkAllConfAttendeeHeartBeat(){
+		Long currentTimeMillis = System.currentTimeMillis();
+		for (ConferenceModel conf : conferenceMap.values()){
+			for (AttendeeModel attendee : conf.getAllAttendees()){
+				if (!attendee.isOnline() || 
+					null==attendee.getLastHBTimeMillis()){
+					continue;
+				}
+				
+				if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30*1000){
+					attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
+					conf.broadcastAttendeeStatus(attendee);
+				}
+			}
+		}
+	}
 }

@@ -242,4 +242,14 @@ $(function() {
 	
 	bindClickToBtnAttendeePhoneCall();
 	SocketIOClient.setup(_confId, _userId, onNotify);
+	
+	function heartbeat(){
+		$.post("webconf/heartbeat", 
+				{conferenceId: _confId},
+				function(data){
+					
+				});
+	}
+	
+	setInterval(heartbeat, 10000);
 });

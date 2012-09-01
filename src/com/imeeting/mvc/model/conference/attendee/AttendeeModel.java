@@ -25,6 +25,7 @@ public class AttendeeModel {
 	private PhoneCallStatus phoneCallStatus;
 	private Integer joinCount = 0;
 	private Boolean isKickout = false;
+	private Long lastestHBTimeMillis;
 
 	public AttendeeModel(String name) {
 		this(name, OnlineStatus.offline);
@@ -72,9 +73,14 @@ public class AttendeeModel {
 		
 		if (onlineStatus.equals(OnlineStatus.online)){
 			this.joinCount += 1;
+			heartBeat();
 		} else {
 			this.joinCount -= 1;
 		}
+	}
+	
+	public boolean isOnline(){
+		return joinCount > 0;
 	}
 
 	public VideoStatus getVideoStatus() {
@@ -87,6 +93,14 @@ public class AttendeeModel {
 
 	public PhoneCallStatus getPhoneCallStatus() {
 		return phoneCallStatus;
+	}
+	
+	public void heartBeat(){
+		this.lastestHBTimeMillis = System.currentTimeMillis();
+	}
+	
+	public Long getLastHBTimeMillis(){	
+		return lastestHBTimeMillis;
 	}
 
 	public boolean statusCall() {
@@ -177,4 +191,5 @@ public class AttendeeModel {
 		}
 		return obj;
 	}
+
 }

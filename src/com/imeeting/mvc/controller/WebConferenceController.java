@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.framework.ContextLoader;
@@ -47,6 +48,13 @@ public class WebConferenceController {
 	public String join() {
 		return "webconf/join";
 	}
+	
+	@RequestMapping(value="create")
+	public ModelAndView create(){
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("webconf/create");
+		return mv;
+	}	
 
 	@RequestMapping(method=RequestMethod.POST)
 	public ModelAndView join(
@@ -96,13 +104,6 @@ public class WebConferenceController {
 		
 		mv.addObject("conference", conference);
 		mv.setViewName("webconf/conf");
-		return mv;
-	}
-	
-	@RequestMapping(value="create")
-	public ModelAndView create(){
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("webconf/create");
 		return mv;
 	}
 	
@@ -238,5 +239,19 @@ public class WebConferenceController {
 		mv.addObject("conference", conference);
 		mv.setViewName("webconf/attendeelist");
 		return mv;
+	}
+	
+	@RequestMapping(value="/heartbeat", method=RequestMethod.POST)
+	public @ResponseBody String heartbeat(
+			HttpSession session,
+			@RequestParam(value="conferenceId") String conferenceId){
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		AttendeeModel attendee = conference.getAttendee(user.getName());
+		if (null != attendee){
+			attendee.heartBeat();
+		}
+		
+		return "ok";
 	}
 }
