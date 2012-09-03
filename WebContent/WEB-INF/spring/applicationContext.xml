@@ -36,6 +36,9 @@
 		<property name="mongoServerPort">
 		    <value>${mongo.server.port}</value>
 		</property>
+		<property name="mongoDBName">
+		    <value>${mongo.db.name}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

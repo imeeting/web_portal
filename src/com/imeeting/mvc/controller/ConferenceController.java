@@ -193,7 +193,7 @@ public class ConferenceController extends ExceptionController {
 		JSONArray confs = conferenceDao.getConferenceWithAttendeesList(username, offset,
 				PageSize);
 
-		String url = "/api/conference/list" + "?";
+		String url = "/conference/list" + "?";
 		Pager pager = new Pager(offset, PageSize, count, url);
 
 		JSONObject ret = new JSONObject();

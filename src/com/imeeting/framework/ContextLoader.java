@@ -13,7 +13,6 @@ import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.notify.APNSProviderClient;
 import com.richitec.notify.Notifier;
