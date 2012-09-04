@@ -118,10 +118,13 @@ public class AddressBookDAO {
 			DBCollection contactsColl = db.getCollection(COLL_CONTACTS);
 			DBObject query = new BasicDBObject();
 			query.put(AddressBookConstants.owner.name(), owner);
+			
 			BasicDBObject reg = new BasicDBObject();
 			reg.put("$regex", "^" + searchWord + ".*");
 			reg.put("$options", "i");
-			query.put(AddressBookConstants.contact_name.name(), reg);
+			
+			query.put(AddressBookConstants.search_name.name(), reg);
+			
 			if (groupId != null) {
 				query.put(AddressBookConstants.group_id.name(), groupId);
 			}
