@@ -42,6 +42,7 @@
 			<mvc:mapping path="/conference/hangup"/>
 			<mvc:mapping path="/conference/mute"/>
 			<mvc:mapping path="/conference/unmute"/>
+			<mvc:mapping path="/conference/heartbeat"/>
 			<bean class="com.imeeting.mvc.ConferenceInterceptor" />
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -57,6 +58,7 @@
 			<mvc:mapping path="/conference/mute"/>
 			<mvc:mapping path="/conference/unmute"/>
 			<mvc:mapping path="/conference/hide"/>
+			<mvc:mapping path="/conference/heartbeat"/>
 			<bean class="com.imeeting.mvc.APIAuthInterceptor"></bean>
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->

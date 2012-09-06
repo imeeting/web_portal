@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.framework.ContextLoader;
@@ -27,6 +29,7 @@ import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.VideoStatus;
+import com.imeeting.web.user.UserBean;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;
@@ -119,7 +122,7 @@ public class ConferenceController extends ExceptionController {
 		conference.setAudioConfId(conferenceId);
 		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(userName);
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
-				conferenceId, vosPhoneNumber.toString(), 
+				conferenceId, vosPhoneNumber.toString(),
 				conference.getAllAttendeeName(), conferenceId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
 			log.error("Create audio conference error : "
@@ -190,8 +193,8 @@ public class ConferenceController extends ExceptionController {
 			throws IOException, DataAccessException, JSONException {
 
 		int count = conferenceDao.getConferenceTotalCount(username);
-		JSONArray confs = conferenceDao.getConferenceWithAttendeesList(username, offset,
-				PageSize);
+		JSONArray confs = conferenceDao.getConferenceWithAttendeesList(
+				username, offset, PageSize);
 
 		String url = "/conference/list" + "?";
 		Pager pager = new Pager(offset, PageSize, count, url);
@@ -268,26 +271,28 @@ public class ConferenceController extends ExceptionController {
 				addedAttendeeList.add(name);
 			} else {
 				AttendeeModel attendee = conference.getAttendee(name);
-				if (attendee.isKickout()){
+				if (attendee.isKickout()) {
 					attendee.invite();
 				}
 			}
 		}
-		
-		if (addedAttendeeList.size() > 0){
+
+		if (addedAttendeeList.size() > 0) {
 			conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
-			
+
 			// add attendees to audio conference
 			DonkeyHttpResponse donkeyResp = donkeyClient.addMoreAttendee(
-					conference.getAudioConfId(), addedAttendeeList, conferenceId);
+					conference.getAudioConfId(), addedAttendeeList,
+					conferenceId);
 			if (null == donkeyResp || !donkeyResp.isAccepted()) {
 				log.error("Add attenddes to audio conference <"
 						+ conference.getAudioConfId()
 						+ "> error : "
 						+ (null == donkeyResp ? "NULL Response" : donkeyResp
 								.getStatusCode()));
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-				"Cannot add attendees to audio conference");
+				response.sendError(
+						HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						"Cannot add attendees to audio conference");
 				return;
 			}
 		}
@@ -374,8 +379,8 @@ public class ConferenceController extends ExceptionController {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
-		
-		if (attendee.isKickout()){
+
+		if (attendee.isKickout()) {
 			log.warn("Cannot join <" + userName + "> to conference <"
 					+ conferenceId + "> beacause it is kicked out.");
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -663,4 +668,17 @@ public class ConferenceController extends ExceptionController {
 		}
 	}
 
+	@RequestMapping(value = "/heartbeat", method = RequestMethod.POST)
+	public @ResponseBody
+	String heartbeat(HttpSession session,
+			@RequestParam(value = "conferenceId") String conferenceId,
+			@RequestParam(value = "username") String userName) {
+		ConferenceModel conference = conferenceManager
+				.getConference(conferenceId);
+		AttendeeModel attendee = conference.getAttendee(userName);
+		if (null != attendee) {
+			attendee.heartBeat();
+		}
+		return "ok";
+	}
 }
