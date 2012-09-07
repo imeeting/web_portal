@@ -23,8 +23,8 @@ public class ConferenceManager {
 	public ConferenceManager() {
 		conferenceMap = new ConcurrentHashMap<String, ConferenceModel>();
 	}
-	
-	public void setConferenceDao(ConferenceDB dao){
+
+	public void setConferenceDao(ConferenceDB dao) {
 		conferenceDao = dao;
 	}
 
@@ -32,8 +32,8 @@ public class ConferenceManager {
 		return conferenceMap.get(conferenceId);
 	}
 
-	public synchronized ConferenceModel checkConferenceModel(String conferenceId,
-			String userName) {
+	public synchronized ConferenceModel checkConferenceModel(
+			String conferenceId, String userName) {
 		ConferenceModel conference = conferenceMap.get(conferenceId);
 		log.info("checkConferenceModel - conference: " + conference);
 		if (null == conference) {
@@ -48,7 +48,8 @@ public class ConferenceManager {
 	}
 
 	public ConferenceModel creatConference(String conferenceId, String ownerName) {
-		ConferenceModel conference = new ConferenceModel(conferenceId, ownerName);
+		ConferenceModel conference = new ConferenceModel(conferenceId,
+				ownerName);
 		conferenceMap.put(conferenceId, conference);
 		return conference;
 	}
@@ -59,12 +60,14 @@ public class ConferenceManager {
 	}
 
 	/**
-	 * remove the conference from conference manager if all attendees are offline
+	 * remove the conference from conference manager if all attendees are
+	 * offline
 	 * 
 	 * @param conferenceId
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public synchronized void removeConferenceIfEmpty(String conferenceId) throws DataAccessException {
+	public synchronized void removeConferenceIfEmpty(String conferenceId)
+			throws DataAccessException {
 		ConferenceModel conference = getConference(conferenceId);
 		if (conference != null) {
 			Collection<AttendeeModel> attendees = conference.getAllAttendees();
@@ -77,24 +80,31 @@ public class ConferenceManager {
 			}
 			if (isEmpty) {
 				removeConference(conferenceId);
-				ContextLoader.getDonkeyClient().destroyConference(conferenceId, conferenceId);
+				ContextLoader.getDonkeyClient().destroyConference(conferenceId,
+						conferenceId);
 				conferenceDao.close(conferenceId);
 			}
 		}
 	}
-	
-	public void checkAllConfAttendeeHeartBeat(){
+
+	public void checkAllConfAttendeeHeartBeat() {
 		Long currentTimeMillis = System.currentTimeMillis();
-		for (ConferenceModel conf : conferenceMap.values()){
-			for (AttendeeModel attendee : conf.getAllAttendees()){
-				if (!attendee.isOnline() || 
-					null==attendee.getLastHBTimeMillis()){
+		for (ConferenceModel conf : conferenceMap.values()) {
+			for (AttendeeModel attendee : conf.getAllAttendees()) {
+				if (null == attendee.getLastHBTimeMillis()) {
 					continue;
 				}
-				
-				if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30*1000){
-					attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
-					conf.broadcastAttendeeStatus(attendee);
+
+				if (attendee.isOnline()) {
+					if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30 * 1000) {
+						attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
+						conf.broadcastAttendeeStatus(attendee);
+					}
+				} else {
+					if (currentTimeMillis - attendee.getLastHBTimeMillis() <= 30 * 1000) {
+						attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
+						conf.broadcastAttendeeStatus(attendee);
+					}
 				}
 			}
 		}
