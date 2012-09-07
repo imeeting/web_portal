@@ -23,6 +23,7 @@ public class AttendeeModel {
 	private String username;
 	private VideoStatus videoStatus;
 	private PhoneCallStatus phoneCallStatus;
+	private OnlineStatus onlineStatus;
 	private Integer joinCount = 0;
 	private Boolean isKickout = false;
 	private Long lastestHBTimeMillis;
@@ -35,6 +36,7 @@ public class AttendeeModel {
 		this.username = userName;
 		this.videoStatus = VideoStatus.off;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
+		this.onlineStatus = status;
 		if (status.equals(OnlineStatus.online)){
 			this.joinCount = 1;
 		}
@@ -50,6 +52,8 @@ public class AttendeeModel {
 	
 	public void kickout(){
 		isKickout = true;
+		onlineStatus = OnlineStatus.offline;
+		videoStatus = VideoStatus.off;
 		joinCount = 0;
 	}
 	
@@ -61,28 +65,37 @@ public class AttendeeModel {
 	public boolean isKickout(){
 		return isKickout;
 	}
-
-	public OnlineStatus getOnlineStatus() {
-		return joinCount > 0 ? OnlineStatus.online : OnlineStatus.offline;
+	
+	public boolean isJoined(){
+		return joinCount > 0;
 	}
-
-	public void setOnlineStatus(OnlineStatus onlineStatus) {
-		if (isKickout()){
-			return;
+	
+	public int join(){
+		onlineStatus = OnlineStatus.online;
+		return ++joinCount;
+	}
+	
+	public int unjoin(){
+		joinCount -= 1;
+		if (joinCount <= 0){
+			onlineStatus = OnlineStatus.offline;
+			videoStatus = VideoStatus.off;
 		}
-		
-		if (onlineStatus.equals(OnlineStatus.online)){
-			this.joinCount += 1;
-			heartBeat();
-		} else {
-			this.joinCount -= 1;
-		}
+		return joinCount;
 	}
 	
 	public boolean isOnline(){
-		return joinCount > 0;
+		return onlineStatus.equals(OnlineStatus.online);
 	}
 
+	public OnlineStatus getOnlineStatus() {
+		return onlineStatus;
+	}
+
+	public void setOnlineStatus(OnlineStatus onlineStatus) {
+		this.onlineStatus = onlineStatus;
+	}
+	
 	public VideoStatus getVideoStatus() {
 		return videoStatus;
 	}

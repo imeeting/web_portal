@@ -32,21 +32,6 @@ public class ConferenceManager {
 		return conferenceMap.get(conferenceId);
 	}
 
-	public synchronized ConferenceModel checkConferenceModel(
-			String conferenceId, String userName) {
-		ConferenceModel conference = conferenceMap.get(conferenceId);
-		log.info("checkConferenceModel - conference: " + conference);
-		if (null == conference) {
-			return null;
-		}
-
-		AttendeeModel attendee = conference.getAttendee(userName);
-		if (attendee != null) {
-			attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
-		}
-		return conference;
-	}
-
 	public ConferenceModel creatConference(String conferenceId, String ownerName) {
 		ConferenceModel conference = new ConferenceModel(conferenceId,
 				ownerName);
@@ -91,7 +76,8 @@ public class ConferenceManager {
 		Long currentTimeMillis = System.currentTimeMillis();
 		for (ConferenceModel conf : conferenceMap.values()) {
 			for (AttendeeModel attendee : conf.getAllAttendees()) {
-				if (null == attendee.getLastHBTimeMillis()) {
+				if (!attendee.isJoined() || 
+					null == attendee.getLastHBTimeMillis()) {
 					continue;
 				}
 
