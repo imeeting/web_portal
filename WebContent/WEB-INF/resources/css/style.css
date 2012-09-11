@@ -84,6 +84,10 @@ footer span {
     float: left;
 }
 
+.im-flash {
+    height: 400px;	
+}
+
 .im-attendee {
     padding: 5px;
     margin: 0 5px 5px 0;
@@ -128,6 +132,10 @@ footer span {
 
 .im-icon-video-off {
 	background-image: url("../img/video_off.png");
+}
+
+.im-icon-video-on {
+    background-image: url("../img/video_on.png");
 }
 
 #formJoinConference hr {

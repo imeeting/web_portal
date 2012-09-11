@@ -128,6 +128,24 @@ $(function() {
 		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
 		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
 		
+		var $videoIcon = $div.find(".im-video-icon");
+		$videoIcon.removeClass("im-icon-video-on im-icon-video-off");
+		$videoIcon.addClass("im-icon-video-" + attendee.video_status);
+		
+		var $videoHiddenInput = $div.find(".iptAttendeeId");
+		$videoHiddenInput.removeClass("im-icon-video-on im-icon-video-off");
+		$videoHiddenInput.addClass("im-icon-video-" + attendee.video_status);		
+		
+		var $videoText = $div.find(".im-video-text");
+		$videoText.html(" " + getVideoStatusText(attendee.video_status));
+		
+		var flash = document.getElementById("imeeting_flash");
+		if (attendee.video_status == "on"){
+			flash.flexAddUserToVideoList(attendeeId, attendeeId);
+		} else {
+			flash.flexRemoveUserFromVideoList(attendeeId);
+		}
+		
 		var $phoneIcon = $div.find(".im-phone-icon");
 		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
 				+ " im-icon-phone-CallWait im-icon-phone-Established");
@@ -157,6 +175,16 @@ $(function() {
 			return "呼叫失败";
 		} else if (status == "Established"){
 			return "已接通";
+		} else {
+			return status;
+		}
+	}
+	
+	function getVideoStatusText(status){
+		if (status == "on") {
+			return "视频已打开";
+		} else if (status == "off") {
+			return "视频不可用";
 		} else {
 			return status;
 		}

@@ -83,11 +83,11 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 			String username, String sig) {
 		String userkey = ContextLoader.getUserDAO().getUserKey(username);
 		if (userkey == null) {
-			log.info("userkey is null");
+			log.debug("userkey is null");
 			return false;
 		}
 		
-		log.info("username: " + username + " key: " + userkey);
+		log.debug("username: " + username + " key: " + userkey);
 		
 		ArrayList<String> paramList = new ArrayList<String>();
 		Enumeration<String> names = request.getParameterNames();
@@ -102,7 +102,7 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 		}
 
 		Collections.sort(paramList);
-		log.info("params after sorting");
+		log.debug("params after sorting");
 		printList(paramList);
 		
 		StringBuffer sb2 = new StringBuffer();
@@ -114,10 +114,10 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 
 		boolean ret = false;
 		String digest = MD5Util.md5(sb2.toString());
-		log.info("digest: " + digest);
+		log.debug("digest: " + digest);
 		if (digest.equalsIgnoreCase(sig)) {
 			ret = true;
-			log.info("valid signature");
+			log.debug("valid signature");
 		}
 
 		return ret;
@@ -125,7 +125,7 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 	
 	private static void printList(List<String> list) {
 		for (int i = 0; i < list.size(); i++) {
-			log.info(list.get(i));
+			log.debug(list.get(i));
 		}
 	}
 }

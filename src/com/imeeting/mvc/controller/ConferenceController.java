@@ -326,8 +326,6 @@ public class ConferenceController extends ExceptionController {
 		}
 		// update the status
 		attendee.kickout();
-		attendee.setOnlineStatus(OnlineStatus.offline);
-		attendee.setVideoStatus(VideoStatus.off);
 
 		// update phone call status and hang up this call
 		if (attendee.statusHangup()) {
@@ -363,8 +361,8 @@ public class ConferenceController extends ExceptionController {
 			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userName)
 			throws DataAccessException, IOException, JSONException {
-		ConferenceModel conference = conferenceManager.checkConferenceModel(
-				conferenceId, userName);
+		
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
 		if (null == conference) {
 			log.error("Cannot join <" + userName + "> to conference <"
 					+ conferenceId + "> beacause the conference is not going.");
@@ -385,6 +383,8 @@ public class ConferenceController extends ExceptionController {
 					+ conferenceId + "> beacause it is kicked out.");
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
+		} else {
+			attendee.join();
 		}
 
 		// notify other people that User has joined
@@ -425,8 +425,7 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 		// update the status
-		attendee.setOnlineStatus(OnlineStatus.offline);
-		attendee.setVideoStatus(VideoStatus.off);
+		attendee.unjoin();
 
 		// update phone call status and hang up this call
 		if (attendee.statusHangup()) {

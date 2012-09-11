@@ -98,7 +98,9 @@ public class WebConferenceController {
 			return mv;
 		}
 		
-		attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
+		attendee.join();
+		attendee.heartBeat();
+		
 		// notify all attendees to update attendee list
 		conference.notifyAttendeesToUpdateMemberList();
 		
@@ -120,8 +122,7 @@ public class WebConferenceController {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
 		} else {
 			// update the status
-			attendee.setOnlineStatus(OnlineStatus.offline);
-			attendee.setVideoStatus(VideoStatus.off);
+			attendee.unjoin();
 			
 			// update phone call status and hang up this call
 			if (attendee.statusHangup()) {
