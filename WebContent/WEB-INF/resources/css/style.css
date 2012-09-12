@@ -173,6 +173,7 @@ footer span {
 	float: left;
 	width:  49%;
 	height: 90%;
+	clear: left;
 }
 
 .selection-list ul.right {
