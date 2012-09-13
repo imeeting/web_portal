@@ -154,6 +154,23 @@
     <script src="/imeeting/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(function(){
+			function disable60Seconds(){
+				var $btn = $("#btnGetPhoneCode");
+				var oldHtml = $btn.html();
+	            $btn.attr("disabled", true);
+	            var seconds = 60;
+	            var itvl = setInterval(function(){
+	                $btn.html(seconds + " 秒后可重试");
+	                seconds -= 1;
+	                if (seconds < 0){
+	                    $btn.html(oldHtml);
+	                    $("#spanPhoneNumberInfo").html("");
+	                    clearInterval(itvl);
+	                    $btn.attr("disabled", false);
+	                }
+	            }, 1000);
+			}
+			
 			$("#btnGetPhoneCode").click(function(){
 				var $span = $("#spanPhoneNumberInfo");
 				var $divCtrl = $("#divPhoneNumberCtrl");
@@ -170,6 +187,7 @@
 					{ phone: phoneNumber },
 					function(data){
 						if ("0" == data.result){
+							disable60Seconds();
 							$divCtrl.addClass("success");
 							$span.html("验证码已发送，注意查看手机短信。");
 						} else
