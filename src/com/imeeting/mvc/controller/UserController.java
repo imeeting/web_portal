@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
@@ -34,6 +36,12 @@ public class UserController extends ExceptionController {
 	private UserDAO userDao;
 	private VOSClient vosClient;
 	private Configuration config;
+	
+	public static final String ErrorCode = "error_code";
+	public static final String PhoneNumberError = "phone_number_error";
+	public static final String PhoneCodeError = "phone_code_error";
+	public static final String PasswordError = "password_error";
+	public static final String ConfirmPasswordError = "confirm_password_error";
 
 	@PostConstruct
 	public void init() {
@@ -132,31 +140,53 @@ public class UserController extends ExceptionController {
 		return "200";
 	}
 	
-	@RequestMapping("/websignup")
-	public @ResponseBody String webSignup(
+	@RequestMapping(value="/websignup", method=RequestMethod.POST)
+	public ModelAndView webSignup(
 			HttpSession session,
-			@RequestParam(value = "phone") String phoneNumber,
-			@RequestParam(value = "code") String phoneCode,			
-			@RequestParam(value = "pwd") String password,
-			@RequestParam(value = "confirmPwd") String confirmPassword) throws Exception {
-		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
-				|| password.isEmpty() || confirmPassword.isEmpty()) {
-			return "400";
-		}
-
+			@RequestParam(value = "phoneNumber") String phoneNumber,
+			@RequestParam(value = "phoneCode") String phoneCode,			
+			@RequestParam(value = "password") String password,
+			@RequestParam(value = "confirmPassword") String confirmPassword) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("signup");
+		
 		String sessionPhoneNumber = (String)session.getAttribute("phonenumber");
 		String sessionPhoneCode = (String)session.getAttribute("phonecode");
+		/*
 		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
-			return "410";
+			mv.addObject(ErrorCode, HttpServletResponse.SC_GONE);
+			return mv;
+		}
+		*/
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
+				|| password.isEmpty() || confirmPassword.isEmpty()) {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
+			if (phoneNumber.isEmpty()){
+				mv.addObject(PhoneNumberError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (phoneCode.isEmpty()) {
+				mv.addObject(PhoneCodeError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (password.isEmpty()){
+				mv.addObject(PasswordError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (confirmPassword.isEmpty()) {
+				mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			return mv;
 		}
 
 		if (!phoneNumber.equals(sessionPhoneNumber)
 				|| !phoneCode.equals(sessionPhoneCode)) {
-			return "401";
+			mv.addObject(ErrorCode, HttpServletResponse.SC_UNAUTHORIZED);
+			mv.addObject(PhoneCodeError, HttpServletResponse.SC_UNAUTHORIZED);
+			return mv;
 		}
 
 		if (!password.equals(confirmPassword)) {
-			return "403";
+			mv.addObject(ErrorCode, HttpServletResponse.SC_FORBIDDEN);
+			mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_FORBIDDEN);
+			return mv;
 		}
 
 		String result = userDao.regUser(phoneNumber, password, confirmPassword);
@@ -198,7 +228,12 @@ public class UserController extends ExceptionController {
 			}
 		}
 
-		return result;
+		if ("0".equals(result)){
+			mv.addObject(ErrorCode, HttpServletResponse.SC_OK);
+		} else {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return mv;
 	}
 	
 	/**

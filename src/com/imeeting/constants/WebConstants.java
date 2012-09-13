@@ -8,5 +8,4 @@ public enum WebConstants {
 	pay_account_name,
 	charge_money,
 	conf_list,
-	
 }
