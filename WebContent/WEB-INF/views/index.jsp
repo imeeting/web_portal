@@ -61,6 +61,7 @@
     				</div>
     				<br>
 	    			<button type="submit" class="btn btn-success" id="btnGetDownloadURL" >获取下载地址</button>
+	    			<span id="spanHelpInfo" class="help-inline"></span>
     			</form>    			
     		</div>
     	</div>
@@ -80,22 +81,39 @@
 				alert("还没有输入手机号码呢！");
 				return false;
 			}
+			
+			var $span = $("#spanHelpInfo");
+			var $btn = $("#btnGetDownloadURL");
+			var btnTitle = $btn.html();
+			$btn.attr("disabled", true);
+			var seconds = 60;
+			var itvl = setInterval(function(){
+				$btn.html(seconds + "秒后可重试");
+				seconds -= 1;
+				if (seconds < 0){
+					$btn.html(btnTitle);
+					$span.html("");
+					clearInterval(itvl);
+					$btn.attr("disabled", false);
+				}
+			}, 1000);
+			
 			$.post("/imeeting/getDownloadPageUrl", 
 				{phoneNumber: phoneNumber},
 				function(data){
 					var result = data.result;
 					switch (result) {
 					case "ok":
-						alert("短信成功发送到手机啦，快去下载吧！");
+						$span.html("短信已发送，注意查看手机");
 						break;
 					case "fail":
-						alert("短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
+						$span.html("短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
 						break;
 					
 					}
 				}, "json")
 				.error(function() {
-					alert("服务器或者网络出现现在有点困难，等会儿再试吧！");
+					$span.html("服务器或者网络出现现在有点困难，等会儿再试吧！");
 				});
 			return false;
 		});
