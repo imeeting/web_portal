@@ -30,7 +30,7 @@
 			<h1>
 				欢迎您：<%=user.getName() %>
 				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>
-				<a class="btn btn-danger btn-large" href="webconf/unjoin?confId=<%=conference.getConferenceId() %>">离开群聊</a>
+				<a class="btn btn-danger btn-large" href="/imeeting/webconf/unjoin?confId=<%=conference.getConferenceId() %>">离开群聊</a>
 			</h1>  	
     	</div>
     	<div class="im-flash">

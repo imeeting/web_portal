@@ -46,7 +46,7 @@ public class UserDAO {
 		try {
 			session.setAttribute("phonenumber", phone);
 			session.setAttribute("phonecode", phoneCode);
-			String content = "验证码：" + phoneCode + " [iMeeting]";
+			String content = "验证码：" + phoneCode + " [智会]";
 			SMSHttpResponse response = ContextLoader.getSMSClient()
 					.sendTextMessage(phone, content);
 			log.info("sms return: " + response.getCode());

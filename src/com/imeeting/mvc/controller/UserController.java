@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
@@ -34,6 +36,12 @@ public class UserController extends ExceptionController {
 	private UserDAO userDao;
 	private VOSClient vosClient;
 	private Configuration config;
+	
+	public static final String ErrorCode = "error_code";
+	public static final String PhoneNumberError = "phone_number_error";
+	public static final String PhoneCodeError = "phone_code_error";
+	public static final String PasswordError = "password_error";
+	public static final String ConfirmPasswordError = "confirm_password_error";
 
 	@PostConstruct
 	public void init() {
@@ -66,6 +74,13 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	/**
+	 * forgetpwd.jsp 页面获取手机验证码请求。
+	 * 
+	 * @param session
+	 * @param phoneNumber
+	 * @return
+	 */
 	@RequestMapping("/validatePhoneNumber")
 	public @ResponseBody
 	String validatePhoneNumber(HttpSession session,
@@ -124,7 +139,111 @@ public class UserController extends ExceptionController {
 
 		return "200";
 	}
+	
+	@RequestMapping(value="/websignup", method=RequestMethod.POST)
+	public ModelAndView webSignup(
+			HttpSession session,
+			@RequestParam(value = "phoneNumber") String phoneNumber,
+			@RequestParam(value = "phoneCode") String phoneCode,			
+			@RequestParam(value = "password") String password,
+			@RequestParam(value = "confirmPassword") String confirmPassword) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("signup");
+		
+		String sessionPhoneNumber = (String)session.getAttribute("phonenumber");
+		String sessionPhoneCode = (String)session.getAttribute("phonecode");
+		/*
+		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_GONE);
+			return mv;
+		}
+		*/
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
+				|| password.isEmpty() || confirmPassword.isEmpty()) {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
+			if (phoneNumber.isEmpty()){
+				mv.addObject(PhoneNumberError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (phoneCode.isEmpty()) {
+				mv.addObject(PhoneCodeError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (password.isEmpty()){
+				mv.addObject(PasswordError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (confirmPassword.isEmpty()) {
+				mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			return mv;
+		}
 
+		if (!phoneNumber.equals(sessionPhoneNumber)
+				|| !phoneCode.equals(sessionPhoneCode)) {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_UNAUTHORIZED);
+			mv.addObject(PhoneCodeError, HttpServletResponse.SC_UNAUTHORIZED);
+			return mv;
+		}
+
+		if (!password.equals(confirmPassword)) {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_FORBIDDEN);
+			mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_FORBIDDEN);
+			return mv;
+		}
+
+		String result = userDao.regUser(phoneNumber, password, confirmPassword);
+		if ("0".equals(result)) { // insert success
+			Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
+			result = addUserToVOS(phoneNumber, vosphone.toString());
+			
+			if ("0".equals(result)) {
+				int affectedRows = 
+					userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			} else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_suite_error);
+			}
+		}
+		
+		if ("0".equals(result)){
+			Double money = config.getSignupGift();
+			if (money!=null && money>0){
+				VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber, money);
+				if (depositeResp.getHttpStatusCode()!=200 ||
+						!depositeResp.isOperationSuccess()){
+					log.error("\nCannot deposite gift for user : " + phoneNumber
+							+ "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
+
+		if ("0".equals(result)){
+			mv.addObject(ErrorCode, HttpServletResponse.SC_OK);
+		} else {
+			mv.addObject(ErrorCode, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return mv;
+	}
+	
+	/**
+	 * 用户从手机注册获取验证码请求。
+	 * 
+	 * @param phone
+	 * @param response
+	 * @param session
+	 * @throws Exception
+	 */
 	@RequestMapping("/getPhoneCode")
 	public void getPhoneCode(@RequestParam(value = "phone") String phone,
 			HttpServletResponse response, HttpSession session) throws Exception {
@@ -143,6 +262,14 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	/**
+	 * 验证手机客户端发送来的验证码
+	 * 
+	 * @param code
+	 * @param response
+	 * @param session
+	 * @throws Exception
+	 */
 	@RequestMapping("/checkPhoneCode")
 	public void checkPhoneCode(@RequestParam(value = "code") String code,
 			HttpServletResponse response, HttpSession session) throws Exception {
@@ -193,6 +320,23 @@ public class UserController extends ExceptionController {
 				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_phone_error);
 			} else if ("2003".equals(result)) {
 				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_suite_error);
+			}
+		}
+		
+		if ("0".equals(result)){
+			Double money = config.getSignupGift();
+			if (money!=null && money>0){
+				VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
+				if (depositeResp.getHttpStatusCode()!=200 ||
+						!depositeResp.isOperationSuccess()){
+					log.error("\nCannot deposite gift for user : " + phone
+							+ "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
 			}
 		}
 
@@ -248,7 +392,15 @@ public class UserController extends ExceptionController {
 
 		return "0";
 	}
-
+	/**
+	 * iphone 客户端每次启动登录后会发送该请求
+	 * 
+	 * @param userName
+	 * @param token
+	 * @param response
+	 * @throws JSONException
+	 * @throws IOException
+	 */
 	@RequestMapping("/regToken")
 	public void regToken(
 			@RequestParam(value = "username", required = true) String userName,

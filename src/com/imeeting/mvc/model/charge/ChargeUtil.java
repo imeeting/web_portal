@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.imeeting.constants.ChargeStatus;
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.controller.ChargeAccountController;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
