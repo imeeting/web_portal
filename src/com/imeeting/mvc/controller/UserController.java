@@ -67,7 +67,7 @@ public class UserController extends ExceptionController {
 	}
 
 	/**
-	 * signup.jsp, forgetpwd.jsp 页面获取手机验证码请求。
+	 * forgetpwd.jsp 页面获取手机验证码请求。
 	 * 
 	 * @param session
 	 * @param phoneNumber
@@ -131,7 +131,76 @@ public class UserController extends ExceptionController {
 
 		return "200";
 	}
+	
+	@RequestMapping("/websignup")
+	public @ResponseBody String webSignup(
+			HttpSession session,
+			@RequestParam(value = "phone") String phoneNumber,
+			@RequestParam(value = "code") String phoneCode,			
+			@RequestParam(value = "pwd") String password,
+			@RequestParam(value = "confirmPwd") String confirmPassword) throws Exception {
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
+				|| password.isEmpty() || confirmPassword.isEmpty()) {
+			return "400";
+		}
 
+		String sessionPhoneNumber = (String)session.getAttribute("phonenumber");
+		String sessionPhoneCode = (String)session.getAttribute("phonecode");
+		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
+			return "410";
+		}
+
+		if (!phoneNumber.equals(sessionPhoneNumber)
+				|| !phoneCode.equals(sessionPhoneCode)) {
+			return "401";
+		}
+
+		if (!password.equals(confirmPassword)) {
+			return "403";
+		}
+
+		String result = userDao.regUser(phoneNumber, password, confirmPassword);
+		if ("0".equals(result)) { // insert success
+			Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
+			result = addUserToVOS(phoneNumber, vosphone.toString());
+			
+			if ("0".equals(result)) {
+				int affectedRows = 
+					userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			} else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_suite_error);
+			}
+		}
+		
+		if ("0".equals(result)){
+			Double money = config.getSignupGift();
+			if (money!=null && money>0){
+				VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber, money);
+				if (depositeResp.getHttpStatusCode()!=200 ||
+						!depositeResp.isOperationSuccess()){
+					log.error("\nCannot deposite gift for user : " + phoneNumber
+							+ "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * 用户从手机注册获取验证码请求。
 	 * 

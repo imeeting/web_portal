@@ -17,23 +17,22 @@
 				class="brand" href="/imeeting/home">智会</a>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="<%="home".equals(pageName) ? "active" : ""%>"><a href="/imeeting/home">首页</a>
+					<li class="<%="home".equals(pageName) ? "active" : ""%>">
+					   <a href="/imeeting/home">首页</a>
 					</li>
-					<li class="<%="deposite".equals(pageName) ? "active" : ""%>"><a href="/imeeting/deposite">在线充值</a>
-					</li>
+                    <li class="<%="signup".equals(pageName) ? "active" : ""%>">
+                        <a href="/imeeting/signup">注册</a>
+                    </li>
 					<li class="<%="signin".equals(pageName) ? "active" : ""%>">
-					<%
-						if (userBean == null) {
-					%>
+					<% if (userBean == null) { %>
 						<a href="/imeeting/signin">登录</a>
-					<%
-						} else {
-					%>
+					<% } else {	%>
 						<a href="/imeeting/accountcharge">进入账户</a>
-					<%
-						}
-					%>
+					<% } %>
 					</li>
+				    <li class="<%="deposite".equals(pageName) ? "active" : ""%>">
+				        <a href="/imeeting/deposite">在线充值</a>
+                    </li>
 				</ul>
 			</div>
 		</div>

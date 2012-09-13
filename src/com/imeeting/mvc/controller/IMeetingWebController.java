@@ -49,7 +49,15 @@ public class IMeetingWebController {
 	@RequestMapping(value = "/help", method = RequestMethod.GET)
 	public String help() {
 		return "help";
-	}		
+	}
+	
+	@RequestMapping(value = "/signup", method = RequestMethod.GET)
+	public ModelAndView signup() {
+		ModelAndView view = new ModelAndView();
+		view.setViewName("signup");
+		view.addObject(WebConstants.page_name.name(), "signup");
+		return view;
+	}
 
 	@RequestMapping(value = "/signin", method = RequestMethod.GET)
 	public ModelAndView signin() {
