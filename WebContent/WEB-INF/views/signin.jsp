@@ -13,11 +13,12 @@
     <div class="container">
     	<div class="row">
 			<form id="signin-form" action="" class="span4 offset4 well">
-				<label>手机号码</label>
+				<label for="username">手机号码</label>
 				<input id="username" class="span4" type="text" />
-				<label>密码&nbsp;<small><a href="forgetpwd" target="blank">（忘记密码）</a></small></label>
+				<label for="password">密码</label>
 				<input id="password" class="span4" type="password" />
 				<button type="submit" class="btn btn-primary">登&nbsp;录</button>
+				<a class="pull-right" href="forgetpwd" target="blank">（忘记密码）</a>
 			</form>
     	</div>
     	
