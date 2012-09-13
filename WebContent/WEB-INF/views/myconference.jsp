@@ -25,7 +25,7 @@
 		    			<% } %>
 		    		</div>
 		    		<div class="pull-right">
-			    		<a class="btn btn-success btn-large" href="./webconf/create" target="blank">创建新的群聊</a>
+			    		<a class="btn btn-success btn-large" href="./webconf/arrange" target="blank">创建新的群聊</a>
 			    		<a class="btn btn-success btn-large" href="./webconf" target="blank">加入群聊</a>
 		    		</div>
 		    	</div>

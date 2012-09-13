@@ -234,3 +234,9 @@ footer span {
 	border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 4px 4px 4px 4px;
 }
+
+#add_new_contact_dlg {
+	width: 360px;
+	left: 55%;
+	margin-left: -245px;
+}

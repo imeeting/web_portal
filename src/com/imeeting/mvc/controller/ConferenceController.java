@@ -109,7 +109,7 @@ public class ConferenceController extends ExceptionController {
 
 		// step 2. save ConferenceModel in Database.
 		try {
-			conferenceDao.saveConference(conference);
+			conferenceDao.saveConference(conference, null);
 		} catch (DataAccessException e) {
 			log.error("\nSave conference <" + conferenceId
 					+ "> to database error : \n" + "Message : "
@@ -134,7 +134,7 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 
-		// step 5. response to user
+		// step 4. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
 		ret.put(ConferenceConstants.audioConfId.name(), conferenceId);

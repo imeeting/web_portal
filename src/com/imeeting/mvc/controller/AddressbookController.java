@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.addressbook.AddressBookDAO;
+import com.imeeting.web.user.UserBean;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -70,7 +72,6 @@ public class AddressbookController {
 		List<DBObject> contactList = abDao.getContacts(userName, groupId,
 				offset, PageSize);
 		String contactsJson = contactList.toString();
-		log.info("contact list: " + contactsJson);
 		JSONArray contactsArray = new JSONArray(contactsJson);
 
 		String url = "/addressbook/contactList" + "?";
@@ -92,12 +93,24 @@ public class AddressbookController {
 
 	}
 
+	@RequestMapping("/allContacts")
+	public void allContactList(HttpServletResponse response,
+			HttpSession session,
+			@RequestParam(value = "groupId", required = false) String groupId)
+			throws IOException {
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		List<DBObject> contactList = abDao.getAllContacts(user.getName(),
+				groupId);
+		response.getWriter().print(contactList.toString());
+	}
+
 	@RequestMapping("/search")
-	public void search(HttpServletResponse response,
-			@RequestParam(value = "username", required = true) String userName,
+	public void search(HttpServletResponse response, HttpSession session,
 			@RequestParam(value = "groupId", required = false) String groupId,
 			@RequestParam String searchWord) throws IOException {
-		List<DBObject> contactList = abDao.searchContact(userName, groupId, searchWord);
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		List<DBObject> contactList = abDao.searchContact(user.getName(),
+				groupId, searchWord);
 		response.getWriter().print(contactList.toString());
 	}
 }

@@ -20,7 +20,7 @@ $(function() {
 				switch (result) {
 				case "0":
 					// login success
-					location.href = "accountcharge";
+					location.href = "myconference";
 					break;
 				default:
 					alert("额，登陆失败了，检查一下您的用户名和密码吧!");

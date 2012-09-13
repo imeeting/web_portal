@@ -105,6 +105,29 @@ public class AddressBookDAO {
 	}
 	
 	/**
+	 * get all contacts from specified group
+	 * @param owner
+	 * @param groupId
+	 * @return return the contact list, if groupId is null, it will return all
+	 */
+	public List<DBObject> getAllContacts(String owner, String groupId) {
+		List<DBObject> contactList = new ArrayList<DBObject>();
+
+		if (db != null) {
+			DBCollection contactsColl = db.getCollection(COLL_CONTACTS);
+			DBObject query = new BasicDBObject();
+			query.put(AddressBookConstants.owner.name(), owner);
+			if (groupId != null) {
+				query.put(AddressBookConstants.group_id.name(), groupId);
+			}
+			
+			contactList = contactsColl.find(query).toArray();
+		}
+
+		return contactList;
+	}
+	
+	/**
 	 * search contact by name
 	 * @param owner
 	 * @param groupId
@@ -144,7 +167,7 @@ public class AddressBookDAO {
 			DBObject query = new BasicDBObject();
 			query.put(AddressBookConstants.owner.name(), owner);
 			BasicDBObject reg = new BasicDBObject();
-			reg.put("$regex", "^" + searchWord + ".*");
+			reg.put("$regex", ".*" + searchWord + ".*");
 			reg.put("$options", "i");
 			query.put(AddressBookConstants.phone_array.name(),reg);
 			if (groupId != null) {
