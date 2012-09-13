@@ -55,7 +55,10 @@
     			<hr>
     			<form id="formGetDownlaodUrl" action="#">
     				<label>输入手机号码，短信获取下载地址</label>
-    				<input type="text" name="phoneNumber" id="iptPhoneNumber" pattern="[0-9]{11}" maxlength="11" />
+    				<div class="input-prepend">
+    				<span class="add-on">+86</span><input type="text" name="phoneNumber" id="iptPhoneNumber" 
+    				pattern="[0-9]{11}" maxlength="11" placeholder="仅限中国大陆手机号码"/>
+    				</div>
     				<br>
 	    			<button type="submit" class="btn btn-success" id="btnGetDownloadURL" >获取下载地址</button>
     			</form>    			
