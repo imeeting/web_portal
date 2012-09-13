@@ -195,6 +195,23 @@ public class UserController extends ExceptionController {
 				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_suite_error);
 			}
 		}
+		
+		if ("0".equals(result)){
+			Double money = config.getSignupGift();
+			if (money!=null && money>0){
+				VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
+				if (depositeResp.getHttpStatusCode()!=200 ||
+						!depositeResp.isOperationSuccess()){
+					log.error("\nCannot deposite gift for user : " + phone
+							+ "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
 
 		JSONObject jsonUser = new JSONObject();
 		try {
@@ -248,7 +265,7 @@ public class UserController extends ExceptionController {
 
 		return "0";
 	}
-
+	
 	@RequestMapping("/regToken")
 	public void regToken(
 			@RequestParam(value = "username", required = true) String userName,

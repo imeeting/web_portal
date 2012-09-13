@@ -16,6 +16,7 @@ public class Configuration {
 	private String mongoServerAddress;
 	private int mongoServerPort;
 	private String mongoDBName;
+	private Double signupGift;
 	
 	public void setUploadDir(String uploadDir){
 		this.uploadDir = uploadDir;
@@ -79,6 +80,14 @@ public class Configuration {
 
 	public void setMongoDBName(String mongoDBName) {
 		this.mongoDBName = mongoDBName;
+	}
+	
+	public void setSignupGift(Double value) {
+		this.signupGift = value;
+	}
+	
+	public Double getSignupGift() {
+		return signupGift;
 	}
 	
 }
