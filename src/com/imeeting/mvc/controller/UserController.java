@@ -66,6 +66,13 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	/**
+	 * signup.jsp, forgetpwd.jsp 页面获取手机验证码请求。
+	 * 
+	 * @param session
+	 * @param phoneNumber
+	 * @return
+	 */
 	@RequestMapping("/validatePhoneNumber")
 	public @ResponseBody
 	String validatePhoneNumber(HttpSession session,
@@ -125,6 +132,14 @@ public class UserController extends ExceptionController {
 		return "200";
 	}
 
+	/**
+	 * 用户从手机注册获取验证码请求。
+	 * 
+	 * @param phone
+	 * @param response
+	 * @param session
+	 * @throws Exception
+	 */
 	@RequestMapping("/getPhoneCode")
 	public void getPhoneCode(@RequestParam(value = "phone") String phone,
 			HttpServletResponse response, HttpSession session) throws Exception {
@@ -143,6 +158,14 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	/**
+	 * 验证手机客户端发送来的验证码
+	 * 
+	 * @param code
+	 * @param response
+	 * @param session
+	 * @throws Exception
+	 */
 	@RequestMapping("/checkPhoneCode")
 	public void checkPhoneCode(@RequestParam(value = "code") String code,
 			HttpServletResponse response, HttpSession session) throws Exception {
@@ -265,7 +288,15 @@ public class UserController extends ExceptionController {
 
 		return "0";
 	}
-	
+	/**
+	 * iphone 客户端每次启动登录后会发送该请求
+	 * 
+	 * @param userName
+	 * @param token
+	 * @param response
+	 * @throws JSONException
+	 * @throws IOException
+	 */
 	@RequestMapping("/regToken")
 	public void regToken(
 			@RequestParam(value = "username", required = true) String userName,
