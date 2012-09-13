@@ -14,7 +14,7 @@
     	<div class="row">
 			<form id="signin-form" action="" class="span4 offset4 well">
 				<label for="username">手机号码</label>
-				<input id="username" class="span4" type="text" />
+				<input id="username" class="span4" type="text" pattern="[0-9]{11}" maxlength="11"/>
 				<label for="password">密码</label>
 				<input id="password" class="span4" type="password" />
 				<button type="submit" class="btn btn-primary">登&nbsp;录</button>

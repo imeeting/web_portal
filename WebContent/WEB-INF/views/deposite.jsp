@@ -39,7 +39,9 @@
 					<div class="tab-pane active" id="pane-pay">
 			    		<form id="formAlipay" action="alipay" method="post">
 				    		<label>请输入要充值的账户名</label>
-				    		<input id="account_name_input" type="text" name="account_name" value="<%=userBean != null ? userBean.getName() : "" %>" />
+				    		<input id="account_name_input" type="text" 
+				    		name="account_name"	pattern="[0-9]{11}" maxlength="11"
+				    		value="<%=userBean != null ? userBean.getName() : "" %>" />
 							<label>请选择充值金额（RMB&nbsp;单位：元）</label>
 							<select name="charge_amount">
 								<option value="50.00">50</option>
@@ -63,7 +65,9 @@
 					<div class="tab-pane" id="pane-zhihuicard">
 						<form id="formCard" action="zhihuicard", method="post">
 							<label>请输入要充值的账户名</label>
-				    		<input id="iptCardAccounName" type="text" name="account_name" value="<%=userBean != null ? userBean.getName() : "" %>" />						
+				    		<input id="iptCardAccounName" type="text" 
+				    		name="account_name" pattern="[0-9]{11}" maxlength="11"
+				    		value="<%=userBean != null ? userBean.getName() : "" %>" />						
 							<label>请输入智会卡号</label>
 							<input id="iptCardPin" type="text" name="pin" />
 							<label>请输入智会卡密码</label>
