@@ -32,23 +32,21 @@
 						  <div id="divOldPwd" class="control-group">
 							<label class="control-label">输入当前使用的密码</label>
 							<input type="password" name="oldPwd" id="iptOldPwd" />
-							<span class="help-block"></span>
+							<span class="help-inline"></span>
 						  </div>
 						  <div id="divNewPwd" class="control-group">
 							<label class="control-label">输入新密码</label>
 							<input type="password" name="newPwd" id="iptNewPwd" />
-							<span class="help-block"></span>
+							<span class="help-inline"></span>
 						  </div>
 						  <div id="divNewPwdConfirm" class="control-group">
 							<label class="control-label">再次输入新密码</label>
 							<input type="password" name="newPwdConfirm" id="iptNewPwdConfirm" />
-							<span class="help-block"></span>
+							<span class="help-inline"></span>
 						  </div>
 						  <div id="divSubmit" class="control-group">
-						    <p>
 							<button type="submit" class="btn btn-primary">确&nbsp;定</button>
-							</p>
-							<span class="help-block"></span>
+							<span class="help-inline"></span>
 						  </div>
 						</form>
 					</div>
@@ -76,7 +74,7 @@
 	<script type="text/javascript" src="/imeeting/js/lib/md5.js"></script>
 	<script type="text/javascript">
 		function isValidPassword($div, val){
-			var $span = $div.find(".help-block");
+			var $span = $div.find(".help-inline");
 			if (val == ""){
 				$div.addClass("error");
 				$span.html("输入不能为空");
@@ -100,7 +98,7 @@
 				isValidPassword($divNewPwdConfirm, newPwdConfirm))
 			{
 				var $divSubmit = $("#divSubmit");
-				var $spanSubmit = $divSubmit.find(".help-block");
+				var $spanSubmit = $divSubmit.find(".help-inline");
 				var jqxhr = $.post("setting/changepassword", 
 					{
 						oldPwd: md5(oldPwd),
