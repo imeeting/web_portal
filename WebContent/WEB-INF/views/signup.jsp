@@ -175,7 +175,10 @@
 				var $span = $("#spanPhoneNumberInfo");
 				var $divCtrl = $("#divPhoneNumberCtrl");
 				var phoneNumber = $("#iptPhoneNumber").val();
-				if (phoneNumber.length != 11 || !$.isNumeric(phoneNumber)){
+				if (phoneNumber.length != 11 || 
+					!$.isNumeric(phoneNumber) ||
+					phoneNumber.charAt(0) != '1')
+				{
 					$divCtrl.addClass("error");
 					$span.html("手机号码格式错误");
 					return;
