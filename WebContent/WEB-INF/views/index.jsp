@@ -125,7 +125,6 @@
 					case "fail":
 						info("error", "短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
 						break;
-					
 					}
 				}, "json")
 				.error(function() {
