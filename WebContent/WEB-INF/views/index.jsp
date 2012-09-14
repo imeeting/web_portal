@@ -54,14 +54,19 @@
     			</div>
     			<hr>
     			<form id="formGetDownlaodUrl" action="#">
-    				<label>输入手机号码，短信获取下载地址</label>
-    				<div class="input-prepend">
-    				<span class="add-on">+86</span><input type="text" name="phoneNumber" id="iptPhoneNumber" 
-    				pattern="[0-9]{11}" maxlength="11" placeholder="仅限中国大陆手机号码"/>
-    				</div>
-    				<br>
-	    			<button type="submit" class="btn btn-success" id="btnGetDownloadURL" >获取下载地址</button>
-	    			<span id="spanHelpInfo" class="help-inline"></span>
+                    <div id="divControlGroup" class="control-group">
+	    				<label class="control-label" for="iptPhoneNumber">输入手机号码，短信获取下载地址</label>
+	    				<div class="controls input-prepend input-append">
+		    				<span class="add-on">+86</span><input type="text" 
+		    				class="input-medium" name="phoneNumber" id="iptPhoneNumber" 
+		    				pattern="[0-9]{11}" maxlength="11" 
+		    				placeholder="仅限中国大陆手机号码"/><button type="submit" 
+		    				class="btn" id="btnGetDownloadURL" >获取下载地址</button>
+	    				</div>
+                    </div>
+                    <div id="divAlert" class="control-group">
+	    				<span id="spanAlert" class="help-inline"></span>
+                    </div>
     			</form>    			
     		</div>
     	</div>
@@ -75,14 +80,25 @@
     <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
     <script src="/imeeting/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
+	    var $divCtrl = $("#divAlert");
+	    var $spanAlert = $("#spanAlert");
+    
+        function info(level, msg){
+            $divCtrl.removeClass("success");
+            $divCtrl.removeClass("error");
+            if (level){
+	            $divCtrl.addClass(level);
+            }
+            $spanAlert.html(msg);
+        }
+	
 		$("#formGetDownlaodUrl").submit(function(){
 			var phoneNumber = $("#iptPhoneNumber").val();
 			if (phoneNumber == null || phoneNumber == "") {
-				alert("还没有输入手机号码呢！");
+				info("error", "还没有输入手机号码呢！");
 				return false;
 			}
 			
-			var $span = $("#spanHelpInfo");
 			var $btn = $("#btnGetDownloadURL");
 			var btnTitle = $btn.html();
 			$btn.attr("disabled", true);
@@ -91,10 +107,10 @@
 				$btn.html(seconds + "秒后可重试");
 				seconds -= 1;
 				if (seconds < 0){
+				    info(null, "");					
 					$btn.html(btnTitle);
-					$span.html("");
-					clearInterval(itvl);
 					$btn.attr("disabled", false);
+					clearInterval(itvl);
 				}
 			}, 1000);
 			
@@ -104,16 +120,16 @@
 					var result = data.result;
 					switch (result) {
 					case "ok":
-						$span.html("短信已发送，注意查看手机");
+						info("success", "短信已发送，注意查看手机");
 						break;
 					case "fail":
-						$span.html("短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
+						info("error", "短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
 						break;
 					
 					}
 				}, "json")
 				.error(function() {
-					$span.html("服务器或者网络出现现在有点困难，等会儿再试吧！");
+					info("error", "服务器或者网络出现现在有点困难，等会儿再试吧！");
 				});
 			return false;
 		});
