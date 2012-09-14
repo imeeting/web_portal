@@ -137,6 +137,8 @@ public class UserController extends ExceptionController {
 			return "500";
 		}
 
+		session.removeAttribute("phonenumber");
+		session.removeAttribute("phonecode");
 		return "200";
 	}
 	
