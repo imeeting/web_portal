@@ -86,7 +86,7 @@
     	       <h2>恭喜你，注册成功！<a href="/imeeting/signin">点此登录</a></h2>
     	   </div>
     	<% } else { %>
-	    	<form id="formSignup" action="/imeeting/user/websignup" method="post" class="span6 offset3">
+	    	<form id="formSignup" action="/imeeting/user/websignup" method="post" class="im-form span6 offset3">
 		    	<div class="page-header">
 			    	<h2>使用手机号码注册</h2>
 			    </div>
