@@ -272,7 +272,7 @@ $(function() {
 	SocketIOClient.setup(_confId, _userId, onNotify);
 	
 	function heartbeat(){
-		$.post("webconf/heartbeat", 
+		$.post("/imeeting/webconf/heartbeat", 
 				{conferenceId: _confId},
 				function(data){
 					

@@ -44,7 +44,7 @@ public class ConferenceDB {
 	public void saveConference(ConferenceModel conference, String title)
 			throws DataAccessException {
 		insert(conference.getConferenceId());
-		if (title == null) {
+		if (title == null || title.equals("")) {
 			title = "群聊号: " + conference.getConferenceId();
 		}
 		editConferenceTitle(conference.getConferenceId(), title);
