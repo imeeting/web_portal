@@ -102,6 +102,7 @@ public class WebConferenceController {
 					AttendeeModel attendee = new AttendeeModel(name);
 					conference.addAttendee(attendee);
 				}
+				conference.sendSMSToAttendees(attendeesJsonArray);
 			} catch (JSONException e) {
 				log.error("\nCannot parse attendees : " + attendeeList);
 				conferenceManager.removeConference(conferenceId);

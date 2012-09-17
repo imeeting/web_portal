@@ -1,5 +1,6 @@
 package com.imeeting.mvc.model.conference;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import javapns.notification.PushNotificationPayload;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -199,5 +201,27 @@ public class ConferenceModel {
 		}
 
 		broadcastAttendeeStatus(attendee);
+	}
+	
+	public void sendSMSToAttendees(JSONArray attendeesJsonArray) {
+		if (attendeesJsonArray != null) {
+			StringBuffer numberList = new StringBuffer();
+			for (int i = 0; i < attendeesJsonArray.length(); i++) {
+				try {
+					String number = attendeesJsonArray.getString(i);
+					numberList.append(number).append(',');
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			if (numberList.length() > 0) {
+				String content = "您被邀请加入群聊（群聊号：" + conferenceId + " ) 访问www.wetalking.net加入群聊。";
+				try {
+					ContextLoader.getSMSClient().sendTextMessage(numberList.toString(), content);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
