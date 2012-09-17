@@ -77,7 +77,7 @@ $(function() {
 	};
 	
 	function onUpdateAttendeeList(event){
-		$_divAttendeeList.load("webconf/attendeeList", 
+		$_divAttendeeList.load("/imeeting/webconf/attendeeList", 
 				{conferenceId: _confId}, 
 				function() {
 					bindClickToBtnAttendeePhoneCall();
@@ -208,7 +208,7 @@ $(function() {
 		var currentPhoneCallStatus = $("#iptMyPhoneCallStatus").val();
 		if ("Terminated" == currentPhoneCallStatus ||
 			"Failed" == currentPhoneCallStatus){
-			$.post("webconf/call", 
+			$.post("/imeeting/webconf/call", 
 					{
 						conferenceId: _confId,
 						dstUserName: _userId
@@ -219,7 +219,7 @@ $(function() {
 		} else 
 		if ("CallWait" == currentPhoneCallStatus ||
 			"Established" == currentPhoneCallStatus){
-			$.post("webconf/hangup", 
+			$.post("/imeeting/webconf/hangup", 
 					{
 						conferenceId: _confId,
 						dstUserName: _userId
@@ -242,7 +242,7 @@ $(function() {
 				var phoneStatus = $iptStatus.val();
 				if ("Terminated" == phoneStatus ||
 						"Failed" == phoneStatus){
-					$.post("webconf/call", 
+					$.post("/imeeting/webconf/call", 
 							{
 						conferenceId: _confId,
 						dstUserName: attendeeId
@@ -253,7 +253,7 @@ $(function() {
 				} else 
 					if ("CallWait" == phoneStatus ||
 							"Established" == phoneStatus){
-						$.post("webconf/hangup", 
+						$.post("/imeeting/webconf/hangup", 
 								{
 							conferenceId: _confId,
 							dstUserName: attendeeId
