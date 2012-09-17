@@ -149,7 +149,8 @@
     </script>
     <script type="text/javascript">
     function js_getRTMPUri(){
-    	return "rtmp://127.0.0.1/quick_server/<%=conference.getConferenceId() %>";
+    	//return "rtmp://127.0.0.1/quick_server/<%=conference.getConferenceId() %>";
+    	return "rtmp://rtmp.wetalking.net/quick_server/<%=conference.getConferenceId() %>";
     }
     function js_getUserId(){
     	return "<%=user.getName() %>";
