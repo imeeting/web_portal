@@ -22,9 +22,7 @@
     			</div>
     		</div>
     		<div class="span4">
-    			<div class="page-header">
-	    			<h1>智会&nbsp;<small>高效能人士的智慧选择</small></h1>
-    			</div>
+    			<h1>智会&nbsp;<small>高效能人士的智慧选择</small></h1>
     			<ul>
     				<li><h2><small>多人同时通话</small></h2></li>
 	    			<li><h2><small>高清语音质量</small></h2></li>

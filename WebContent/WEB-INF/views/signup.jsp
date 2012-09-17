@@ -82,14 +82,13 @@
     <div class="container">
     	<div class="row">
     	<% if (null != errorCode && HttpServletResponse.SC_OK == errorCode) { %>
-    	   <div class="page-header span4 offset4">
+    	   <div class="span4 offset4">
     	       <h2>恭喜你，注册成功！<a href="/imeeting/signin">点此登录</a></h2>
     	   </div>
     	<% } else { %>
 	    	<form id="formSignup" action="/imeeting/user/websignup" method="post" class="im-form span6 offset3">
-		    	<div class="page-header">
-			    	<h2>使用手机号码注册</h2>
-			    </div>
+			    <h2>使用手机号码注册</h2>
+			    <hr>
 			    <% if (null != errorInfo) { %>
 			    <div class="alert alert-error">
 			     <strong>错误：</strong><%=errorInfo %>

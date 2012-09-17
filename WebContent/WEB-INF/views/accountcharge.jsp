@@ -24,19 +24,13 @@
 
 
     <div class="container">
-    	<div class="row well">
-			<div class="span4 offset3">
-				<h1>账户余额：￥<%=strBalance %></h1>
-			</div>
-			<a class="span1 btn btn-large btn-success" href="deposite" target="blank">在线充值</a>
-    	</div>
-		<div class="row">
-			<div class="page-header span6 offset3">
-				<h2>我的充值记录</h2>
-			</div>
-		</div>
 		<div class="row">
 			<div class="span6 offset3">
+			    <div class="clearfix">
+					<h2 class="pull-left">账户余额：￥<%=strBalance %></h2>
+					<a class="pull-right btn btn-large btn-success im-btn" href="deposite" target="blank">在线充值</a>
+			    </div>
+			    <hr>
 				<table class="table table-striped">
 					<thead>
 						<tr>

@@ -13,9 +13,8 @@
     <div class="container">
     	<div class="row">
     		<form id="formResetPassword" action="user/resetpassword" class="im-form span6 offset3">
-    		    <div class="page-header">
-                    <h2>重新设置密码</h2>
-                </div>
+                <h2>重新设置密码</h2>
+                <hr>
                 <div id="divPhoneNumberCtrl" class="control-group">
                     <label class="control-label" for="iptPhoneNumber">手机号</label>
                     <div class="controls">

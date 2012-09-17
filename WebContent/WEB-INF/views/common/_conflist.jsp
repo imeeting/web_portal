@@ -33,7 +33,7 @@
 			
 			<div class="well clearfix">
 				<div class="im-conf-info pull-left">
-					<h3 class="im-conf-title"><%=conf.getTitle()%></h3>
+					<p class="im-conf-title"><%=conf.getTitle()%></p>
 					<div class="clearfix">
 						<% for (int j=0; j<attendeeList.size(); j++) {
 								AttendeeBean attendee = attendeeList.get(j);
@@ -45,12 +45,12 @@
 					</div>
 				</div>
 				<div class="pull-right">
-					<h3><small>群聊号：<strong><%=conf.getId() %></strong></small></h3>
-					<h3><small>
+					<p>
+					          群聊号：<strong><%=conf.getId() %></strong><br>
 						<strong><%=year %></strong>年<strong><%=month %></strong>月<strong><%=day %></strong>日<br>
 						<%=week %><br>
 						<strong><%=ap %>&nbsp;<%=hour %></strong>
-					</small></h3>
+					</p>
 				</div>
 			</div>
 <% } //End of FOR%>

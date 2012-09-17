@@ -16,7 +16,7 @@
     <div class="container">
     	<div class="row">
     		<div class="span8 offset2">
-		    	<div class="clearfix page-header">
+		    	<div class="clearfix">
 		    		<div class="pull-left">
 		    			<% if (null == confCount || confCount<=0) { %>
 		    			<h2>您还没有参加过任何群聊</h2>
@@ -25,10 +25,11 @@
 		    			<% } %>
 		    		</div>
 		    		<div class="pull-right">
-			    		<a class="btn btn-success btn-large" href="./webconf/arrange" target="blank">创建新的群聊</a>
-			    		<a class="btn btn-success btn-large" href="./webconf" target="blank">加入群聊</a>
+			    		<a class="btn btn-success btn-large im-btn" href="./webconf/arrange" target="blank">创建新的群聊</a>
+			    		<a class="btn btn-success btn-large im-btn" href="./webconf" target="blank">加入群聊</a>
 		    		</div>
 		    	</div>
+		    	<hr>
 				<div id="divConfListContainer">
 					<small>正在加载数据...</small>
 				</div>
