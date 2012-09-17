@@ -14,6 +14,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,12 +43,12 @@ import com.richitec.vos.client.VOSHttpResponse;
 @Controller
 public class ChargeAccountController {
 	private static Log log = LogFactory.getLog(ChargeAccountController.class);
-	
+
 	private VOSClient vosClient;
 	private ChargeDAO chargeDao;
 	private UserDAO userDao;
 	private SMSClient smsClient;
-	
+
 	@PostConstruct
 	public void init() {
 		vosClient = ContextLoader.getVOSClient();
@@ -61,7 +64,7 @@ public class ChargeAccountController {
 		view.addObject(WebConstants.page_name.name(), "deposite");
 		return view;
 	}
-	
+
 	/**
 	 * 充值卡号前四位表示该卡的面额
 	 * 
@@ -73,58 +76,59 @@ public class ChargeAccountController {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	@RequestMapping(value="/zhihuicard", method=RequestMethod.POST)
-	public ModelAndView zhihuiCard(
-			HttpServletResponse response,
-			@RequestParam(value="account_name") String account,
-			@RequestParam(value="pin") String pin,
-			@RequestParam(value="password") String password) throws IOException, SQLException{
+	@RequestMapping(value = "/zhihuicard", method = RequestMethod.POST)
+	public ModelAndView zhihuiCard(HttpServletResponse response,
+			@RequestParam(value = "account_name") String account,
+			@RequestParam(value = "pin") String pin,
+			@RequestParam(value = "password") String password)
+			throws IOException, SQLException {
 		ModelAndView mv = new ModelAndView();
 		boolean isExist = userDao.isExistsLoginName(account);
-		if (!isExist){
+		if (!isExist) {
 			mv.setViewName("accountcharge/invalidAccount");
 			return mv;
 		}
-		
-		if (pin.length() < 4){
+
+		if (pin.length() < 4) {
 			mv.setViewName("accountcharge/invalidPin");
-			return mv;			
+			return mv;
 		}
-		
+
 		Double value = 0.0;
 		String cardValue = pin.substring(0, 4);
 		try {
 			value = Double.parseDouble(cardValue);
 		} catch (NumberFormatException e) {
 			mv.setViewName("accountcharge/invalidPin");
-			return mv;	
+			return mv;
 		}
-		
+
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin, password);
-		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()){
-			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.vos_fail);
-			log.error("\nCannot deposite to account <" + account + "> with card <" + pin + ">" 
-					+ "<" + password +">"
-					+ "\nVOS Http Response : "
-					+ vosResp.getHttpStatusCode()
-					+ "\nVOS Status Code : "
-					+ vosResp.getVOSStatusCode()
-					+ "\nVOS Response Info ："
-					+ vosResp.getVOSResponseInfo());
+		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin,
+				password);
+		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
+			chargeDao.addChargeRecord(chargeId, account, value,
+					ChargeStatus.vos_fail);
+			log.error("\nCannot deposite to account <" + account
+					+ "> with card <" + pin + ">" + "<" + password + ">"
+					+ "\nVOS Http Response : " + vosResp.getHttpStatusCode()
+					+ "\nVOS Status Code : " + vosResp.getVOSStatusCode()
+					+ "\nVOS Response Info ：" + vosResp.getVOSResponseInfo());
 		}
-		
+
 		mv.addObject("vosResponse", vosResp);
-		if (vosResp.isOperationSuccess()){
+		if (vosResp.isOperationSuccess()) {
 			/*
-			log.info("VOS INFO : " + vosResp.getVOSResponseInfo());
-			DepositeCardInfo info = new DepositeCardInfo(vosResp.getVOSResponseInfo());
-			mv.addObject("despositeInfo", info);
-			*/
-			chargeDao.addChargeRecord(chargeId, account, value, ChargeStatus.success);
+			 * log.info("VOS INFO : " + vosResp.getVOSResponseInfo());
+			 * DepositeCardInfo info = new
+			 * DepositeCardInfo(vosResp.getVOSResponseInfo());
+			 * mv.addObject("despositeInfo", info);
+			 */
+			chargeDao.addChargeRecord(chargeId, account, value,
+					ChargeStatus.success);
 			smsClient.sendTextMessage(account, "您的智会账户已成功充值" + value + "元，谢谢！");
 		}
-		
+
 		mv.setViewName("accountcharge/vosComplete");
 		return mv;
 	}
@@ -164,23 +168,23 @@ public class ChargeAccountController {
 		view.addObject(WebConstants.charge_list.name(), chargeList);
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
-	public ModelAndView aliPay(
-			HttpSession session,
-			@RequestParam(value="account_name") String accountName,
-			@RequestParam(value="charge_amount") String chargeAmount) throws Exception {
+	public ModelAndView aliPay(HttpSession session,
+			@RequestParam(value = "account_name") String accountName,
+			@RequestParam(value = "charge_amount") String chargeAmount)
+			throws Exception {
 		log.info("****** prepay alipay ******");
 		boolean isExist = userDao.isExistsLoginName(accountName);
 		ModelAndView mv = new ModelAndView();
-		if (isExist){
+		if (isExist) {
 			mv.setViewName("accountcharge/alipay");
 		} else {
 			mv.setViewName("accountcharge/invalidAccount");
 		}
 		return mv;
 	}
-	
+
 	/**
 	 * 支付宝异步返回URL
 	 * 
@@ -224,7 +228,7 @@ public class ChargeAccountController {
 			return "fail";
 		}
 	}
-	
+
 	/**
 	 * 支付宝同步返回URL
 	 * 
@@ -253,7 +257,7 @@ public class ChargeAccountController {
 			}
 			params.put(name, valueStr);
 		}
-		
+
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
 		String total_fee = request.getParameter("total_fee"); // 获取总金额
 		String trade_status = request.getParameter("trade_status"); // 交易状态
@@ -264,7 +268,8 @@ public class ChargeAccountController {
 				// 判断该笔订单是否在商户网站中已经做过处理（可参考“集成教程”中“3.4返回数据处理”）
 				// 如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
 				// 如果有做过处理，不执行商户的业务程序
-				String accountName = ChargeUtil.finishCharge(order_no, total_fee);
+				String accountName = ChargeUtil.finishCharge(order_no,
+						total_fee);
 				mv.addObject("result", "0");
 				mv.addObject(WebConstants.charge_money.name(), total_fee);
 				mv.addObject(WebConstants.pay_account_name.name(), accountName);
@@ -277,5 +282,91 @@ public class ChargeAccountController {
 		}
 		return mv;
 	}
+
+	// API urls
 	
+	/**
+	 * get account balance, used for API
+	 * @param response
+	 * @param userName
+	 * @throws JSONException
+	 * @throws IOException
+	 */
+	@RequestMapping("/accountBalance")
+	public void accountBalance(HttpServletResponse response,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
+		// get account balance
+		JSONObject ret = new JSONObject();
+		AccountInfo accountInfo = vosClient.getAccountInfo(userName);
+		CurrentSuiteInfo suiteInfo = vosClient.getCurrentSuite(userName);
+		if (accountInfo != null && suiteInfo != null) {
+			Double balance = accountInfo.getBalance()
+					+ suiteInfo.getGiftBalance();
+			ret.put(WebConstants.balance.name(), balance.doubleValue());
+		} else {
+			ret.put(WebConstants.balance.name(), -1);
+		}
+		response.getWriter().print(ret.toString());
+	}
+
+	/**
+	 * charge with card, used for API
+	 * @param response
+	 * @param userName
+	 * @param pin
+	 * @param password
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/cardCharge", method = RequestMethod.POST)
+	public void cardCharge(HttpServletResponse response,
+			@RequestParam(value = "username") String userName,
+			@RequestParam(value = "pin") String pin,
+			@RequestParam(value = "password") String password)
+			throws IOException, SQLException {
+		boolean isExist = userDao.isExistsLoginName(userName);
+		if (!isExist) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		if (pin.length() < 4) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Double value = 0.0;
+		String cardValue = pin.substring(0, 4);
+		try {
+			value = Double.parseDouble(cardValue);
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		String chargeId = pin + "_" + RandomString.genRandomChars(10);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(userName, pin,
+				password);
+		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
+			chargeDao.addChargeRecord(chargeId, userName, value,
+					ChargeStatus.vos_fail);
+			log.error("\nCannot deposite to account <" + userName
+					+ "> with card <" + pin + ">" + "<" + password + ">"
+					+ "\nVOS Http Response : " + vosResp.getHttpStatusCode()
+					+ "\nVOS Status Code : " + vosResp.getVOSStatusCode()
+					+ "\nVOS Response Info ：" + vosResp.getVOSResponseInfo());
+		}
+
+		if (vosResp.isOperationSuccess()) {
+			chargeDao.addChargeRecord(chargeId, userName, value,
+					ChargeStatus.success);
+			smsClient
+					.sendTextMessage(userName, "您的智会账户已成功充值" + value + "元，谢谢！");
+			response.setStatus(HttpServletResponse.SC_OK);
+		} else {
+			response.sendError(HttpServletResponse.SC_CONFLICT);
+		}
+
+	}
 }
