@@ -111,9 +111,11 @@
 			<h3>添加新成员</h3>
 		</div>
 		<div class="modal-body">
+			<!--  
 			<span>名&nbsp;&nbsp;称：</span>
 			<input id="newContactName" type="text" class="span3" />
 			<br/>
+			-->
 			<span>号&nbsp;&nbsp;码：</span>
 			<input id="newContactPhoneNumber" type="text" class="span3" />
 		</div>
