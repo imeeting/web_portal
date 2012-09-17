@@ -146,63 +146,31 @@ footer span {
 	margin: 5px 0;
 }
 
-.contact-selection-region {
-	width: 100%;
-	height: auto;
-	position: relative;
-	margin-bottom: 20px;
-	
-}
-
-.contact-selection-region > table {
-	margin-bottom: 0;
-}
-
-
 .selection-list {
 	height: 400px;
+	width: 49%;
 }
 
 .selection-list ul {
 	overflow: auto;
 	margin: 0;
 	padding: 0;
+	height: 80%;
 }
 
 .selection-list ul > li {
 	padding: 4px 4px 4px 6px;
 }
 
-.selection-list ul.left {
-	float: left;
-	width:  49%;
-	height: 90%;
-	clear: left;
-}
-
-.selection-list ul.right {
-	float: right;
-	width:  49%;
-	height: 90%;
-}
-
 .create-button-region {
 	text-align: center;
 }
 
-
-.ab-search-field {
-	width: 50%;
-	float: left;
-}
-
-.ab-search-field #ab_search_input {
-	width: 79%;
+#ab_search_input {
+	width: 89%;
 }
 
 .selection-list > .blank {
-	float: right;
-	width: 50%;
 	margin-bottom: 5px;
 }
 

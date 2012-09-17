@@ -7,6 +7,7 @@
 <%
 	String confId = request.getParameter("confId");
 	String attendeeName = request.getParameter("attendeeName");
+	List<DBObject> abContacts = (List<DBObject>) request.getAttribute(WebConstants.addressbook.name());
 %>
 <!DOCTYPE html>
 <html lang="zh">
@@ -21,29 +22,19 @@
 	<div class="container">
 		<div class="row">
 			<form id="formJoinConference" action="./webconf"
-				class="span4 offset4" method="post">
-				<label>给你的群聊起个名字吧</label> 
-				<input id="iptConfTitle" name="confTitle"
-					class="span4" type="text" placeholder="请叫我 红领巾" />
-				<hr/>
-				<label>选择要参加群聊的成员吧</label> 
-				<div class="contact-selection-region">
-					<table class="table">
-						<thead>
-							<tr>
-								<th width="50%">通讯录</th>
-								<th width="50%">已添加成员</th>
-						</thead>
-					</table>
-					
-					<%
-						List<DBObject> abContacts = (List<DBObject>) request.getAttribute(WebConstants.addressbook.name());
-					%>
-					
-					<div class="selection-list">
-						<div class="input-prepend ab-search-field"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
-						<div class="blank"><button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-inverse">添加新成员</button></div>
-						<ul id="addressbook" class="well left unstyled">
+				class="span8 offset2" method="post">
+				<div class="control-group">
+					<label class="control-label">给你的群聊起个名字吧</label>
+					<div class="controls">
+					<input id="iptConfTitle" name="confTitle" maxlength="32"
+						class="span8" type="text" placeholder="默认使用群聊号作为标题" />
+					</div>
+				</div>
+				<div class="control-group clearfix">
+					<div class="selection-list pull-left">
+					    <label class="control-label">请选择参与者</label>
+						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
+						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {
 								for (DBObject contact : abContacts) {
@@ -71,12 +62,15 @@
 						%>
 							
 						</ul>
-						<ul id="selected_contacts" class="well right unstyled">
+					</div>
+					<div class="selection-list pull-right">
+					    <label class="control-label">已选中参与者</label>
+					    <div class="blank"><button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button></div>
+						<ul id="selected_contacts" class="well unstyled">
 						</ul>
 					</div>
 				</div>
-
-				<div class="create-button-region">
+				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
 					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">开始群聊</button>
 				</div>
