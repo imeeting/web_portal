@@ -62,6 +62,7 @@
 			<mvc:mapping path="/conference/hide"/>
 			<mvc:mapping path="/conference/heartbeat"/>
 			<mvc:mapping path="/addressbook/upload"/>
+			<mvc:mapping path="/accountBalance"/>
 			<bean class="com.imeeting.mvc.APIAuthInterceptor"></bean>
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
