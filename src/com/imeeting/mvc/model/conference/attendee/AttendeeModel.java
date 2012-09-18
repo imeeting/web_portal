@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.imeeting.constants.AttendeeConstants;
+
 public class AttendeeModel {
 	private static Log log = LogFactory.getLog(AttendeeModel.class);
 
@@ -205,10 +207,11 @@ public class AttendeeModel {
 	public JSONObject toJson() {
 		JSONObject obj = new JSONObject();
 		try {
-			obj.put("username", username);
-			obj.put("online_status", getOnlineStatus().name());
-			obj.put("video_status", videoStatus.name());
-			obj.put("telephone_status", phoneCallStatus.name());
+			obj.put(AttendeeConstants.username.name(), username);
+			obj.put(AttendeeConstants.nickname.name(), nickname);
+			obj.put(AttendeeConstants.online_status.name(), getOnlineStatus().name());
+			obj.put(AttendeeConstants.video_status.name(), videoStatus.name());
+			obj.put(AttendeeConstants.telephone_status.name(), phoneCallStatus.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

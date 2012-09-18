@@ -207,20 +207,23 @@ public class ConferenceDB {
 		confIds.append(')');
 
 		// query the attendees in each conference
-		sql = "SELECT conferenceId AS id, username " + "FROM im_attendee "
+		sql = "SELECT conferenceId AS id, username, nickname " + "FROM im_attendee "
 				+ "WHERE conferenceId IN " + confIds.toString();
 		List<Map<String, Object>> attendeeList = jdbc.queryForList(sql);
 
 		for (Map<String, Object> attendeeMap : attendeeList) {
 			String confId = (String) attendeeMap.get("id");
-			String attendee = (String) attendeeMap
+			String attendeeUserName = (String) attendeeMap
 					.get(AttendeeConstants.username.name());
-
+			String attendeeNickname = (String) attendeeMap.get(AttendeeConstants.nickname.name());
 			JSONObject conference = confInfoMap.get(confId);
 			try {
 				JSONArray attendees = conference
 						.getJSONArray(ConferenceConstants.attendees.name());
-				attendees.put(attendee);
+				JSONObject attendeeJson = new JSONObject();
+				attendeeJson.put(AttendeeConstants.username.name(), attendeeUserName);
+				attendeeJson.put(AttendeeConstants.nickname.name(), attendeeNickname);
+				attendees.put(attendeeJson);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

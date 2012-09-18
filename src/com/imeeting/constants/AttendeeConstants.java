@@ -2,5 +2,8 @@ package com.imeeting.constants;
 
 public enum AttendeeConstants {
 	username,
-	nickname
+	nickname,
+	online_status,
+	video_status,
+	telephone_status
 }
