@@ -42,7 +42,8 @@ public class UserController extends ExceptionController {
 	public static final String PhoneCodeError = "phone_code_error";
 	public static final String PasswordError = "password_error";
 	public static final String ConfirmPasswordError = "confirm_password_error";
-
+	public static final String NicknameError = "nickname_error";
+	
 	@PostConstruct
 	public void init() {
 		userDao = ContextLoader.getUserDAO();
@@ -146,7 +147,8 @@ public class UserController extends ExceptionController {
 	public ModelAndView webSignup(
 			HttpSession session,
 			@RequestParam(value = "phoneNumber") String phoneNumber,
-			@RequestParam(value = "phoneCode") String phoneCode,			
+			@RequestParam(value = "phoneCode") String phoneCode,
+			@RequestParam(value = "nickname") String nickname,			
 			@RequestParam(value = "password") String password,
 			@RequestParam(value = "confirmPassword") String confirmPassword) throws Exception {
 		ModelAndView mv = new ModelAndView();
@@ -161,7 +163,7 @@ public class UserController extends ExceptionController {
 		}
 		*/
 		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
-				|| password.isEmpty() || confirmPassword.isEmpty()) {
+				|| password.isEmpty() || confirmPassword.isEmpty() || nickname.isEmpty()) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
 			if (phoneNumber.isEmpty()){
 				mv.addObject(PhoneNumberError, HttpServletResponse.SC_BAD_REQUEST);
@@ -174,6 +176,9 @@ public class UserController extends ExceptionController {
 			}
 			if (confirmPassword.isEmpty()) {
 				mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_BAD_REQUEST);
+			}
+			if (nickname.isEmpty()) {
+				mv.addObject(NicknameError, HttpServletResponse.SC_BAD_REQUEST);
 			}
 			return mv;
 		}
@@ -191,7 +196,7 @@ public class UserController extends ExceptionController {
 			return mv;
 		}
 
-		String result = userDao.regUser(phoneNumber, password, confirmPassword);
+		String result = userDao.regUser(phoneNumber, nickname, password, confirmPassword);
 		if ("0".equals(result)) { // insert success
 			Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
 			result = addUserToVOS(phoneNumber, vosphone.toString());
@@ -302,7 +307,7 @@ public class UserController extends ExceptionController {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
-			result = userDao.regUser(phone, password, password1);
+			result = userDao.regUser(phone, "", password, password1);
 		}
 
 		if ("0".equals(result)) { // insert success

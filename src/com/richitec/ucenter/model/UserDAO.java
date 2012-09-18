@@ -66,13 +66,13 @@ public class UserDAO {
 	 * @param code
 	 * @return
 	 */
-	public String regUser(String phone, String password, String password1) {
+	public String regUser(String phone, String nickname, String password, String password1) {
 		String result = checkRegisterUser(phone, password, password1);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey) VALUES (?,?,?)";
+			String sql = "INSERT INTO im_user(username, password, userkey, nickname) VALUES (?,?,?,?)";
 			Object[] params = new Object[] { Long.parseLong(phone),
-					MD5Util.md5(password), userkey };
+					MD5Util.md5(password), userkey, nickname };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
