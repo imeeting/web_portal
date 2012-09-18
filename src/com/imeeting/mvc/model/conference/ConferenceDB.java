@@ -56,10 +56,10 @@ public class ConferenceDB {
 	public void saveAttendeeBeans(String conferenceId,
 			Collection<AttendeeModel> attendeeCollection)
 			throws DataAccessException {
-		String sql = "INSERT INTO im_attendee(conferenceId, username) VALUES(?,?)";
+		String sql = "INSERT INTO im_attendee(conferenceId, username, nickname) VALUES(?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeModel attendee : attendeeCollection) {
-			params.add(new Object[] { conferenceId, attendee.getUsername() });
+			params.add(new Object[] { conferenceId, attendee.getUsername(), attendee.getNickname() });
 		}
 		jdbc.batchUpdate(sql, params);
 	}

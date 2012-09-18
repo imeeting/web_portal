@@ -2,6 +2,8 @@ package com.richitec.ucenter.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
@@ -141,9 +143,9 @@ public class UserDAO {
 
 	public String checkPhoneCode(HttpSession session, String code) {
 		if (code.equals("")) {
-			return "1"; // 验证码必�?
+			return "1"; // code is required
 		} else if (!code.equals(session.getAttribute("phonecode"))) {
-			return "2"; // 验证码错�?
+			return "2"; // error code
 		} else {
 			return "0";
 		}
@@ -257,5 +259,16 @@ public class UserDAO {
 	public int updateUserAccountStatus(String userName, UserAccountStatus status) {
 		String sql = "UPDATE im_user SET status = ? WHERE username = ?";
 		return jdbc.update(sql, status.name(), userName);
+	}
+	
+	/**
+	 * get nickname of user
+	 * @param userNameList - IN Operation parameter eg. "(x, x, x)"
+	 * @return
+	 */
+	public List<Map<String, Object>> getNicknameInfo(String userNameList) {
+		String sql = "SELECT username, nickname FROM im_user WHERE username IN " + userNameList;
+		log.info(sql);
+		return jdbc.queryForList(sql);
 	}
 }
