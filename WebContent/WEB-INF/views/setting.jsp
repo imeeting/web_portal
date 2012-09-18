@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@ page import="com.imeeting.web.user.UserBean" %>
+<%
+UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
+%>    
 <!DOCTYPE html>
 <html lang="zh">
   <head>
@@ -15,17 +19,43 @@
 			<div class="span6 offset3 tabbable tabs-left">
 				<ul class="nav nav-tabs">
 					<li class="active">
-						<a href="#pane-change-password" data-toggle="tab">修改密码</a>
+						<a href="#pane-user-info" data-toggle="tab">基本信息</a>
 					</li>
 					<li>
-						<a href="#pane-user-info" data-toggle="tab">基本信息</a>
+						<a href="#pane-change-password" data-toggle="tab">修改密码</a>
 					</li>
 					<li>
 						<a href="#pane-user-avatar" data-toggle="tab">设置头像</a>
 					</li>					
 				</ul>
-				<div class="tab-content">			
-					<div class="tab-pane active" id="pane-change-password">
+				<div class="tab-content">	
+                    <div class="tab-pane active" id="pane-user-info">
+                        <h3>基本信息</h3>
+                        <hr>
+                        <form method="post">
+                            <div class="control-group info">
+                                <label class="control-label">登录名</label>
+                                <div class="controls">
+                                    <input type="text" disabled="disabled" value="<%=userBean.getUserName() %>">
+                                    <span class="help-inline">不可更改</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">名称</label>
+                                <div class="controls">
+                                   <input type="text" maxlength="20" placeholder="请输入新的名称"
+                                    value="<%=userBean.getNickName() %>"/>
+                                   <span class="help-inline"></span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <button type="submit" class="btn btn-primary">修改名称</button>
+                                <span class="help-inline"></span>
+                            </div>
+                        </form>
+                    </div>  
+                    
+					<div class="tab-pane" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
 						<form action="setting/changepassword" method="post" id="formChangePwd" >
@@ -50,11 +80,7 @@
 						  </div>
 						</form>
 					</div>
-					<div class="tab-pane" id="pane-user-info">
-						<h3>基本信息</h3>
-						<hr>
-						<p>我们正在紧张开发中，请耐心等待。。。</p>
-					</div>	
+
 					<div class="tab-pane" id="pane-user-avatar">
 						<h3>设置头像</h3>
 						<hr>
