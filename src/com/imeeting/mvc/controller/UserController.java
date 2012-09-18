@@ -298,6 +298,7 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/regUser")
 	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
+			@RequestParam(value = "nickname") String nickname,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
 
@@ -307,7 +308,7 @@ public class UserController extends ExceptionController {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
-			result = userDao.regUser(phone, "", password, password1);
+			result = userDao.regUser(phone, nickname, password, password1);
 		}
 
 		if ("0".equals(result)) { // insert success
