@@ -87,7 +87,7 @@
 			<div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
 				<p>
 				    <i class="<%=onlineClass%> im-icon im-signin-icon"></i>
-				    <span>&nbsp;<%=attendee.getUsername()%></span>
+				    <span>&nbsp;<%=attendee.getDisplayName()%></span>
 				</p>
 				<p class="divAttendeeVideo">
 				    <input class="<%=videoClass%> iptAttendeeId" type="hidden" value="<%=attendee.getUsername()%>"/>
@@ -96,6 +96,8 @@
 				</p>
 				<p>
 				    <i class="<%=telephoneClass%> im-icon im-phone-icon"></i>
+				    <span>&nbsp;<%=attendee.getUsername()%></span><br>
+				    <i class="im-icon"></i>
 				    <span class="im-phone-text">&nbsp;<%=phoneCallStatusText%></span>
 				</p>
 				<%

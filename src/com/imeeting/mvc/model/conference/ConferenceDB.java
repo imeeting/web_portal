@@ -268,7 +268,7 @@ public class ConferenceDB {
 				confIdString += ", ";
 			}
 		}
-		return jdbc.query("SELECT conferenceId, username FROM im_attendee "
+		return jdbc.query("SELECT conferenceId, username, nickname FROM im_attendee "
 				+ "WHERE conferenceId IN (" + confIdString + ")",
 				new RowMapper<AttendeeBean>() {
 					@Override
@@ -277,6 +277,7 @@ public class ConferenceDB {
 						AttendeeBean bean = new AttendeeBean();
 						bean.setConferenceId(rs.getString("conferenceId"));
 						bean.setUserName(rs.getString("username"));
+						bean.setNickName(rs.getString("nickname"));
 						return bean;
 					}
 				});

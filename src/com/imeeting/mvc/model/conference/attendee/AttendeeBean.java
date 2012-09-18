@@ -4,6 +4,7 @@ public class AttendeeBean {
 
 	private String confId;
 	private String userName;
+	private String nickName;
 	
 	public void setConferenceId(String confId){
 		this.confId = confId;
@@ -19,5 +20,21 @@ public class AttendeeBean {
 	
 	public String getUserName(){
 		return userName;
+	}
+	
+	public void setNickName(String nickName){
+		this.nickName = nickName;
+	}
+	
+	public String getNickName(){
+		return nickName;
+	}
+	
+	public String getDisplayName(){
+		if (nickName != null && nickName.length()>0){
+			return nickName;
+		} else {
+			return userName;
+		}
 	}
 }

@@ -61,6 +61,14 @@ public class AttendeeModel {
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
+	
+	public String getDisplayName(){
+		if (nickname != null && nickname.length()>0){
+			return nickname;
+		} else {
+			return username;
+		}
+	}
 
 	public void kickout(){
 		isKickout = true;

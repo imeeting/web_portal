@@ -101,6 +101,8 @@ footer span {
 .im-attendee {
     padding: 5px;
     margin: 0 5px 5px 0;
+    width: 110px;
+    overflow: hidden;
 }
 
 .im-icon {
