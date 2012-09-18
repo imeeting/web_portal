@@ -58,6 +58,14 @@
 	  }
   }
   
+  Integer nicknameError = (Integer)request.getAttribute(UserController.NicknameError);
+  String nicknameErrorInfo = "";
+  if (null != nicknameError) {
+	  if (HttpServletResponse.SC_BAD_REQUEST == nicknameError) {
+		  nicknameErrorInfo = "昵称不能为空";
+	  }
+  }
+  
   String phoneNumber = "";
   if (null != request.getParameter("phoneNumber")){
 	  phoneNumber = request.getParameter("phoneNumber");
@@ -112,6 +120,15 @@
 		    		    pattern="[0-9]{6}" maxlength="6" value="<%=phoneCode %>" />
 		    		    <span id="spanPhoneCodeInfo" class="help-inline">
 		    		    <%=phoneCodeErrorInfo %>
+		    		    </span>
+		    		</div>
+		    	</div>
+		    	<div class="control-group <%=nicknameErrorInfo.isEmpty()? "" : "error" %>">
+		    	    <label class="control-label" for="iptNickname">昵称</label>
+		    	    <div class="controls">
+		    		    <input type="text" name="nickname" maxlength="64" id="iptNickname" />
+		    		    <span id="spanNicknameInfo" class="help-inline">
+		    		   	<%=nicknameErrorInfo %>
 		    		    </span>
 		    		</div>
 		    	</div>
@@ -206,45 +223,7 @@
 						}
 					}, "json");
 			});
-			/*
-			$("#formSignup").submit(function(){
-				var phoneNumber = $("#iptPhoneNumber").val();
-				var phoneCode = $("#iptPhoneCode").val();
-				var password = $("#iptPassword").val();
-				var confirmPassword = $("#iptConfirmPassword").val();
-				$.post("user/websignup",
-					{
-						phone: phoneNumber,
-						code: phoneCode,
-						pwd: password,
-						confirmPwd: confirmPassword
-					},
-					function(data){
-						if ("0" == data){
-							alert("注册成功！");
-						} else 
-						if ("400" == data){
-							alert("数据不完整");
-						} else
-						if ("401" == data){
-							alert("验证码与手机号码不匹配");
-						} else 
-						if ("403" == data) {
-							alert("两次输入的密码不一致");
-						} else 
-						if ("410" == data){
-							alert("操作超时，请重试");
-						} else
-						if ("500" == data){
-							alert("服务器内部错误");
-						} else {
-							alert("未知错误：[" + data + "]");
-						}
-					});
-				
-				return false;
-			});
-			*/
+			
 		});
 	</script>
   </body>
