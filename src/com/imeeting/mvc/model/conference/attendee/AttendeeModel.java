@@ -21,6 +21,7 @@ public class AttendeeModel {
 	}
 	
 	private String username;
+	private String nickname;
 	private VideoStatus videoStatus;
 	private PhoneCallStatus phoneCallStatus;
 	private OnlineStatus onlineStatus;
@@ -28,12 +29,13 @@ public class AttendeeModel {
 	private Boolean isKickout = false;
 	private Long lastestHBTimeMillis;
 
-	public AttendeeModel(String name) {
-		this(name, OnlineStatus.offline);
+	public AttendeeModel(String userName) {
+		this(userName, OnlineStatus.offline);
 	}
 
 	public AttendeeModel(String userName, OnlineStatus status) {
 		this.username = userName;
+		this.nickname = "";
 		this.videoStatus = VideoStatus.off;
 		this.phoneCallStatus = PhoneCallStatus.Terminated;
 		this.onlineStatus = status;
@@ -50,6 +52,14 @@ public class AttendeeModel {
 		this.username = name;
 	}
 	
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 	public void kickout(){
 		isKickout = true;
 		onlineStatus = OnlineStatus.offline;

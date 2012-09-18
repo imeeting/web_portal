@@ -98,10 +98,11 @@ public class WebConferenceController {
 			try {
 				JSONArray attendeesJsonArray = new JSONArray(attendeeList);
 				for (int i = 0; i < attendeesJsonArray.length(); i++) {
-					String name = attendeesJsonArray.getString(i);
-					AttendeeModel attendee = new AttendeeModel(name);
+					String userName = attendeesJsonArray.getString(i);
+					AttendeeModel attendee = new AttendeeModel(userName);
 					conference.addAttendee(attendee);
 				}
+				conference.fillNicknameForEachAttendee();
 				conference.sendSMSToAttendees(attendeesJsonArray);
 			} catch (JSONException e) {
 				log.error("\nCannot parse attendees : " + attendeeList);
