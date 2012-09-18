@@ -69,5 +69,9 @@ public class VOSHttpResponse {
 	public String getVOSResponseInfo(){
 		return this.vosResponseInfo;
 	}
+	
+	public HttpResponse getHttpResponse(){
+		return httpResponse;
+	}
 
 }

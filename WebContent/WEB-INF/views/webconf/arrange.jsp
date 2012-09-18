@@ -32,7 +32,9 @@
 				</div>
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
-					    <label class="control-label">请选择参与者</label>
+					    <label class="control-label">请选择参与者
+					       <a>（通过手机客户端上传通讯录）</a>
+					    </label>
 						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 
@@ -46,13 +48,9 @@
 										<li class="ab_contact">
 											<strong class="name"><%=displayName %></strong>
 											<ul class="unstyled">
-											<%
-												for (String phone : phones) {
-											%>
-													<li><span class="phone_number"><%=phone %></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
-											<%
-												}
-											%>
+											<% for (String phone : phones) { %>
+												<li><span class="phone_number"><%=phone %></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
+											<% } %>
 											</ul>
 										</li>
 						<%

@@ -5,7 +5,7 @@ public class CurrentSuiteInfo {
 	private String suiteId;
 	private String suiteName;
 	private String orderId;
-	private Double giftBalance;
+	private Double giftBalance = 0.0;
 
 	public CurrentSuiteInfo(String vosResponseInfo){
 		String [] list = vosResponseInfo.split(";");
