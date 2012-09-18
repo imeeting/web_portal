@@ -43,4 +43,7 @@ public class DonkeyHttpResponse {
 		return new String(entityBytes);
 	}
 	
+	public HttpResponse getHttpResponse(){
+		return httpResponse;
+	}
 }

@@ -12,6 +12,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 public class SMSClient {
 	
@@ -22,16 +29,29 @@ public class SMSClient {
 	private String baseUri;
 	private String userName;
 	private String password;
+	private PoolingClientConnectionManager connManager;
 	
 	public SMSClient(){
-		this.httpClient = new DefaultHttpClient();
+		initHttpClient();
 	}
 
 	public SMSClient(String baseUri, String userName, String password) {
 		this.baseUri = baseUri;
 		this.userName = userName;
 		this.password = password;
-		this.httpClient = new DefaultHttpClient();
+		initHttpClient();
+	}
+	
+	private void initHttpClient(){
+		connManager = new PoolingClientConnectionManager();
+		connManager.setMaxTotal(10);
+		connManager.setDefaultMaxPerRoute(10);
+		
+		HttpParams httpParameters = new BasicHttpParams();
+		HttpConnectionParams.setSoTimeout(httpParameters, 10000);
+		HttpConnectionParams.setConnectionTimeout(httpParameters, 10000);
+		
+		httpClient = new DefaultHttpClient(connManager, httpParameters);
 	}
 	
 	public void setBaseUri(String baseUri){
@@ -55,6 +75,7 @@ public class SMSClient {
 				"&Content=" + contentStr + "&ContentType=15");
 		
 		HttpGet get = new HttpGet(this.baseUri + stm.toString());
+		HttpContext context = new BasicHttpContext();
 		SMSHttpResponse smsResponse = null;
 		try {
 			smsResponse = this.httpClient.execute(get, new ResponseHandler<SMSHttpResponse>(){
@@ -63,11 +84,17 @@ public class SMSClient {
 						throws ClientProtocolException, IOException {
 					return new SMSHttpResponse(response);
 				}
-			});
+			}, context);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				EntityUtils.consume(smsResponse.getHttpResponse().getEntity());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return smsResponse;

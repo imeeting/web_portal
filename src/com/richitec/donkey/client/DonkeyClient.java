@@ -23,29 +23,48 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
-import com.richitec.util.TextUtility;
 
 public class DonkeyClient {
 
 	private static Log log = LogFactory.getLog(DonkeyClient.class);
 	
 	private HttpClient httpClient;
+	private PoolingClientConnectionManager connManager;
 	
 	private String baseUri;
 	private String appId;
 	private String appKey;
 	
 	public DonkeyClient(){
-		this.httpClient = new DefaultHttpClient();
+		initHttpClient();
 	}
 
 	public DonkeyClient(String baseUri, String appId, String appKey) {
 		this.baseUri = baseUri;
 		this.appId = appId;
 		this.appKey = appKey;
-		this.httpClient = new DefaultHttpClient();
+		initHttpClient();
+	}
+	
+	private void initHttpClient(){
+		connManager = new PoolingClientConnectionManager();
+		connManager.setMaxTotal(100);
+		connManager.setDefaultMaxPerRoute(100);
+		
+		HttpParams httpParameters = new BasicHttpParams();
+		HttpConnectionParams.setSoTimeout(httpParameters, 10000);
+		HttpConnectionParams.setConnectionTimeout(httpParameters, 10000);
+		
+		this.httpClient = new DefaultHttpClient(connManager, httpParameters);
 	}
 	
 	public void setBaseUri(String baseUri){
@@ -112,17 +131,24 @@ public class DonkeyClient {
 	private DonkeyHttpResponse execute(HttpUriRequest req){
 		DonkeyHttpResponse donkeyResponse = null;
 		try {
+			HttpContext context = new BasicHttpContext();
 			donkeyResponse = this.httpClient.execute(req, new ResponseHandler<DonkeyHttpResponse>() {
 				@Override
 				public DonkeyHttpResponse handleResponse(HttpResponse response)
 						throws ClientProtocolException, IOException {
 					return new DonkeyHttpResponse(response);
 				}
-			});
+			}, context);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				EntityUtils.consume(donkeyResponse.getHttpResponse().getEntity());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return donkeyResponse;
 	}

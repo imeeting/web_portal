@@ -47,4 +47,8 @@ public class SMSHttpResponse {
 	public Boolean isSuccess(){
 		return this.code == 3;
 	}
+	
+	public HttpResponse getHttpResponse(){
+		return httpResponse;
+	}
 }

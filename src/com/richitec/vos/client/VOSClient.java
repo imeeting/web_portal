@@ -17,7 +17,14 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 public class VOSClient {
 	
@@ -38,13 +45,22 @@ public class VOSClient {
 	public static final String P_password = "password";
 	
 	private HttpClient httpClient;
+	private PoolingClientConnectionManager connManager;
 	
 	private String baseURI;
 	private String loginName;
 	private String loginPassword;
 	
 	public VOSClient(){
-		this.httpClient = new DefaultHttpClient();
+		connManager = new PoolingClientConnectionManager();
+		connManager.setMaxTotal(100);
+		connManager.setDefaultMaxPerRoute(100);
+		
+		HttpParams httpParameters = new BasicHttpParams();
+		HttpConnectionParams.setSoTimeout(httpParameters, 10000);
+		HttpConnectionParams.setConnectionTimeout(httpParameters, 10000);
+		
+		this.httpClient = new DefaultHttpClient(connManager, httpParameters);
 	}
 	
 	public void setBaseUri(String baseUri){
@@ -65,17 +81,24 @@ public class VOSClient {
 	private VOSHttpResponse execute(HttpUriRequest req){
 		VOSHttpResponse response = null;
 		try {
+			HttpContext context = new BasicHttpContext();
 			response = httpClient.execute(req, new ResponseHandler<VOSHttpResponse>() {
 				@Override
 				public VOSHttpResponse handleResponse(HttpResponse arg0)
 						throws ClientProtocolException, IOException {
 					return new VOSHttpResponse(arg0);
 				}
-			});
+			}, context);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				EntityUtils.consume(response.getHttpResponse().getEntity());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return response;
 	}
