@@ -145,9 +145,9 @@ public class ChargeAccountController {
 				.getAttribute(UserBean.SESSION_BEAN);
 
 		// get account balance
-		AccountInfo accountInfo = vosClient.getAccountInfo(userBean.getName());
+		AccountInfo accountInfo = vosClient.getAccountInfo(userBean.getUserName());
 		CurrentSuiteInfo suiteInfo = vosClient.getCurrentSuite(userBean
-				.getName());
+				.getUserName());
 		if (accountInfo != null && suiteInfo != null) {
 			Double balance = accountInfo.getBalance()
 					+ suiteInfo.getGiftBalance();
@@ -157,10 +157,10 @@ public class ChargeAccountController {
 		}
 
 		// get charge history list
-		int total = chargeDao.getChargeListTotalCount(userBean.getName());
+		int total = chargeDao.getChargeListTotalCount(userBean.getUserName());
 		int pageSize = 10;
 		List<Map<String, Object>> chargeList = chargeDao.getChargeList(
-				userBean.getName(), offset, pageSize);
+				userBean.getUserName(), offset, pageSize);
 
 		String url = "accountcharge?";
 		Pager pager = new Pager(offset, pageSize, total, url);

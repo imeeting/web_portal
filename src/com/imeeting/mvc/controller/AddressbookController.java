@@ -99,7 +99,7 @@ public class AddressbookController {
 			@RequestParam(value = "groupId", required = false) String groupId)
 			throws IOException {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		List<DBObject> contactList = abDao.getAllContacts(user.getName(),
+		List<DBObject> contactList = abDao.getAllContacts(user.getUserName(),
 				groupId);
 		response.getWriter().print(contactList.toString());
 	}
@@ -109,7 +109,7 @@ public class AddressbookController {
 			@RequestParam(value = "groupId", required = false) String groupId,
 			@RequestParam String searchWord) throws IOException {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		List<DBObject> contactList = abDao.searchContact(user.getName(),
+		List<DBObject> contactList = abDao.searchContact(user.getUserName(),
 				groupId, searchWord);
 		response.getWriter().print(contactList.toString());
 	}

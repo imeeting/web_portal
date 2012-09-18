@@ -65,7 +65,7 @@ public class ProfileController {
 		}
 		
 		String md5Password = MD5Util.md5(newPwd);
-		if (userDao.changePassword(user.getName(), md5Password)<=0){
+		if (userDao.changePassword(user.getUserName(), md5Password)<=0){
 			return "500";
 		}
 		

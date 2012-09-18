@@ -51,8 +51,9 @@ public class UserController extends ExceptionController {
 		config = ContextLoader.getConfiguration();
 	}
 
-	@RequestMapping("/login")
-	public void login(
+	@Deprecated
+	@RequestMapping("/loginold")
+	public void loginold(
 			@RequestParam(value = "loginName") String loginName,
 			@RequestParam(value = "loginPwd") String loginPwd,
 			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
@@ -68,11 +69,36 @@ public class UserController extends ExceptionController {
 		if (result != null && result.equals("0")) {
 			// login success, add UserBean to Session
 			UserBean userBean = new UserBean();
-			userBean.setName(loginName);
+			userBean.setUserName(loginName);
 			userBean.setPassword(loginPwd);
 			session.setAttribute(UserBean.SESSION_BEAN, userBean);
 		}
 		response.getWriter().print(jsonUser.toString());
+	}
+	
+	@RequestMapping("/login")
+	public void login(
+			@RequestParam(value = "loginName") String loginName,
+			@RequestParam(value = "loginPwd") String loginPwd,
+			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
+			@RequestParam(value = "model", required = false, defaultValue = "") String model,
+			@RequestParam(value = "release", required = false, defaultValue = "") String release,
+			@RequestParam(value = "sdk", required = false, defaultValue = "") String sdk,
+			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
+			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		UserBean user = userDao.getUserBean(loginName, loginPwd);
+		JSONObject json = new JSONObject();
+		if (null != user){
+			json.put("result", "0");
+			json.put("userkey", user.getUserKey());
+			user.setUserName(loginName);
+			user.setPassword(loginPwd);
+			session.setAttribute(UserBean.SESSION_BEAN, user);
+		} else {
+			json.put("result", "1");
+		}
+		response.getWriter().print(json.toString());
 	}
 
 	/**

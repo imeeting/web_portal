@@ -1,6 +1,7 @@
 package com.richitec.ucenter.model;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,11 @@ import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
@@ -90,6 +93,7 @@ public class UserDAO {
 	 * @return
 	 * @throws JSONException
 	 */
+	@Deprecated
 	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
 		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=? AND status = ?";
 		log.info("login pwd: " + loginPwd);
@@ -110,6 +114,22 @@ public class UserDAO {
 			throw e;
 		}
 		return ret;
+	}
+	
+	public UserBean getUserBean(String loginName, final String loginPwd) throws DataAccessException {
+		String sql = "SELECT userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
+		Object[] params = new Object[] { loginName, loginPwd, UserAccountStatus.success.name() };
+		return jdbc.queryForObject(sql, params, 
+				new RowMapper<UserBean>(){
+					@Override
+					public UserBean mapRow(ResultSet rs, int rowCount)
+							throws SQLException {
+						UserBean user = new UserBean();
+						user.setNickName(rs.getString("nickname"));
+						user.setUserKey(rs.getString("userkey"));
+						return user;
+					}
+				});
 	}
 
 	/**

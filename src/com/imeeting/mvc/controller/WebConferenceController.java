@@ -66,7 +66,7 @@ public class WebConferenceController {
 	public ModelAndView arrange(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		List<DBObject> contacts = addressBookDao.getAllContacts(user.getName(),
+		List<DBObject> contacts = addressBookDao.getAllContacts(user.getUserName(),
 				null);
 		mv.addObject(WebConstants.addressbook.name(), contacts);
 
@@ -88,9 +88,9 @@ public class WebConferenceController {
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
 		ConferenceModel conference = conferenceManager.creatConference(
-				conferenceId, user.getName());
+				conferenceId, user.getUserName());
 
-		AttendeeModel owner = new AttendeeModel(user.getName(),
+		AttendeeModel owner = new AttendeeModel(user.getUserName(),
 				OnlineStatus.online);
 		conference.addAttendee(owner);
 
@@ -124,7 +124,7 @@ public class WebConferenceController {
 
 		// step 3. create audio conference
 		conference.setAudioConfId(conferenceId);
-		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(user.getName());
+		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(user.getUserName());
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
 				conferenceId, vosPhoneNumber.toString(),
 				conference.getAllAttendeeName(), conferenceId);
@@ -153,7 +153,7 @@ public class WebConferenceController {
 		ModelAndView mv = new ModelAndView();
 		
 		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		AttendeeModel attendee = conference.getAttendee(user.getName());
+		AttendeeModel attendee = conference.getAttendee(user.getUserName());
 		
 		attendee.heartBeat();
 
@@ -178,11 +178,11 @@ public class WebConferenceController {
 			return mv;
 		}
 
-		AttendeeModel attendee = conference.getAttendee(user.getName());
+		AttendeeModel attendee = conference.getAttendee(user.getUserName());
 		if (null == attendee) {
-			attendee = new AttendeeModel(user.getName());
+			attendee = new AttendeeModel(user.getUserName());
 			conference.addAttendee(attendee);
-			conferenceDao.saveAttendee(confId, user.getName());
+			conferenceDao.saveAttendee(confId, user.getUserName());
 
 			// add attendees to audio conference
 			DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(
@@ -224,7 +224,7 @@ public class WebConferenceController {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		ConferenceModel conferenceModel = conferenceManager
 				.getConference(confId);
-		AttendeeModel attendee = conferenceModel.getAttendee(user.getName());
+		AttendeeModel attendee = conferenceModel.getAttendee(user.getUserName());
 		if (attendee == null) {
 			// user are prohibited to join the conference for he isn't in it
 			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
@@ -235,13 +235,13 @@ public class WebConferenceController {
 			// update phone call status and hang up this call
 			if (attendee.statusHangup()) {
 				String sipUri = DonkeyClient.generateSipUriFromPhone(user
-						.getName());
+						.getUserName());
 				DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
 						conferenceModel.getAudioConfId(), sipUri,
 						conferenceModel.getConferenceId());
 				if (null == donkeyResp || !donkeyResp.isAccepted()) {
 					log.error("Hangup <"
-							+ user.getName()
+							+ user.getUserName()
 							+ "> in conference <"
 							+ conferenceModel.getConferenceId()
 							+ "> failed : "
@@ -360,7 +360,7 @@ public class WebConferenceController {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		AttendeeModel attendee = conference.getAttendee(user.getName());
+		AttendeeModel attendee = conference.getAttendee(user.getUserName());
 		if (null != attendee) {
 			attendee.heartBeat();
 		}

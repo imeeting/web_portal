@@ -28,9 +28,9 @@
 				<small>请拨打号码0551-2379997加入群聊，或者点击<span class="label label-success">Call Me</span>按钮，系统会向您发起呼叫。</small>
 			</h1>
 			<h1>
-				欢迎您：<%=user.getName() %>
+				欢迎您：<%=user.getDisplayName()%>
 				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>
-				<a class="btn btn-danger btn-large" href="/imeeting/webconf/unjoin?confId=<%=conference.getConferenceId() %>">离开群聊</a>
+				<a class="btn btn-danger btn-large" href="/imeeting/webconf/unjoin?confId=<%=conference.getConferenceId()%>">离开群聊</a>
 			</h1>  	
     	</div>
     	<div class="im-flash">
@@ -47,73 +47,79 @@
 	    	</div>
     	</div>
 		<div id="divAttendeeList" class="clearfix">
-			<% 
+			<%
 				for(AttendeeModel attendee : attendeeCollection) {
-					if (user.getName().equals(attendee.getUsername())){
-						myself = attendee;
-						continue;
-					}
-					AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
-					String onlineClass = "im-icon-signin-" + onlineStatus.name();
-					String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
-					String videoClass = "im-icon-video-" + attendee.getVideoStatus().name();
-					String videoStatusText = "";
-					if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())){
-						videoStatusText = "视频已打开";
-						videoOnAttendees.put(attendee.getUsername());
-					} else {
-						videoStatusText = "视频不可用";
-					}
-					
-                    String btnValue = "";
-                    String phoneCallStatusText = "";
-                    if (AttendeeModel.PhoneCallStatus.Terminated.equals(attendee.getPhoneCallStatus()) ){
-                        btnValue = "呼叫";
-                        phoneCallStatusText = "未接通";
-                    } else 
-                    if (AttendeeModel.PhoneCallStatus.Failed.equals(attendee.getPhoneCallStatus()) ){
-                        btnValue = "重新呼叫";
-                        phoneCallStatusText = "呼叫失败";
-                    } else 
-                    if(AttendeeModel.PhoneCallStatus.CallWait.equals(attendee.getPhoneCallStatus()) ) {
-                        btnValue = "取消呼叫";
-                        phoneCallStatusText = "正在呼叫";
-                    } else 
-                    if (AttendeeModel.PhoneCallStatus.Established.equals(attendee.getPhoneCallStatus()) ){
-                        btnValue = "挂断";
-                        phoneCallStatusText = "已接通";
-                    }					
+						if (user.getUserName().equals(attendee.getUsername())){
+							myself = attendee;
+							continue;
+						}
+						AttendeeModel.OnlineStatus onlineStatus = attendee.getOnlineStatus();
+						String onlineClass = "im-icon-signin-" + onlineStatus.name();
+						String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
+						String videoClass = "im-icon-video-" + attendee.getVideoStatus().name();
+						String videoStatusText = "";
+						if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())){
+							videoStatusText = "视频已打开";
+							videoOnAttendees.put(attendee.getUsername());
+						} else {
+							videoStatusText = "视频不可用";
+						}
+						
+			                    String btnValue = "";
+			                    String phoneCallStatusText = "";
+			                    if (AttendeeModel.PhoneCallStatus.Terminated.equals(attendee.getPhoneCallStatus()) ){
+			                        btnValue = "呼叫";
+			                        phoneCallStatusText = "未接通";
+			                    } else 
+			                    if (AttendeeModel.PhoneCallStatus.Failed.equals(attendee.getPhoneCallStatus()) ){
+			                        btnValue = "重新呼叫";
+			                        phoneCallStatusText = "呼叫失败";
+			                    } else 
+			                    if(AttendeeModel.PhoneCallStatus.CallWait.equals(attendee.getPhoneCallStatus()) ) {
+			                        btnValue = "取消呼叫";
+			                        phoneCallStatusText = "正在呼叫";
+			                    } else 
+			                    if (AttendeeModel.PhoneCallStatus.Established.equals(attendee.getPhoneCallStatus()) ){
+			                        btnValue = "挂断";
+			                        phoneCallStatusText = "已接通";
+			                    }
 			%>
-			<div id="div<%=attendee.getUsername() %>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
+			<div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
 				<p>
-				    <i class="<%=onlineClass %> im-icon im-signin-icon"></i>
-				    <span>&nbsp;<%=attendee.getUsername() %></span>
+				    <i class="<%=onlineClass%> im-icon im-signin-icon"></i>
+				    <span>&nbsp;<%=attendee.getUsername()%></span>
 				</p>
 				<p class="divAttendeeVideo">
-				    <input class="<%=videoClass %> iptAttendeeId" type="hidden" value="<%=attendee.getUsername() %>"/>
-				    <i class="<%=videoClass %> im-icon im-video-icon"></i>
-				    <span class="im-video-text">&nbsp;<%=videoStatusText %></span>
+				    <input class="<%=videoClass%> iptAttendeeId" type="hidden" value="<%=attendee.getUsername()%>"/>
+				    <i class="<%=videoClass%> im-icon im-video-icon"></i>
+				    <span class="im-video-text">&nbsp;<%=videoStatusText%></span>
 				</p>
 				<p>
-				    <i class="<%=telephoneClass %> im-icon im-phone-icon"></i>
-				    <span class="im-phone-text">&nbsp;<%=phoneCallStatusText %></span>
+				    <i class="<%=telephoneClass%> im-icon im-phone-icon"></i>
+				    <span class="im-phone-text">&nbsp;<%=phoneCallStatusText%></span>
 				</p>
-				<% if (conference.getOwnerName().equals(user.getName())) { %>
+				<%
+					if (conference.getOwnerName().equals(user.getUserName())) {
+				%>
 				<div class="divAttendeePhone">
-				    <input class="iptAttendeePhoneNumber" type="hidden" value="<%=attendee.getUsername() %>" />
-				    <input class="iptAttendeePhoneCallStatus" type="hidden" value="<%=attendee.getPhoneCallStatus() %>" />
-				    <button class="btnAttendeePhoneCall btn" class="btn"><%=btnValue %></button>	
+				    <input class="iptAttendeePhoneNumber" type="hidden" value="<%=attendee.getUsername()%>" />
+				    <input class="iptAttendeePhoneCallStatus" type="hidden" value="<%=attendee.getPhoneCallStatus()%>" />
+				    <button class="btnAttendeePhoneCall btn" class="btn"><%=btnValue%></button>	
 				</div>
-				<% } %>
+				<%
+					}
+				%>
 			</div>
-			<% } %>
+			<%
+				}
+			%>
 		</div>
 		<jsp:include page="../common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
     <div>
-        <input id="iptMyPhoneCallStatus" type="hidden" value="<%=myself.getPhoneCallStatus() %>">
-        <input id="iptConfId" type="hidden" value="<%=conference.getConferenceId() %>">
-        <input id="iptUserId" type="hidden" value="<%=user.getName() %>">
+        <input id="iptMyPhoneCallStatus" type="hidden" value="<%=myself.getPhoneCallStatus()%>">
+        <input id="iptConfId" type="hidden" value="<%=conference.getConferenceId()%>">
+        <input id="iptUserId" type="hidden" value="<%=user.getUserName()%>">
     </div>
 
     <!-- Le javascript
@@ -149,11 +155,11 @@
     </script>
     <script type="text/javascript">
     function js_getRTMPUri(){
-    	//return "rtmp://127.0.0.1/quick_server/<%=conference.getConferenceId() %>";
-    	return "rtmp://rtmp.wetalking.net/quick_server/<%=conference.getConferenceId() %>";
+    	//return "rtmp://127.0.0.1/quick_server/<%=conference.getConferenceId()%>";
+    	return "rtmp://rtmp.wetalking.net/quick_server/<%=conference.getConferenceId()%>";
     }
     function js_getUserId(){
-    	return "<%=user.getName() %>";
+    	return "<%=user.getUserName()%>";
     }
     function js_getVideoOnAttendees(){
     	return <%=videoOnAttendees.toString() %>;
