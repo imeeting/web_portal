@@ -100,6 +100,7 @@ public class ConferenceController extends ExceptionController {
 					AttendeeModel attendee = new AttendeeModel(name);
 					conference.addAttendee(attendee);
 				}
+				conference.fillNicknameForEachAttendee();
 			} catch (JSONException e) {
 				log.error("\nCannot parse attendees : " + attendeeList);
 				conferenceManager.removeConference(conferenceId);

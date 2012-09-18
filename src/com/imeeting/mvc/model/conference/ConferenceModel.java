@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.imeeting.constants.AttendeeConstants;
+import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
@@ -56,14 +58,14 @@ public class ConferenceModel {
 	public final Collection<AttendeeModel> getAllAttendees() {
 		return attendeeMap.values();
 	}
-	
+
 	/**
 	 * get all attendees in conference that status is not kickout.
 	 */
 	public final Collection<AttendeeModel> getAvaliableAttendees() {
 		List<AttendeeModel> result = new LinkedList<AttendeeModel>();
-		for (AttendeeModel attendee : attendeeMap.values()){
-			if (attendee.isKickout()){
+		for (AttendeeModel attendee : attendeeMap.values()) {
+			if (attendee.isKickout()) {
 				continue;
 			}
 			result.add(attendee);
@@ -202,7 +204,7 @@ public class ConferenceModel {
 
 		broadcastAttendeeStatus(attendee);
 	}
-	
+
 	public void sendSMSToAttendees(JSONArray attendeesJsonArray) {
 		if (attendeesJsonArray != null) {
 			StringBuffer numberList = new StringBuffer();
@@ -215,11 +217,40 @@ public class ConferenceModel {
 				}
 			}
 			if (numberList.length() > 0) {
-				String content = "您被邀请加入群聊（群聊号：" + conferenceId + " ) 访问www.wetalking.net加入群聊。";
+				String content = "您被邀请加入群聊（群聊号：" + conferenceId
+						+ " ) 拨打0551-2379997或访问www.wetalking.net加入群聊。";
 				try {
-					ContextLoader.getSMSClient().sendTextMessage(numberList.toString(), content);
+					ContextLoader.getSMSClient().sendTextMessage(
+							numberList.toString(), content);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void fillNicknameForEachAttendee() {
+		Collection<AttendeeModel> attendees = getAllAttendees();
+		if (attendees.size() > 0) {
+			StringBuffer attendeeList = new StringBuffer();
+			for (AttendeeModel attendee : attendees) {
+				attendeeList.append(attendee.getUsername()).append(',');
+			}
+			if (attendeeList.toString().endsWith(",")) {
+				attendeeList.deleteCharAt(attendeeList.length() - 1);
+			}
+			List<Map<String, Object>> users = ContextLoader.getUserDAO().getNicknameInfo("(" + attendeeList.toString() + ")");
+			if (users != null) {
+				for (Map<String, Object> user : users) {
+					String userName = (String) user.get(AttendeeConstants.username.name());
+					String nickname = (String) user.get(AttendeeConstants.nickname.name());
+					log.info("username: " + userName + " nickname: " + nickname);
+					for (AttendeeModel attendee : attendees) {
+						if (attendee.getUsername().equals(userName)) {
+							attendee.setNickname(nickname);
+							break;
+						}
+					}
 				}
 			}
 		}
