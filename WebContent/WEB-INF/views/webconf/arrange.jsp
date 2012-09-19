@@ -33,7 +33,7 @@
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
 					    <label class="control-label">请选择参与者
-					       <a>（通过手机客户端上传通讯录）</a>
+					       <a data-toggle="modal" href="#upload_addressbook_help_dlg">（通过手机客户端上传通讯录）</a>
 					    </label>
 						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
 						<ul id="addressbook" class="well unstyled">
@@ -100,7 +100,7 @@
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"
 				aria-hidden="true">&times;</button>
-			<h3>添加新成员</h3>
+			<h4>添加新成员</h4>
 		</div>
 		<div class="modal-body">
 			<!--  
@@ -114,6 +114,27 @@
 		<div class="modal-footer">
 			<a href="#" id="add_cancel_bt" class="btn" data-dismiss="modal" aria-hidden="true">取消</a> 
 			<a href="#" id="add_confirm_bt" class="btn btn-primary">确定</a>
+		</div>
+	</div>
+	
+	<div id="upload_addressbook_help_dlg" class="modal hide fade">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+			<h4>手机通讯录上传方法</h4>
+		</div>
+		<div class="modal-body">
+			<h5>第一步：在客户端首页中点击设置按钮，进入设置界面</h5>
+			<img alt="首页" src="/imeeting/img/app_main_page.png" title="在客户端首页中点击设置按钮，进入设置界面">
+			<hr/>
+			<h5>第二步：在设置界面选择“备份通讯录”</h5>
+			<img alt="设置界面" src="/imeeting/img/app_setting_page.png" title="在设置界面选择“备份通讯录”">
+			<hr/>
+			<h5>第三步：在弹出的对话框中选择备份，即可上传手机通讯录</h5>
+			<img alt="备份对话框" src="/imeeting/img/app_addressbook_upload_page.png" title="在弹出的对话框中选择备份，即可上传手机通讯录">
+		</div>
+		<div class="modal-footer">
+			<a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-primary">关闭</a>
 		</div>
 	</div>
 
