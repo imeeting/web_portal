@@ -1,8 +1,18 @@
+<%@page import="com.imeeting.mvc.controller.ProfileController"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@ page import="com.imeeting.web.user.UserBean" %>
 <%
 UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
+Integer nicknameErrorCode = (Integer) request.getAttribute(ProfileController.NicknameErrorCode);
+String nicknameErrorInfo = "";
+if (nicknameErrorCode != null) {
+	if (nicknameErrorCode == HttpServletResponse.SC_BAD_REQUEST) {
+		nicknameErrorInfo = "名称不能为空！";
+	} else if (nicknameErrorCode == HttpServletResponse.SC_NOT_FOUND) {
+		nicknameErrorInfo = "名称修改失败，当前用户不存在！";
+	}
+}
 %>    
 <!DOCTYPE html>
 <html lang="zh">
@@ -32,7 +42,7 @@ UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
                     <div class="tab-pane active" id="pane-user-info">
                         <h3>基本信息</h3>
                         <hr>
-                        <form method="post">
+                        <form method="post" action="/imeeting/setting/changeNickname">
                             <div class="control-group info">
                                 <label class="control-label">登录名</label>
                                 <div class="controls">
@@ -40,12 +50,12 @@ UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
                                     <span class="help-inline">不可更改</span>
                                 </div>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group <%=nicknameErrorInfo.isEmpty() ? "" : "error" %>">
                                 <label class="control-label">名称</label>
                                 <div class="controls">
-                                   <input type="text" maxlength="20" placeholder="请输入新的名称"
+                                   <input type="text" maxlength="20" placeholder="请输入新的名称" name="nickname"
                                     value="<%=userBean.getNickName() %>"/>
-                                   <span class="help-inline"></span>
+                                   <span class="help-inline"><%=nicknameErrorInfo %></span>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -58,7 +68,7 @@ UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
 					<div class="tab-pane" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="setting/changepassword" method="post" id="formChangePwd" >
+						<form action="/imeeting/setting/changepassword" method="post" id="formChangePwd" >
 						  <div id="divOldPwd" class="control-group">
 							<label class="control-label">输入当前使用的密码</label>
 							<input type="password" name="oldPwd" id="iptOldPwd" />

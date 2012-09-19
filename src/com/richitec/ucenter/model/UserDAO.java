@@ -291,4 +291,9 @@ public class UserDAO {
 		log.info(sql);
 		return jdbc.queryForList(sql);
 	}
+	
+	public int changeNickname(String userName, String nickname) {
+		String sql = "UPDATE im_user SET nickname = ? WHERE username = ?";
+		return jdbc.update(sql, nickname, userName);
+	}
 }

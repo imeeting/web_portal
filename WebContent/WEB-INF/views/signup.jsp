@@ -62,7 +62,7 @@
   String nicknameErrorInfo = "";
   if (null != nicknameError) {
 	  if (HttpServletResponse.SC_BAD_REQUEST == nicknameError) {
-		  nicknameErrorInfo = "昵称不能为空";
+		  nicknameErrorInfo = "名称不能为空";
 	  }
   }
   
@@ -124,7 +124,7 @@
 		    		</div>
 		    	</div>
 		    	<div class="control-group <%=nicknameErrorInfo.isEmpty()? "" : "error" %>">
-		    	    <label class="control-label" for="iptNickname">昵称</label>
+		    	    <label class="control-label" for="iptNickname">名称</label>
 		    	    <div class="controls">
 		    		    <input type="text" name="nickname" maxlength="64" id="iptNickname" />
 		    		    <span id="spanNicknameInfo" class="help-inline">

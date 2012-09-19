@@ -28,6 +28,7 @@ import com.richitec.util.RandomString;
 @Controller
 @RequestMapping(value="/setting")
 public class ProfileController {
+	public static final String NicknameErrorCode = "NicknameErrorCode";
 	
 	private static Log log = LogFactory.getLog(ProfileController.class);
 	
@@ -71,6 +72,27 @@ public class ProfileController {
 		
 		user.setPassword(md5Password);
 		return "200";
+	}
+	
+	@RequestMapping(value = "/changeNickname", method = RequestMethod.POST)
+	public ModelAndView changeNickname(HttpSession session, HttpServletResponse response, @RequestParam String nickname) throws IOException {
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		ModelAndView view = new ModelAndView();
+		view.setViewName("setting");
+		view.addObject(WebConstants.page_name.name(), "setting");
+		if (nickname.equals("")) {
+			view.addObject(NicknameErrorCode, HttpServletResponse.SC_BAD_REQUEST);
+			return view;
+		}
+		
+		int rows = userDao.changeNickname(user.getUserName(), nickname);
+		if (rows <= 0) {
+			view.addObject(NicknameErrorCode, HttpServletResponse.SC_NOT_FOUND);
+			return view;
+		}
+		
+		user.setNickName(nickname);
+		return view;
 	}
 	
 	@RequestMapping(value="/avatar", method=RequestMethod.GET)
