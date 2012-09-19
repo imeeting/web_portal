@@ -224,6 +224,91 @@ public class ConferenceDB {
 		}
 		return confJSONArray;
 	}
+	
+	// to be compatible with old apps
+	@Deprecated
+	public JSONArray getConferenceWithAttendeesListOld(String userName,
+			int offset, int pageSize) throws DataAccessException {
+		// query conference list related to username
+		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
+				+ "FROM im_conference AS c INNER JOIN im_attendee AS a "
+				+ "ON c.conferenceId = a.conferenceId AND a.username = ? AND a.status = ? "
+				+ "ORDER BY c.created DESC LIMIT ?, ?";
+
+		int startIndex = (offset - 1) * pageSize;
+		List<Map<String, Object>> confResultList = jdbc.queryForList(sql,
+				userName, UserConfStatus.VISIABLE.name(), startIndex, pageSize);
+
+		log.debug("confResultList size: " + confResultList.size());
+
+		if (confResultList.size() <= 0) {
+			return new JSONArray();
+		}
+
+		StringBuffer confIds = new StringBuffer();
+		confIds.append('(');
+
+		HashMap<String, JSONObject> confInfoMap = new HashMap<String, JSONObject>();
+
+		for (Map<String, Object> confMap : confResultList) {
+			String confId = (String) confMap.get("id");
+			Long createdTime = (Long) confMap.get("created");
+			String status = (String) confMap.get("status");
+			String title = (String) confMap.get("title");
+			log.debug("conferenceId: " + confId);
+			log.debug("created time: " + createdTime.longValue());
+			log.debug("status: " + status);
+			log.debug("title: " + title);
+
+			JSONObject conference = new JSONObject();
+			try {
+				conference.put(ConferenceConstants.conferenceId.name(), confId);
+				conference.put(ConferenceConstants.created_time.name(),
+						createdTime);
+				conference.put(ConferenceConstants.status.name(), status);
+				conference.put(ConferenceConstants.title.name(), title);
+				JSONArray attendees = new JSONArray();
+				conference.put(ConferenceConstants.attendees.name(), attendees);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			confInfoMap.put(confId, conference);
+
+			confIds.append("'" + confId + "'").append(',');
+		}
+		if (confIds.lastIndexOf(",") == confIds.length() - 1) {
+			confIds.deleteCharAt(confIds.length() - 1);
+		}
+		confIds.append(')');
+
+		// query the attendees in each conference
+		sql = "SELECT conferenceId AS id, username, nickname " + "FROM im_attendee "
+				+ "WHERE conferenceId IN " + confIds.toString();
+		List<Map<String, Object>> attendeeList = jdbc.queryForList(sql);
+
+		for (Map<String, Object> attendeeMap : attendeeList) {
+			String confId = (String) attendeeMap.get("id");
+			String attendeeUserName = (String) attendeeMap
+					.get(AttendeeConstants.username.name());
+			JSONObject conference = confInfoMap.get(confId);
+			try {
+				JSONArray attendees = conference
+						.getJSONArray(ConferenceConstants.attendees.name());
+				attendees.put(attendeeUserName);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// convert conference info map to json array
+		JSONArray confJSONArray = new JSONArray();
+		for (Map<String, Object> confInfo : confResultList) {
+			String conferenceId = (String) confInfo.get("id");
+			JSONObject conference = confInfoMap.get(conferenceId);
+			confJSONArray.put(conference);
+		}
+		return confJSONArray;
+	}
 
 	public int makeConferenceVisibleForEachAttendee(String conferenceId)
 			throws DataAccessException {

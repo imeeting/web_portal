@@ -186,8 +186,8 @@ public class ConferenceController extends ExceptionController {
 	 * @throws SQLException
 	 * @throws JSONException
 	 */
-	@RequestMapping(value = "/list")
-	public void list(
+	@RequestMapping(value = "/conflist")
+	public void confList(
 			HttpServletResponse response,
 			@RequestParam(value = "offset", required = false, defaultValue = "1") int offset,
 			@RequestParam(value = "username") String username)
@@ -215,6 +215,37 @@ public class ConferenceController extends ExceptionController {
 		response.getWriter().print(ret.toString());
 	}
 
+	@RequestMapping(value = "/list")
+	@Deprecated
+	public void list(
+			HttpServletResponse response,
+			@RequestParam(value = "offset", required = false, defaultValue = "1") int offset,
+			@RequestParam(value = "username") String username)
+			throws IOException, DataAccessException, JSONException {
+
+		int count = conferenceDao.getConferenceTotalCount(username);
+		JSONArray confs = conferenceDao.getConferenceWithAttendeesListOld(
+				username, offset, PageSize);
+
+		String url = "/conference/list" + "?";
+		Pager pager = new Pager(offset, PageSize, count, url);
+
+		JSONObject ret = new JSONObject();
+		JSONObject jsonPager = new JSONObject();
+		jsonPager.put("offset", pager.getOffset());
+		jsonPager.put("pagenumber", pager.getPageNumber());
+		jsonPager.put("hasPrevious", pager.getHasPrevious());
+		jsonPager.put("hasNext", pager.getHasNext());
+		jsonPager.put("previousPage", pager.getPreviousPage());
+		jsonPager.put("nextPage", pager.getNextPage());
+		jsonPager.put("count", pager.getSize());
+		ret.put("pager", jsonPager);
+		ret.put("list", confs);
+
+		response.getWriter().print(ret.toString());
+	}
+
+	
 	/**
 	 * get attendee list of the conference which has been opened already
 	 * 
