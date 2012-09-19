@@ -19,6 +19,12 @@
         String onlineClass = "im-icon-signin-" + onlineStatus.name();
         String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
         String videoClass = "im-icon-video-" + attendee.getVideoStatus().name();
+        String videoStatusText = "";
+        if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())){
+            videoStatusText = "视频已打开";
+        } else {
+            videoStatusText = "视频不可用";
+        }        
         
         String btnValue = "";
         String phoneCallStatusText = "";
@@ -40,20 +46,16 @@
         }
 %>
 <div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
-    <p><i class="<%=onlineClass%> im-icon im-signin-icon"></i>&nbsp;<%=attendee.getUsername()%></p>
-    <%
-    	if (AttendeeModel.VideoStatus.on.equals(attendee.getVideoStatus())) {
-    %>
-    <p><button class="im-btn-video btn btn-info"><i class="icon-facetime-video btn-white"></i>&nbsp;观看视频</button></p>
-    <%
-    	} else {
-    %>
-    <p><i class="im-icon-video-off im-icon"></i>&nbsp;没有视频</p>
-    <%
-    	}
-    %>
+    <p><i class="<%=onlineClass%> im-icon im-signin-icon"></i>&nbsp;<%=attendee.getDisplayName()%></p>
+    <p class="divAttendeeVideo">
+        <input class="<%=videoClass%> iptAttendeeId" type="hidden" value="<%=attendee.getUsername()%>"/>
+        <i class="<%=videoClass%> im-icon im-video-icon"></i>
+        <span class="im-video-text">&nbsp;<%=videoStatusText%></span>
+    </p>
     <p>
         <i class="<%=telephoneClass%> im-icon im-phone-icon"></i>
+        <span>&nbsp;<%=attendee.getUsername()%></span><br>
+        <i class="im-icon"></i>
         <span class="im-phone-text">&nbsp;<%=phoneCallStatusText%></span>
     </p>
     <%
