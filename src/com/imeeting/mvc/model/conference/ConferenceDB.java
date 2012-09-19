@@ -64,24 +64,10 @@ public class ConferenceDB {
 		jdbc.batchUpdate(sql, params);
 	}
 
-	public void saveAttendee(String conferenceId, String attendeeName) {
-		Collection<String> attendees = new ArrayList<String>();
-		attendees.add(attendeeName);
-		saveAttendees(conferenceId, attendees);
-	}
-
-	public void saveAttendees(String conferenceId,
-			Collection<String> attendeeNameCollection) {
-		String sql = "INSERT INTO im_attendee(conferenceId, username) VALUES(?,?)";
-		List<Object[]> params = new ArrayList<Object[]>();
-		for (String attendeeName : attendeeNameCollection) {
-			params.add(new Object[] { conferenceId, attendeeName });
-		}
-		try {
-			jdbc.batchUpdate(sql, params);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void saveAttendee(String conferenceId, AttendeeModel attendee) {
+		Collection<AttendeeModel> attendees = new ArrayList<AttendeeModel>();
+		attendees.add(attendee);
+		saveAttendeeBeans(conferenceId, attendees);
 	}
 
 	public int insert(String conferenceId) throws DataAccessException {

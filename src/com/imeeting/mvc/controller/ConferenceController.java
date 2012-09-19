@@ -260,7 +260,8 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 
-		List<String> addedAttendeeList = new LinkedList<String>();
+		List<AttendeeModel> addedAttendeeList = new LinkedList<AttendeeModel>();
+		List<String> addedAttendeeNameList = new LinkedList<String>();
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
 		JSONArray attendeesJsonArray = new JSONArray(attendees);
@@ -269,7 +270,8 @@ public class ConferenceController extends ExceptionController {
 			if (!conference.containsAttendee(name)) {
 				AttendeeModel attendee = new AttendeeModel(name);
 				conference.addAttendee(attendee);
-				addedAttendeeList.add(name);
+				addedAttendeeList.add(attendee);
+				addedAttendeeNameList.add(name);
 			} else {
 				AttendeeModel attendee = conference.getAttendee(name);
 				if (attendee.isKickout()) {
@@ -277,13 +279,14 @@ public class ConferenceController extends ExceptionController {
 				}
 			}
 		}
+		conference.fillNicknameForEachAttendee();
 
 		if (addedAttendeeList.size() > 0) {
-			conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
+			conferenceDao.saveAttendeeBeans(conferenceId, addedAttendeeList);
 
 			// add attendees to audio conference
 			DonkeyHttpResponse donkeyResp = donkeyClient.addMoreAttendee(
-					conference.getAudioConfId(), addedAttendeeList,
+					conference.getAudioConfId(), addedAttendeeNameList,
 					conferenceId);
 			if (null == donkeyResp || !donkeyResp.isAccepted()) {
 				log.error("Add attenddes to audio conference <"

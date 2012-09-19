@@ -17,6 +17,7 @@ import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyEvent;
+import com.richitec.ucenter.model.UserDAO;
 
 @Controller
 @RequestMapping(value="/donkeyevent")
@@ -26,10 +27,12 @@ public class DonkeyEventController {
 	
 	private ConferenceManager conferenceManager;
 	private ConferenceDB conferenceDao;
+	private UserDAO userDao;
 	@PostConstruct
 	public void init(){
 		conferenceManager = ContextLoader.getConferenceManager();
 		conferenceDao = ContextLoader.getConferenceDAO();
+		userDao = ContextLoader.getUserDAO();
 	}
 	
 	@RequestMapping
@@ -111,10 +114,13 @@ public class DonkeyEventController {
 		
 		if (attendee == null) {
 			log.info("onAttendeeCallEstablished - attendee is null, add to conference");
+			String nickname = userDao.getNickname(attendeeName);
 			attendee = new AttendeeModel(attendeeName);
+			attendee.setNickname(nickname);
+			
 			conference.addAttendee(attendee);
 			
-			conferenceDao.saveAttendee(requestId, attendeeName);
+			conferenceDao.saveAttendee(requestId, attendee);
 			
 			attendee.statusCallEstablished();
 			conference.notifyAttendeesToUpdateMemberList();

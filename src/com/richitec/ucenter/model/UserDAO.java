@@ -29,10 +29,10 @@ import com.richitec.util.ValidatePattern;
 public class UserDAO {
 	private static Log log = LogFactory.getLog(UserDAO.class);
 	public static final String PASSWORD_STR = "huuguanghui";
-	
+
 	private JdbcTemplate jdbc;
-	
-	public void setDataSource(DataSource ds){
+
+	public void setDataSource(DataSource ds) {
 		jdbc = new JdbcTemplate(ds);
 	}
 
@@ -71,7 +71,8 @@ public class UserDAO {
 	 * @param code
 	 * @return
 	 */
-	public String regUser(String phone, String nickname, String password, String password1) {
+	public String regUser(String phone, String nickname, String password,
+			String password1) {
 		String result = checkRegisterUser(phone, password, password1);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
@@ -94,15 +95,17 @@ public class UserDAO {
 	 * @throws JSONException
 	 */
 	@Deprecated
-	public JSONObject login(String loginName, final String loginPwd) throws DataAccessException, JSONException {
+	public JSONObject login(String loginName, final String loginPwd)
+			throws DataAccessException, JSONException {
 		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=? AND status = ?";
 		log.info("login pwd: " + loginPwd);
-		Object[] params = new Object[] { loginName, loginPwd, UserAccountStatus.success.name() };
+		Object[] params = new Object[] { loginName, loginPwd,
+				UserAccountStatus.success.name() };
 		String result = null;
 		JSONObject ret = new JSONObject();
 		try {
 			String userkey = jdbc.queryForObject(sql, params, String.class);
-			if (null != userkey){
+			if (null != userkey) {
 				result = "0";
 				ret.put("result", result);
 				ret.put("userkey", userkey);
@@ -115,21 +118,22 @@ public class UserDAO {
 		}
 		return ret;
 	}
-	
-	public UserBean getUserBean(String loginName, final String loginPwd) throws DataAccessException {
+
+	public UserBean getUserBean(String loginName, final String loginPwd)
+			throws DataAccessException {
 		String sql = "SELECT userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
-		Object[] params = new Object[] { loginName, loginPwd, UserAccountStatus.success.name() };
-		return jdbc.queryForObject(sql, params, 
-				new RowMapper<UserBean>(){
-					@Override
-					public UserBean mapRow(ResultSet rs, int rowCount)
-							throws SQLException {
-						UserBean user = new UserBean();
-						user.setNickName(rs.getString("nickname"));
-						user.setUserKey(rs.getString("userkey"));
-						return user;
-					}
-				});
+		Object[] params = new Object[] { loginName, loginPwd,
+				UserAccountStatus.success.name() };
+		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
+			@Override
+			public UserBean mapRow(ResultSet rs, int rowCount)
+					throws SQLException {
+				UserBean user = new UserBean();
+				user.setNickName(rs.getString("nickname"));
+				user.setUserKey(rs.getString("userkey"));
+				return user;
+			}
+		});
 	}
 
 	/**
@@ -143,21 +147,21 @@ public class UserDAO {
 	 * @param width
 	 * @param height
 	 */
-	public void recodeDeviceInfo(String username, String brand,
-			String model, String release, String sdk, String width,
-			String height) {
+	public void recodeDeviceInfo(String username, String brand, String model,
+			String release, String sdk, String width, String height) {
 		log.info("record device info - username:  " + username + " brand: "
 				+ brand);
 
 		String sql = "SELECT count(username) FROM fy_device_info WHERE username = ?";
 		int count = jdbc.queryForInt(sql, username);
-		if (count > 0){
-			jdbc.update("UPDATE fy_device_info SET brand=?, model=?, " +
-					"release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
+		if (count > 0) {
+			jdbc.update(
+					"UPDATE fy_device_info SET brand=?, model=?, "
+							+ "release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
 					brand, model, release, sdk, width, height, username);
 		} else {
 			jdbc.update("INSERT INTO fy_device_info VALUE(?,?,?,?,?,?,?)",
-					 username, brand, model, release, sdk, width, height );
+					username, brand, model, release, sdk, width, height);
 		}
 	}
 
@@ -232,8 +236,7 @@ public class UserDAO {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean isExistsLoginName(String loginName)
-			throws SQLException {
+	public boolean isExistsLoginName(String loginName) throws SQLException {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { loginName };
 		return jdbc.queryForInt(sql, params) > 0;
@@ -250,8 +253,8 @@ public class UserDAO {
 		Object[] params = new Object[] { phone };
 		return jdbc.queryForObject(sql, params, String.class);
 	}
-	
-	public int getVOSPhoneNumber(String username){
+
+	public int getVOSPhoneNumber(String username) {
 		String sql = "SELECT vosphone FROM im_user WHERE username = ?";
 		Object[] params = new Object[] { username };
 		return jdbc.queryForInt(sql, params);
@@ -269,29 +272,43 @@ public class UserDAO {
 		}
 		return retCode;
 	}
-	
-	public int changePassword(String userName, String md5Password){
+
+	public int changePassword(String userName, String md5Password) {
 		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=?";
 		String userkey = MD5Util.md5(userName + md5Password);
 		return jdbc.update(sql, md5Password, userkey, userName);
 	}
-	
+
 	public int updateUserAccountStatus(String userName, UserAccountStatus status) {
 		String sql = "UPDATE im_user SET status = ? WHERE username = ?";
 		return jdbc.update(sql, status.name(), userName);
 	}
-	
+
 	/**
 	 * get nickname of user
-	 * @param userNameList - IN Operation parameter eg. "(x, x, x)"
+	 * 
+	 * @param userNameList
+	 *            - IN Operation parameter eg. "(x, x, x)"
 	 * @return
 	 */
 	public List<Map<String, Object>> getNicknameInfo(String userNameList) {
-		String sql = "SELECT username, nickname FROM im_user WHERE username IN " + userNameList;
+		String sql = "SELECT username, nickname FROM im_user WHERE username IN "
+				+ userNameList;
 		log.info(sql);
 		return jdbc.queryForList(sql);
 	}
-	
+
+	public String getNickname(String userName) {
+		String nickname = "";
+		String sql = "SELECT nickname FROM im_user WHERE username = ?";
+		try {
+			nickname = jdbc.queryForObject(sql, new Object[] { userName },
+					String.class);
+		} catch (Exception e) {
+		}
+		return nickname;
+	}
+
 	public int changeNickname(String userName, String nickname) {
 		String sql = "UPDATE im_user SET nickname = ? WHERE username = ?";
 		return jdbc.update(sql, nickname, userName);

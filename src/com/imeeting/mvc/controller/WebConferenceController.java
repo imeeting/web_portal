@@ -181,8 +181,9 @@ public class WebConferenceController {
 		AttendeeModel attendee = conference.getAttendee(user.getUserName());
 		if (null == attendee) {
 			attendee = new AttendeeModel(user.getUserName());
+			attendee.setNickname(user.getNickName());
 			conference.addAttendee(attendee);
-			conferenceDao.saveAttendee(confId, user.getUserName());
+			conferenceDao.saveAttendee(confId, attendee);
 
 			// add attendees to audio conference
 			DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(

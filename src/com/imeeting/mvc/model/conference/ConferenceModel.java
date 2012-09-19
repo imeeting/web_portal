@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.imeeting.constants.AttendeeConstants;
-import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
@@ -244,7 +243,6 @@ public class ConferenceModel {
 				for (Map<String, Object> user : users) {
 					String userName = (String) user.get(AttendeeConstants.username.name());
 					String nickname = (String) user.get(AttendeeConstants.nickname.name());
-					log.info("username: " + userName + " nickname: " + nickname);
 					for (AttendeeModel attendee : attendees) {
 						if (attendee.getUsername().equals(userName)) {
 							attendee.setNickname(nickname);
@@ -254,5 +252,30 @@ public class ConferenceModel {
 				}
 			}
 		}
+	}
+	
+	public Collection<AttendeeModel> loadAttendeeModelCollection(Collection<String> attendees) {
+		Collection<AttendeeModel> attendeeCollection = new LinkedList<AttendeeModel>();
+		if (attendees.size() > 0) {
+			StringBuffer attendeeList = new StringBuffer();
+			for (String userName : attendees) {
+				attendeeList.append(userName).append(',');
+			}
+			if (attendeeList.toString().endsWith(",")) {
+				attendeeList.deleteCharAt(attendeeList.length() - 1);
+			}
+			List<Map<String, Object>> users = ContextLoader.getUserDAO().getNicknameInfo("(" + attendeeList.toString() + ")");
+			if (users != null) {
+				for (Map<String, Object> user : users) {
+					String userName = (String) user.get(AttendeeConstants.username.name());
+					String nickname = (String) user.get(AttendeeConstants.nickname.name());
+					log.info("username: " + userName + " nickname: " + nickname);
+					AttendeeModel attendee = new AttendeeModel(userName);
+					attendee.setNickname(nickname);
+					attendeeCollection.add(attendee);
+				}
+			}
+		}
+		return attendeeCollection;
 	}
 }
