@@ -28,7 +28,7 @@ import com.richitec.util.RandomString;
 @Controller
 @RequestMapping(value="/setting")
 public class ProfileController {
-	public static final String NicknameErrorCode = "NicknameErrorCode";
+	public static final String NicknameRetCode = "NicknameRetCode";
 	
 	private static Log log = LogFactory.getLog(ProfileController.class);
 	
@@ -81,17 +81,21 @@ public class ProfileController {
 		view.setViewName("setting");
 		view.addObject(WebConstants.page_name.name(), "setting");
 		if (nickname.equals("")) {
-			view.addObject(NicknameErrorCode, HttpServletResponse.SC_BAD_REQUEST);
+			view.addObject(NicknameRetCode, HttpServletResponse.SC_BAD_REQUEST);
 			return view;
 		}
 		
 		int rows = userDao.changeNickname(user.getUserName(), nickname);
 		if (rows <= 0) {
-			view.addObject(NicknameErrorCode, HttpServletResponse.SC_NOT_FOUND);
+			view.addObject(NicknameRetCode, HttpServletResponse.SC_NOT_FOUND);
 			return view;
 		}
 		
+		
+		view.addObject(NicknameRetCode, HttpServletResponse.SC_OK);
 		user.setNickName(nickname);
+		
+		view.setViewName("redirect:/setting");
 		return view;
 	}
 	

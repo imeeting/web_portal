@@ -3,15 +3,30 @@
     pageEncoding="utf-8"%>
 <%@ page import="com.imeeting.web.user.UserBean" %>
 <%
-UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
-Integer nicknameErrorCode = (Integer) request.getAttribute(ProfileController.NicknameErrorCode);
-String nicknameErrorInfo = "";
-if (nicknameErrorCode != null) {
-	if (nicknameErrorCode == HttpServletResponse.SC_BAD_REQUEST) {
-		nicknameErrorInfo = "名称不能为空！";
-	} else if (nicknameErrorCode == HttpServletResponse.SC_NOT_FOUND) {
-		nicknameErrorInfo = "名称修改失败，当前用户不存在！";
+	UserBean userBean = (UserBean)session.getAttribute(UserBean.SESSION_BEAN);
+Integer nicknameRetCode = (Integer) request.getAttribute(ProfileController.NicknameRetCode);
+
+String nicknameInfo = "";
+if (nicknameRetCode == null) {
+	String code = request.getParameter(ProfileController.NicknameRetCode);
+	if (code != null) {
+		try {
+			nicknameRetCode = Integer.parseInt(code);
+		} catch(NumberFormatException e) {
+		}
 	}
+}
+
+if (nicknameRetCode != null) {
+	if (nicknameRetCode == HttpServletResponse.SC_BAD_REQUEST) {
+		nicknameInfo = "名称不能为空！";
+	} else if (nicknameRetCode == HttpServletResponse.SC_NOT_FOUND) {
+		nicknameInfo = "名称修改失败，当前用户不存在！";
+	} else if (nicknameRetCode == HttpServletResponse.SC_OK) {
+		nicknameInfo = "名称修改成功！";
+	}
+} else {
+	nicknameRetCode = HttpServletResponse.SC_OK;
 }
 %>    
 <!DOCTYPE html>
@@ -42,7 +57,7 @@ if (nicknameErrorCode != null) {
                     <div class="tab-pane active" id="pane-user-info">
                         <h3>基本信息</h3>
                         <hr>
-                        <form method="post" action="/imeeting/setting/changeNickname">
+                        <form method="post" action="/imeeting/setting/changeNickname" class="im-form">
                             <div class="control-group info">
                                 <label class="control-label">登录名</label>
                                 <div class="controls">
@@ -50,12 +65,12 @@ if (nicknameErrorCode != null) {
                                     <span class="help-inline">不可更改</span>
                                 </div>
                             </div>
-                            <div class="control-group <%=nicknameErrorInfo.isEmpty() ? "" : "error" %>">
+                            <div class="control-group <%=nicknameRetCode == HttpServletResponse.SC_OK ? "" : "error" %>">
                                 <label class="control-label">名称</label>
                                 <div class="controls">
-                                   <input type="text" maxlength="20" placeholder="请输入新的名称" name="nickname"
+                                   <input id="iptNewNickname" type="text" maxlength="20" placeholder="请输入新的名称" name="nickname"
                                     value="<%=userBean.getNickName() %>"/>
-                                   <span class="help-inline"><%=nicknameErrorInfo %></span>
+                                   <span id="infoNickname" class="help-inline"><%=nicknameInfo %></span>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -68,7 +83,7 @@ if (nicknameErrorCode != null) {
 					<div class="tab-pane" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="/imeeting/setting/changepassword" method="post" id="formChangePwd" >
+						<form action="/imeeting/setting/changepassword" method="post" id="formChangePwd" class="im-form" >
 						  <div id="divOldPwd" class="control-group">
 							<label class="control-label">输入当前使用的密码</label>
 							<input type="password" name="oldPwd" id="iptOldPwd" />
@@ -179,6 +194,10 @@ if (nicknameErrorCode != null) {
 				});
 			}
 			return false;
+		});
+		
+		$("#iptNewNickname").focus(function() {
+			$("#infoNickname").html("");
 		});
 	</script>
   </body>
