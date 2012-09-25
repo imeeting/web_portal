@@ -1,6 +1,7 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +29,6 @@ import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel.VideoStatus;
-import com.imeeting.web.user.UserBean;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;

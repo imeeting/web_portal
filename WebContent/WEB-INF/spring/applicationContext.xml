@@ -42,6 +42,9 @@
 		<property name="mongoDBName">
 		    <value>${mongo.db.name}</value>
 		</property>
+		<property name="appvcenterUrl">
+		    <value>${appvcenter_url}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

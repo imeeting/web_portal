@@ -1,3 +1,4 @@
+<%@page import="com.imeeting.framework.ContextLoader"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <!DOCTYPE html>
@@ -41,7 +42,7 @@
     						</div>
     					</div>
     				</a>
-    				<a class="btn">
+    				<a class="btn" href="<%=ContextLoader.getConfiguration().getAppDownloadUrl()%>/1/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">

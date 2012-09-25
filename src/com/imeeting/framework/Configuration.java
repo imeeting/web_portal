@@ -7,7 +7,7 @@ package com.imeeting.framework;
  * 
  */
 public class Configuration {
-	
+
 	private String uploadDir;
 	private String suite0Id;
 	private String suite5Id;
@@ -17,36 +17,37 @@ public class Configuration {
 	private int mongoServerPort;
 	private String mongoDBName;
 	private Double signupGift;
-	
-	public void setUploadDir(String uploadDir){
+	private String appvcenterUrl;
+
+	public void setUploadDir(String uploadDir) {
 		this.uploadDir = uploadDir;
 	}
-	
-	public String getUploadDir(){
+
+	public String getUploadDir() {
 		return this.uploadDir;
 	}
-	
-	public String getSuite0Id(){
+
+	public String getSuite0Id() {
 		return this.suite0Id;
 	}
-	
-	public void setSuite0Id(String id){
+
+	public void setSuite0Id(String id) {
 		this.suite0Id = id;
 	}
-	
-	public String getSuite5Id(){
+
+	public String getSuite5Id() {
 		return this.suite5Id;
 	}
-	
-	public void setSuite5Id(String id){
+
+	public void setSuite5Id(String id) {
 		this.suite5Id = id;
 	}
-	
-	public String getSuite10Id(){
+
+	public String getSuite10Id() {
 		return this.suite10Id;
 	}
-	
-	public void setSuite10Id(String id){
+
+	public void setSuite10Id(String id) {
 		this.suite10Id = id;
 	}
 
@@ -81,13 +82,28 @@ public class Configuration {
 	public void setMongoDBName(String mongoDBName) {
 		this.mongoDBName = mongoDBName;
 	}
-	
+
 	public void setSignupGift(Double value) {
 		this.signupGift = value;
 	}
-	
+
 	public Double getSignupGift() {
 		return signupGift;
 	}
+
+	public String getAppvcenterUrl() {
+		return appvcenterUrl;
+	}
+
+	public void setAppvcenterUrl(String appvcenterUrl) {
+		this.appvcenterUrl = appvcenterUrl;
+	}
 	
+	public String getAppDownloadUrl() {
+		return this.appvcenterUrl + "/downloadapp";
+	}
+
+	public String getAppVersionUrl() {
+		return this.appvcenterUrl + "/version";
+	}
 }

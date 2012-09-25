@@ -10,10 +10,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.WebConstants;
@@ -119,4 +122,19 @@ public class IMeetingWebController {
 		return "app_download";
 	}
 	
+	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
+	@RequestMapping("/downloadAppClient/{device}")
+	public void downloadAppClient(HttpServletResponse response, @PathVariable String device) {
+		String downloadUrl = ContextLoader.getConfiguration().getAppDownloadUrl();
+		downloadUrl = downloadUrl + "/1/" + device; 
+		response.addHeader("Location", downloadUrl);
+	}
+	
+	
+	@RequestMapping("/appVersion/{device}")
+	public void appVersion(HttpServletResponse response, @PathVariable String device) {
+		String versionUrl = ContextLoader.getConfiguration().getAppVersionUrl();
+		versionUrl = versionUrl + "/1/" + device;
+		response.addHeader("Location", versionUrl);
+	}
 }
