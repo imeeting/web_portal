@@ -18,6 +18,7 @@ public class Configuration {
 	private String mongoDBName;
 	private Double signupGift;
 	private String appvcenterUrl;
+	private String appId;
 
 	public void setUploadDir(String uploadDir) {
 		this.uploadDir = uploadDir;
@@ -98,7 +99,7 @@ public class Configuration {
 	public void setAppvcenterUrl(String appvcenterUrl) {
 		this.appvcenterUrl = appvcenterUrl;
 	}
-	
+
 	public String getAppDownloadUrl() {
 		return this.appvcenterUrl + "/downloadapp";
 	}
@@ -106,4 +107,13 @@ public class Configuration {
 	public String getAppVersionUrl() {
 		return this.appvcenterUrl + "/version";
 	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
 }

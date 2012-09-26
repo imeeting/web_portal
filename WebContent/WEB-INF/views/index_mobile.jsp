@@ -39,7 +39,7 @@
     						</div>
     					</div>
     				</a>
-    				<a class="btn" href="<%=ContextLoader.getConfiguration().getAppDownloadUrl()%>/1/android">
+    				<a class="btn" href="/imeeting/downloadAppClient/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">

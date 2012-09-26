@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.WebConstants;
+import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
@@ -125,16 +126,20 @@ public class IMeetingWebController {
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
 	@RequestMapping("/downloadAppClient/{device}")
 	public void downloadAppClient(HttpServletResponse response, @PathVariable String device) {
-		String downloadUrl = ContextLoader.getConfiguration().getAppDownloadUrl();
-		downloadUrl = downloadUrl + "/1/" + device; 
+		Configuration config = ContextLoader.getConfiguration();
+		String downloadUrl = config.getAppDownloadUrl();
+		String appId = config.getAppId();
+		downloadUrl = downloadUrl + "/" + appId + "/" + device; 
 		response.addHeader("Location", downloadUrl);
 	}
 	
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
 	@RequestMapping("/appVersion/{device}")
 	public void appVersion(HttpServletResponse response, @PathVariable String device) {
-		String versionUrl = ContextLoader.getConfiguration().getAppVersionUrl();
-		versionUrl = versionUrl + "/1/" + device;
+		Configuration config = ContextLoader.getConfiguration();
+		String versionUrl = config.getAppVersionUrl();
+		String appId = config.getAppId();
+		versionUrl = versionUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", versionUrl);
 	}
 }

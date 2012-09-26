@@ -45,6 +45,9 @@
 		<property name="appvcenterUrl">
 		    <value>${appvcenter_url}</value>
 		</property>
+		<property name="appId">
+		    <value>${app_id}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
