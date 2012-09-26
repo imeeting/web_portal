@@ -130,7 +130,7 @@ public class IMeetingWebController {
 		response.addHeader("Location", downloadUrl);
 	}
 	
-	
+	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
 	@RequestMapping("/appVersion/{device}")
 	public void appVersion(HttpServletResponse response, @PathVariable String device) {
 		String versionUrl = ContextLoader.getConfiguration().getAppVersionUrl();
