@@ -69,6 +69,11 @@ public class ConferenceDB {
 		attendees.add(attendee);
 		saveAttendeeBeans(conferenceId, attendees);
 	}
+	
+	public void removeAttendee(String conferenceId, AttendeeModel attendee) {
+		String sql = "DELETE FROM im_attendee WHERE conferenceId = ? AND username = ?";
+		jdbc.update(sql, conferenceId, attendee.getUsername());
+	}
 
 	public int insert(String conferenceId) throws DataAccessException {
 		return jdbc.update(

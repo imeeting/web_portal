@@ -360,7 +360,9 @@ public class ConferenceController extends ExceptionController {
 		}
 		// update the status
 		attendee.kickout();
-
+		// remove from database
+		conferenceDao.removeAttendee(conferenceId, attendee);
+		
 		// update phone call status and hang up this call
 		if (attendee.statusHangup()) {
 			String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
