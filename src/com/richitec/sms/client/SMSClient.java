@@ -91,7 +91,9 @@ public class SMSClient {
 			e.printStackTrace();
 		} finally {
 			try {
-				EntityUtils.consume(smsResponse.getHttpResponse().getEntity());
+				if (smsResponse != null && smsResponse.getHttpResponse() != null){
+					EntityUtils.consume(smsResponse.getHttpResponse().getEntity());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
