@@ -85,8 +85,7 @@ public class ConferenceModel {
 	}
 
 	public AttendeeModel removeAttendee(String userName) {
-		AttendeeModel ab = attendeeMap.remove(userName);
-		return ab;
+		return attendeeMap.remove(userName);
 	}
 
 	public boolean containsAttendee(String userName) {
