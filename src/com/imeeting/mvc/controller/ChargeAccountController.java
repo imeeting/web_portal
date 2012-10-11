@@ -34,8 +34,6 @@ import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
-import com.richitec.vos.client.AccountInfo;
-import com.richitec.vos.client.CurrentSuiteInfo;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
