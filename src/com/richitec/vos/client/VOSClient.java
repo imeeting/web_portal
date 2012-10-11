@@ -26,6 +26,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+
 public class VOSClient {
 	
 	public static final String P_loginName = "loginName";
@@ -258,6 +259,18 @@ public class VOSClient {
 			return new CurrentSuiteInfo(response.getVOSResponseInfo());
 		}
 		return null;		
+	}
+	
+	public Double getAccountBalance(String account){
+		Double balance = null;
+		AccountInfo accountInfo = getAccountInfo(account);
+		CurrentSuiteInfo suiteInfo = getCurrentSuite(account);
+		if (accountInfo != null && suiteInfo != null) {
+			balance = accountInfo.getBalance()
+					+ suiteInfo.getGiftBalance();
+		}
+		
+		return balance;
 	}
 	
 	public static void main(String [] args){

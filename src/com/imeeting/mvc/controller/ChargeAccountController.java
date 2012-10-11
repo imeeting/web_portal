@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -145,16 +144,8 @@ public class ChargeAccountController {
 				.getAttribute(UserBean.SESSION_BEAN);
 
 		// get account balance
-		AccountInfo accountInfo = vosClient.getAccountInfo(userBean.getUserName());
-		CurrentSuiteInfo suiteInfo = vosClient.getCurrentSuite(userBean
-				.getUserName());
-		if (accountInfo != null && suiteInfo != null) {
-			Double balance = accountInfo.getBalance()
-					+ suiteInfo.getGiftBalance();
-			view.addObject(WebConstants.balance.name(), balance);
-		} else {
-			view.addObject(WebConstants.balance.name(), new Double(-1));
-		}
+		view.addObject(WebConstants.balance.name(), 
+				vosClient.getAccountBalance(userBean.getUserName()));
 
 		// get charge history list
 		int total = chargeDao.getChargeListTotalCount(userBean.getUserName());
@@ -298,14 +289,10 @@ public class ChargeAccountController {
 			throws JSONException, IOException {
 		// get account balance
 		JSONObject ret = new JSONObject();
-		AccountInfo accountInfo = vosClient.getAccountInfo(userName);
-		CurrentSuiteInfo suiteInfo = vosClient.getCurrentSuite(userName);
-		if (accountInfo != null && suiteInfo != null) {
-			Double balance = accountInfo.getBalance()
-					+ suiteInfo.getGiftBalance();
-			ret.put(WebConstants.balance.name(), balance.doubleValue());
-		} else {
-			ret.put(WebConstants.balance.name(), -1);
+		Double value = vosClient.getAccountBalance(userName);
+		ret.put("result", null==value ? 0 : 1);
+		if (null != value){
+			ret.put(WebConstants.balance.name(), value);
 		}
 		response.getWriter().print(ret.toString());
 	}
