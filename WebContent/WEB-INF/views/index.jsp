@@ -127,7 +127,7 @@
 					}
 				}, "json")
 				.error(function() {
-					info("error", "服务器或者网络出现现在有点困难，等会儿再试吧！");
+					info("error", "额。。网络正忙，请稍后再试吧！");
 				});
 			return false;
 		});

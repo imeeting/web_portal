@@ -566,6 +566,43 @@ public class ConferenceController extends ExceptionController {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
+	@RequestMapping(value = "/callAll")
+	public void callAll(
+			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId){
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
+			callAttendee(conference, attendee);
+		}
+		conference.notifyAttendeesToUpdateMemberList();
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+	
+	private void callAttendee(ConferenceModel conference, AttendeeModel attendee){
+		// transfer attendee status from Initial to CallWait
+		if (!attendee.statusCall()) {
+			log.error("Cannot call <" + attendee.getUsername()
+					+ ">, beacuse attendee status is "
+					+ attendee.getPhoneCallStatus());
+			return;
+		}
+		
+		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
+		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
+				conference.getAudioConfId(), sipUri, conference.getConferenceId());
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			attendee.statusCallTerminated();
+			log.error("Call <"
+					+ attendee.getUsername()
+					+ "> in conferece <"
+					+ conference.getConferenceId()
+					+ "> failed : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			return;
+		}
+	}
+	
 	/**
 	 * Hang up phone of userId.
 	 * 

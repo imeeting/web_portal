@@ -142,7 +142,7 @@ public class ChargeAccountController {
 				.getAttribute(UserBean.SESSION_BEAN);
 
 		// get account balance
-		view.addObject(WebConstants.balance.name(), 
+		view.addObject(WebConstants.balance.name(),
 				vosClient.getAccountBalance(userBean.getUserName()));
 
 		// get charge history list
@@ -273,9 +273,10 @@ public class ChargeAccountController {
 	}
 
 	// API urls
-	
+
 	/**
 	 * get account balance, used for API
+	 * 
 	 * @param response
 	 * @param userName
 	 * @throws JSONException
@@ -288,8 +289,8 @@ public class ChargeAccountController {
 		// get account balance
 		JSONObject ret = new JSONObject();
 		Double value = vosClient.getAccountBalance(userName);
-		ret.put("result", null==value ? 0 : 1);
-		if (null != value){
+		ret.put("result", null == value ? 1 : 0);
+		if (null != value) {
 			ret.put(WebConstants.balance.name(), value);
 		}
 		response.getWriter().print(ret.toString());
@@ -297,6 +298,7 @@ public class ChargeAccountController {
 
 	/**
 	 * charge with card, used for API
+	 * 
 	 * @param response
 	 * @param userName
 	 * @param pin

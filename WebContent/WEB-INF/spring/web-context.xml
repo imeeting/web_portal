@@ -42,6 +42,7 @@
 			<mvc:mapping path="/conference/unjoin"/>
 			<mvc:mapping path="/conference/updateAttendeeStatus"/>
 			<mvc:mapping path="/conference/call"/>
+			<mvc:mapping path="/conference/callAll"/>
 			<mvc:mapping path="/conference/hangup"/>
 			<mvc:mapping path="/conference/mute"/>
 			<mvc:mapping path="/conference/unmute"/>
@@ -58,6 +59,7 @@
 			<mvc:mapping path="/conference/join"/>
 			<mvc:mapping path="/conference/unjoin"/>
 			<mvc:mapping path="/conference/call"/>
+			<mvc:mapping path="/conference/callAll"/>
 			<mvc:mapping path="/conference/hangup"/>
 			<mvc:mapping path="/conference/mute"/>
 			<mvc:mapping path="/conference/unmute"/>
