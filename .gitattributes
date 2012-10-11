@@ -1,0 +1,9 @@
+* text=auto
+*.java text
+*.xml text
+*.jsp text
+*.js  text
+*.css text
+*.properties text
+*.MF text
+
