@@ -30,7 +30,9 @@
 			<h1>
 				欢迎您：<%=user.getDisplayName()%>
 				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>
+                <% if (conference.getOwnerName().equals(user.getUserName())) { %>
 				<a id="btnCallAll" class="btn btn-success btn-large">全体呼叫</a>
+				<% } %>
 				<a class="btn btn-danger btn-large" href="/imeeting/webconf/unjoin?confId=<%=conference.getConferenceId()%>">离开群聊</a>
 			</h1>  	
     	</div>
