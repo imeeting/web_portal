@@ -35,6 +35,7 @@ import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.RandomString;
+import com.richitec.vos.client.VOSClient;
 
 @Controller
 @RequestMapping(value = "/webconf")
@@ -47,6 +48,7 @@ public class WebConferenceController {
 	private DonkeyClient donkeyClient;
 	private AddressBookDAO addressBookDao;
 	private UserDAO userDao;
+	private VOSClient vosClient;
 
 	@PostConstruct
 	public void init() {
@@ -55,6 +57,7 @@ public class WebConferenceController {
 		donkeyClient = ContextLoader.getDonkeyClient();
 		addressBookDao = ContextLoader.getAddressBookDAO();
 		userDao = ContextLoader.getUserDAO();
+		vosClient = ContextLoader.getVOSClient();
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -82,8 +85,16 @@ public class WebConferenceController {
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws JSONException, IOException {
 		log.info("attendees: " + attendeeList);
-		
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		
+		//step 0. check account balance
+		Double balance = vosClient.getAccountBalance(user.getUserName());
+		if (balance < 1.0){
+			log.warn("Not enough money (" +  balance +") for user <" + 
+					user.getUserName() + "> to create conference.");
+			response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
+			return;
+		}
 
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
