@@ -16,7 +16,12 @@
 	
 	<%
 		Double balance = (Double) request.getAttribute(WebConstants.balance.name());
-		String strBalance = String.format("%,.2f", balance.doubleValue());
+         String strBalance = null;
+         if (null != balance){
+			 strBalance = String.format("%,.2f", balance.doubleValue());
+         } else {
+        	 strBalance = "Error";
+         }
 		
 		List<Map<String, Object>> chargeList = (List<Map<String, Object>>) request.getAttribute(WebConstants.charge_list.name());
 		Pager pager = (Pager) request.getAttribute(WebConstants.pager.name());
