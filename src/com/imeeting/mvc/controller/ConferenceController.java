@@ -88,6 +88,13 @@ public class ConferenceController extends ExceptionController {
 			throws IOException, DataAccessException, JSONException {
 		//step 0. check account balance
 		Double balance = vosClient.getAccountBalance(userName);
+		if (balance == null) {
+			log.warn("Error balance (" +  balance +") for user <" + 
+					userName + "> to create conference.");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+		
 		if (balance < 1.0){
 			log.warn("Not enough money (" +  balance +") for user <" + 
 					userName + "> to create conference.");

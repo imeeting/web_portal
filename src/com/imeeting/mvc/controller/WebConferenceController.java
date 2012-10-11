@@ -89,6 +89,13 @@ public class WebConferenceController {
 		
 		//step 0. check account balance
 		Double balance = vosClient.getAccountBalance(user.getUserName());
+		if (balance == null) {
+			log.warn("Error balance (" +  balance +") for user <" + 
+					user.getUserName() + "> to create conference.");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+		
 		if (balance < 1.0){
 			log.warn("Not enough money (" +  balance +") for user <" + 
 					user.getUserName() + "> to create conference.");
