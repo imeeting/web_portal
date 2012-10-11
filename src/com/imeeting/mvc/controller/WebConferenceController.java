@@ -302,6 +302,43 @@ public class WebConferenceController {
 		conference.broadcastAttendeeStatus(attendee);
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
+	
+	@RequestMapping(value = "/callAll")
+	public void callAll(
+			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId){
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
+			callAttendee(conference, attendee);
+		}
+		conference.notifyAttendeesToUpdateMemberList();
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+	
+	private void callAttendee(ConferenceModel conference, AttendeeModel attendee){
+		// transfer attendee status from Initial to CallWait
+		if (!attendee.statusCall()) {
+			log.error("Cannot call <" + attendee.getUsername()
+					+ ">, beacuse attendee status is "
+					+ attendee.getPhoneCallStatus());
+			return;
+		}
+		
+		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
+		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
+				conference.getAudioConfId(), sipUri, conference.getConferenceId());
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			attendee.statusCallTerminated();
+			log.error("Call <"
+					+ attendee.getUsername()
+					+ "> in conferece <"
+					+ conference.getConferenceId()
+					+ "> failed : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			return;
+		}
+	}
 
 	@RequestMapping(value = "/hangup", method = RequestMethod.POST)
 	public void hangup(HttpServletResponse response,
@@ -342,7 +379,42 @@ public class WebConferenceController {
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
+	
+	@RequestMapping(value = "/hangupAll")
+	public void hangupAll(			
+			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId){
+		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
+			hangupAttendee(conference, attendee);
+		}
+		conference.notifyAttendeesToUpdateMemberList();
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+	
+	private void hangupAttendee(ConferenceModel conference, AttendeeModel attendee){
+		// transfer attendee status from Initial to CallWait
+		if (!attendee.statusHangup()) {
+			log.error("Cannot hangup <" + attendee.getUsername()
+					+ ">, beacuse attendee status is "
+					+ attendee.getPhoneCallStatus());
+		}
 
+		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
+		DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
+				conference.getAudioConfId(), sipUri, conference.getConferenceId());
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			log.error("Hangup <"
+					+ attendee.getUsername()
+					+ "> in conference <"
+					+ conference.getConferenceId()
+					+ "> failed : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			return;
+		}
+	}
+	
 	@RequestMapping(value = "/attendeeList")
 	public ModelAndView attendeeList(@RequestParam String conferenceId)
 			throws IOException {
