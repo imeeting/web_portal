@@ -4,6 +4,7 @@ $(function() {
 	var _confId = $("#iptConfId").val();
 	var _userId = $("#iptUserId").val();
 	var $_btnPhoneCall = $("#btnPhoneCall");
+	var $_btnCallAll = $("#btnCallAll");
 	var $_divAttendeeList = $("#divAttendeeList");
 	
 	var SocketIOClient = {
@@ -229,6 +230,26 @@ $(function() {
 					});
 		} else {
 			//do nothing
+		}
+	});
+	
+	$_btnCallAll.click(function(){
+		var status = $("#iptCallAllStatus").val();
+		if ("NotCall" == status){
+			$.post("/imeeting/webconf/callAll",
+					{ conferenceId: _confId	},
+					function(){
+						$("#iptCallAllStatus").val("Called");
+						$_btnCallAll.html("全部挂断");
+					});
+		} else 
+		if ("Called" == status){
+			$.post("/imeeting/webconf/hangupAll",
+					{ conferenceId: _confId	},
+					function(){
+						$("#iptCallAllStatus").val("NotCall");
+						$_btnCallAll.html("全体呼叫");
+					});			
 		}
 	});
 	
