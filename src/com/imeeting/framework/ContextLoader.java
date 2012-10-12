@@ -26,10 +26,14 @@ public class ContextLoader extends ContextLoaderListener {
 	public static String appAbsolutePath;
 
 	public void contextDestroyed(ServletContextEvent event) {
-		ComboPooledDataSource ds = (ComboPooledDataSource) appContext
-				.getBean("dataSource_mysql_c3p0");
-		if (null != ds) {
-			ds.close();
+		try {
+			ComboPooledDataSource ds = (ComboPooledDataSource) appContext
+					.getBean("dataSource_mysql_c3p0");
+			if (null != ds) {
+				ds.close();
+			}
+		} finally {
+			super.contextDestroyed(event);
 		}
 	}
 
