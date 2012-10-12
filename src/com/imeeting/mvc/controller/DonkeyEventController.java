@@ -79,6 +79,10 @@ public class DonkeyEventController {
 	private void onConferenceCreateSuccess(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}
 		String audioConfId = event.getConferenceId();
 		conference.setAudioConfId(audioConfId);
 	}
@@ -86,27 +90,41 @@ public class DonkeyEventController {
 	private void onConferenceCreateFailed(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}
 		//TODO: notify all attendees in this conference.
 	}
 	
 	private void onConferenceDestroySuccess(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
-		if (conference != null) {
-			conferenceManager.removeConference(requestId);
-			conferenceDao.close(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
 		}
+		conferenceManager.removeConference(requestId);
+		conferenceDao.close(requestId);
 	}
 	
 	private void onConferenceStatusConflict(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}		
 		//TODO: notify all attendees in this conference.
 	}
 	
 	private void onAttendeeCallEstablished(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}		
 		// notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
@@ -139,7 +157,11 @@ public class DonkeyEventController {
 	private void onAttendeeCallFailed(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
-		//TODO: notify all attendees in this conference.
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}		
+		// notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeModel attendee = conference.getAttendee(attendeeName);
@@ -157,7 +179,11 @@ public class DonkeyEventController {
 	private void onAttendeeCallTerminated(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
-		//TODO: notify all attendees in this conference.
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}		
+		// notify all attendees in this conference.
 		String sipUri = event.getSipUri();
 		String attendeeName = DonkeyClient.getPhoneNumberFromSipUri(sipUri);
 		AttendeeModel attendee = conference.getAttendee(attendeeName);
@@ -174,6 +200,10 @@ public class DonkeyEventController {
 	private void onAttendeeStatusConflict(DonkeyEvent event){
 		String requestId = event.getRequestId();
 		ConferenceModel conference = conferenceManager.getConference(requestId);
+		if (null == conference) {
+			log.error("ConferenceModel of <" + requestId + "> is NULL.");
+			return;
+		}		
 		//TODO: notify all attendees in this conference.
 	}
 	
