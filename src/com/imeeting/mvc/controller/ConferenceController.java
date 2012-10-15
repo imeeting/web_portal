@@ -86,22 +86,22 @@ public class ConferenceController extends ExceptionController {
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws IOException, DataAccessException, JSONException {
-		//step 0. check account balance
+		// step 0. check account balance
 		Double balance = vosClient.getAccountBalance(userName);
 		if (balance == null) {
-			log.warn("Error balance (" +  balance +") for user <" + 
-					userName + "> to create conference.");
+			log.warn("Error balance (" + balance + ") for user <" + userName
+					+ "> to create conference.");
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
-		
-		if (balance < 1.0){
-			log.warn("Not enough money (" +  balance +") for user <" + 
-					userName + "> to create conference.");
+
+		if (balance < 1.0) {
+			log.warn("Not enough money (" + balance + ") for user <" + userName
+					+ "> to create conference.");
 			response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
 			return;
 		}
-		
+
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
 		ConferenceModel conference = conferenceManager.creatConference(
@@ -166,33 +166,28 @@ public class ConferenceController extends ExceptionController {
 	 * destroy conference
 	 * 
 	 * @param response
-	 * @param username
+	 * @param userName
 	 * @param conferenceId
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	@Deprecated
 	@RequestMapping(value = "/destroy")
 	public void destroy(HttpServletResponse response,
-			@RequestParam String username, @RequestParam String conferenceId)
-			throws IOException {
-		// /
-		log.debug("destroy");
+			@RequestParam(value = "username") String userName,
+			@RequestParam String conferenceId) throws IOException {
+		log.debug("destroy conference");
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
-		if (null == conference) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND,
-					"Cannot find conference with ID:" + conferenceId);
+
+		if (!userName.equals(conference.getOwnerName())) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"only owner can destory conference");
 			return;
 		}
-
-		if (username != conference.getOwnerName()) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-					"userName and confId are not match");
-			return;
-		}
-
-		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		
+		conferenceManager.closeConference(conferenceId);
+		conferenceManager.notifyConferenceDestoryed(conferenceId);
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	/**
@@ -263,7 +258,6 @@ public class ConferenceController extends ExceptionController {
 		response.getWriter().print(ret.toString());
 	}
 
-	
 	/**
 	 * get attendee list of the conference which has been opened already
 	 * 
@@ -381,7 +375,7 @@ public class ConferenceController extends ExceptionController {
 		attendee.kickout();
 		// remove from database
 		conferenceDao.removeAttendee(conferenceId, attendee);
-		
+
 		// update phone call status and hang up this call
 		if (attendee.statusHangup()) {
 			String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
@@ -416,8 +410,9 @@ public class ConferenceController extends ExceptionController {
 			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userName)
 			throws DataAccessException, IOException, JSONException {
-		
-		ConferenceModel conference = conferenceManager.getConference(conferenceId);
+
+		ConferenceModel conference = conferenceManager
+				.getConference(conferenceId);
 		if (null == conference) {
 			log.error("Cannot join <" + userName + "> to conference <"
 					+ conferenceId + "> beacause the conference is not going.");
@@ -574,18 +569,18 @@ public class ConferenceController extends ExceptionController {
 	}
 
 	@RequestMapping(value = "/callAll")
-	public void callAll(
-			HttpServletResponse response,
-			@RequestParam(value = "conferenceId") String conferenceId){
-		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
+	public void callAll(HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId) {
+		ConferenceModel conference = conferenceManager
+				.getConference(conferenceId);
+		for (AttendeeModel attendee : conference.getAvaliableAttendees()) {
 			callAttendee(conference, attendee);
 		}
 		conference.notifyAttendeesToUpdateMemberList();
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
-	
-	private void callAttendee(ConferenceModel conference, AttendeeModel attendee){
+
+	private void callAttendee(ConferenceModel conference, AttendeeModel attendee) {
 		// transfer attendee status from Initial to CallWait
 		if (!attendee.statusCall()) {
 			log.error("Cannot call <" + attendee.getUsername()
@@ -593,10 +588,12 @@ public class ConferenceController extends ExceptionController {
 					+ attendee.getPhoneCallStatus());
 			return;
 		}
-		
-		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
+
+		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee
+				.getUsername());
 		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
-				conference.getAudioConfId(), sipUri, conference.getConferenceId());
+				conference.getAudioConfId(), sipUri,
+				conference.getConferenceId());
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
 			attendee.statusCallTerminated();
 			log.error("Call <"
@@ -609,7 +606,7 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Hang up phone of userId.
 	 * 

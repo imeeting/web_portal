@@ -7,11 +7,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
+import com.richitec.notify.Notifier;
 
 public class ConferenceManager {
 
@@ -64,14 +68,34 @@ public class ConferenceManager {
 				}
 			}
 			if (isEmpty) {
-				removeConference(conferenceId);
-				ContextLoader.getDonkeyClient().destroyConference(conferenceId,
-						conferenceId);
-				conferenceDao.close(conferenceId);
+				closeConference(conferenceId);
 			}
 		}
 	}
+	
+	/**
+	 * close the conference and release all resources
+	 * @param conferenceId
+	 */
+	public void closeConference(String conferenceId) {
+		removeConference(conferenceId);
+		ContextLoader.getDonkeyClient().destroyConference(conferenceId,
+				conferenceId);
+		conferenceDao.close(conferenceId);
+	}
 
+	public void notifyConferenceDestoryed(String conferenceId) {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("conferenceId", conferenceId);
+			msg.put("action", ConferenceAction.conf_destoryed.name());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(conferenceId, msg.toString());
+	}
+	
 	public void checkAllConfAttendeeHeartBeat() {
 		Long currentTimeMillis = System.currentTimeMillis();
 		for (ConferenceModel conf : conferenceMap.values()) {
