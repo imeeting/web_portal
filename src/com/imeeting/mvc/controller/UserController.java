@@ -325,16 +325,19 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/regUser")
 	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
-			@RequestParam(value = "nickname") String nickname,
+			@RequestParam(value = "nickname", defaultValue = "") String nickname,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
-
+	
 		String result = "";
 		String phone = "";
 		if (null == session.getAttribute("phonenumber")) {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
+			if (nickname.length() == 0) {
+				nickname = phone;
+			}
 			result = userDao.regUser(phone, nickname, password, password1);
 		}
 
