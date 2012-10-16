@@ -31,7 +31,7 @@
     			<hr>
     			<h3>立刻下载开始你的智会之旅</h3>
     			<div>
-    				<a class="btn">
+    				<a class="btn" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/iphone.png">
     						<div class="pull-right">
