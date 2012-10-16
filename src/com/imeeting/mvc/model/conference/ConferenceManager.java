@@ -16,6 +16,12 @@ import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.richitec.notify.Notifier;
+import org.springframework.dao.DataAccessException;
+
+import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
+>>>>>>> master
 
 public class ConferenceManager {
 
