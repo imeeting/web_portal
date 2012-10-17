@@ -45,6 +45,8 @@
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />
 							<label>请选择充值金额（RMB&nbsp;单位：元）</label>
 							<select name="charge_amount">
+							    <option value="10.00">10</option>
+							    <option value="30.00">30</option>
 								<option value="50.00">50</option>
 								<option value="100.00" selected="selected">100</option>
 								<option value="200.00">200</option>
