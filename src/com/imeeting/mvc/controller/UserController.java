@@ -22,6 +22,7 @@ import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
+import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MD5Util;
 import com.richitec.vos.client.VOSClient;
@@ -35,6 +36,7 @@ public class UserController extends ExceptionController {
 
 	private UserDAO userDao;
 	private VOSClient vosClient;
+	private SMSClient smsClient;
 	private Configuration config;
 	
 	public static final String ErrorCode = "error_code";
@@ -374,6 +376,13 @@ public class UserController extends ExceptionController {
 							+ depositeResp.getVOSStatusCode()
 							+ "\nVOS Response Info ："
 							+ depositeResp.getVOSResponseInfo());
+				} else {
+				    try {
+				        smsClient.sendTextMessage(phone, "欢迎您成为智会用户，" +
+				    		"您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
+				    } catch(Exception e) {
+				        log.error("Cannot send SMS to new user: " + phone);
+				    }
 				}
 			}
 		}

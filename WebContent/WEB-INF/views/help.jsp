@@ -97,6 +97,7 @@
                         </div>
                         <div id="que6" class="accordion-body collapse in">
                             <div class="accordion-inner">
+                <p>网站：<a href="http://www.wetalking.net">http://www.wetalking.net</a></p>
                 <p>客服QQ：1622122511</p>
                 <p>微信：youyun_zhihui</p>
                 <p>客服电话：0551-2379996</p>
