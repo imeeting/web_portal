@@ -243,6 +243,11 @@ public class WebConferenceController {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		ConferenceModel conferenceModel = conferenceManager
 				.getConference(confId);
+		if (null == conferenceModel){
+		    log.error("Conference <" + confId + "> is null.");
+		    return "redirect:/myconference";
+		}
+		
 		AttendeeModel attendee = conferenceModel.getAttendee(user.getUserName());
 		if (attendee == null) {
 			// user are prohibited to join the conference for he isn't in it
