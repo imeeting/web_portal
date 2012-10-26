@@ -456,6 +456,10 @@ public class WebConferenceController {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		ConferenceModel conference = conferenceManager
 				.getConference(conferenceId);
+		if (null == conference){
+		    log.error("heartbeat to null conference <" + conferenceId + ">");
+		    return "null";
+		}
 		AttendeeModel attendee = conference.getAttendee(user.getUserName());
 		if (null != attendee) {
 			attendee.heartBeat();
