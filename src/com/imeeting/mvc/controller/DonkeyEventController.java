@@ -106,6 +106,7 @@ public class DonkeyEventController {
 		}
 		conferenceManager.removeConference(requestId);
 		conferenceDao.close(requestId);
+		conferenceManager.notifyConferenceDestoryed(requestId);
 	}
 	
 	private void onConferenceStatusConflict(DonkeyEvent event){
