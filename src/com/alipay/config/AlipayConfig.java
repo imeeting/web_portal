@@ -25,13 +25,13 @@ public class AlipayConfig {
 	
 	//↓↓↓↓↓↓↓↓↓↓请在这里配置您的基本信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 	// 合作身份者ID，以2088开头由16位纯数字组成的字符串
-	public static String partner = "2088601218915553";
+	public static String partner = "2088801270252724";
 	
 	// 交易安全检验码，由数字和字母组成的32位字符串
-	public static String key = "z5wxgd4ss3ppaav6jy1i6zhdwj9i1wwk";
+	public static String key = "4jnm78lp451bxrc783ofo65icbx2bik8";
 	
 	// 签约支付宝账号或卖家收款支付宝帐户
-	public static String seller_email = "nanjingfutuo@yahoo.cn";
+	public static String seller_email = "youyun@richitec.com";
 	
 	// 支付宝服务器通知的页面 要用 http://格式的完整路径，不允许加?id=123这类自定义参数
 	// 必须保证其地址能够在互联网中访问的到
