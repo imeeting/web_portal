@@ -9,7 +9,7 @@ $(function() {
 	
 	var SocketIOClient = {
 			socket : null,
-			serverAddr : 'http://msg.walkwork.net',
+			serverAddr : 'http://msg.wetalking.net',
 			setup : function(topic, subscriberID, callback) {
 				SocketIOClient.socket = io.connect(SocketIOClient.serverAddr, {
 					port : 80
