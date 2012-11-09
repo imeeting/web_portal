@@ -143,6 +143,7 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
 	<script src="/imeeting/js/lib/bootstrap.js"></script>
+	<script src="/imeeting/js/lib/json2.js"></script>
 	<script src="/imeeting/js/applib/common.js"></script>
 	<script src="/imeeting/js/webconf/arrange.js"></script>
 </body>
