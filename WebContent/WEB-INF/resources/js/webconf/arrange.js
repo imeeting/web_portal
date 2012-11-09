@@ -77,7 +77,11 @@ $(function() {
 				}
 			},
 			error : function(jqXHR) {
-				alert("额。。会议创建失败！请重试～");
+				if (jqXHR.status == 402){
+					alert("账户余额不足，请充值后继续使用。");
+				} else {
+					alert("额。。会议创建失败！请重试～");
+				}
 			}
 			
 
