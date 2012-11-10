@@ -2,7 +2,6 @@ package com.imeeting.mvc.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
