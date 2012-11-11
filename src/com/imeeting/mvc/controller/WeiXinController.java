@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,12 +38,13 @@ public class WeiXinController {
     
     private DonkeyClient donkeyClient;
     
-    private static final String ToUserName = "ToUserName";
-    private static final String FromUserName = "FromUserName";
-    private static final String CreateTime = "CreateTime";
-    private static final String MsgType = "MsgType";
-    private static final String Content = "Content";
-    private static final String FuncFlag = "FuncFlag";
+    public static final String ToUserName = "ToUserName";
+    public static final String FromUserName = "FromUserName";
+    public static final String CreateTime = "CreateTime";
+    public static final String MsgType = "MsgType";
+    public static final String Content = "Content";
+    public static final String FuncFlag = "FuncFlag";
+    public static final String ConfId = "ConfId";
     
     @PostConstruct
     public void init() {
@@ -71,7 +73,7 @@ public class WeiXinController {
     
 
     @RequestMapping(method = RequestMethod.POST)
-    public @ResponseBody String post(
+    public ModelAndView post(
             @RequestParam(value="signature") String signature,
             @RequestParam(value="timestamp") String timestamp,
             @RequestParam(value="nonce") String nonce,
@@ -88,28 +90,26 @@ public class WeiXinController {
         String msgType = get_value(doc, MsgType);
         String content = get_value(doc, Content);
         
-        if ("kh".equalsIgnoreCase(content)){
-            String confId = RandomString.genRandomNum(6);
+        String confId = null;
+        if ("text".equalsIgnoreCase(msgType) && "kh".equalsIgnoreCase(content)){
+            confId = RandomString.genRandomNum(5);
             DonkeyHttpResponse donkeyResp =
                 donkeyClient.createNoMediaConference(confId, null, null, "weixin");
             if (null == donkeyResp || !donkeyResp.isAccepted()){
-                content = "Sorry, /::<";
-            } else {
-                content = "Call 0551-2379997 join conference\n" + 
-                "Conf Id : " + confId;
+                confId = "0";
+                log.error("Create audio conference error : "
+                        + (null == donkeyResp ? "NULL Response" : donkeyResp
+                                .getStatusCode()));
             }
-        } else {
-            content = "Send 'kh' to me, I will create a Tel conference for you.";
         }
         
-        return "<xml>"+
-        "<ToUserName><![CDATA[" + fromUserName + "]]></ToUserName>" +
-        "<FromUserName><![CDATA[" + toUserName + "]]></FromUserName>" +
-        "<CreateTime><![CDATA[" + createTime + "]]></CreateTime>" +
-        "<MsgType><![CDATA[" + "text" + "]]></MsgType>" +
-        "<Content><![CDATA[" + content + "]]></Content>" +
-        "<FuncFlag>" + "0" + "</FuncFlag>" +
-        "</xml>"; 
+        ModelAndView mv = new ModelAndView();
+        mv.addObject(ToUserName, fromUserName);
+        mv.addObject(FromUserName, toUserName);
+        mv.addObject(CreateTime, createTime);
+        mv.addObject(ConfId, confId);
+        mv.setViewName("weixin/msg");
+        return mv;
     }    
     
     private String get_value(Document doc, String nodeName){
