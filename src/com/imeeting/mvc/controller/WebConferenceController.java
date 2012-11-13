@@ -88,6 +88,7 @@ public class WebConferenceController {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		
 		//step 0. check account balance
+		/*
 		Double balance = vosClient.getAccountBalance(user.getUserName());
 		if (balance == null) {
 			log.warn("Error balance (" +  balance +") for user <" + 
@@ -102,7 +103,8 @@ public class WebConferenceController {
 			response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
 			return;
 		}
-
+        */
+		
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
 		ConferenceModel conference = conferenceManager.creatConference(
