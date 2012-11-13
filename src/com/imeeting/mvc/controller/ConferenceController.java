@@ -87,6 +87,7 @@ public class ConferenceController extends ExceptionController {
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws IOException, DataAccessException, JSONException {
 		// step 0. check account balance
+	    /*
 		Double balance = vosClient.getAccountBalance(userName);
 		if (balance == null) {
 			log.warn("Error balance (" + balance + ") for user <" + userName
@@ -101,7 +102,8 @@ public class ConferenceController extends ExceptionController {
 			response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
 			return;
 		}
-
+        */
+	    
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
 		ConferenceModel conference = conferenceManager.creatConference(
