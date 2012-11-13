@@ -495,7 +495,7 @@ public class ConferenceController extends ExceptionController {
 		// notify other people that User has unjoined
 		conferenceModel.broadcastAttendeeStatus(attendee);
 
-		conferenceManager.removeConferenceIfEmpty(conferenceId);
+//		conferenceManager.removeConferenceIfEmpty(conferenceId);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

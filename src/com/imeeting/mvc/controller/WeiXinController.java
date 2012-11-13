@@ -91,7 +91,10 @@ public class WeiXinController {
         String content = get_value(doc, Content);
         
         String confId = null;
-        if ("text".equalsIgnoreCase(msgType) && "kh".equalsIgnoreCase(content)){
+        if ("text".equalsIgnoreCase(msgType) && 
+            ("kh".equalsIgnoreCase(content) || "开会".equals(content) ||
+             "kaihui".equalsIgnoreCase(content) || "hk".equalsIgnoreCase(content) ||
+             "開會".equals(content)) ){
             confId = RandomString.genRandomNum(5);
             DonkeyHttpResponse donkeyResp =
                 donkeyClient.createNoMediaConference(confId, null, null, "weixin");

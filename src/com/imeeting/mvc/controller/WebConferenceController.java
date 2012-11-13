@@ -277,7 +277,7 @@ public class WebConferenceController {
 			// notify other people that User has unjoined
 			conferenceModel.broadcastAttendeeStatus(attendee);
 
-			conferenceManager.removeConferenceIfEmpty(confId);
+//			conferenceManager.removeConferenceIfEmpty(confId);
 		}
 
 		return "redirect:/myconference";
