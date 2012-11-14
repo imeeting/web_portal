@@ -275,7 +275,7 @@ public class UserDAO {
 
 	public int changePassword(String userName, String md5Password) {
 		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=?";
-		String userkey = MD5Util.md5(userName + md5Password);
+		String userkey = MD5Util.md5(RandomString.genRandomChars(10));
 		return jdbc.update(sql, md5Password, userkey, userName);
 	}
 
@@ -312,5 +312,11 @@ public class UserDAO {
 	public int changeNickname(String userName, String nickname) {
 		String sql = "UPDATE im_user SET nickname = ? WHERE username = ?";
 		return jdbc.update(sql, nickname, userName);
+	}
+	
+	public Map<String, Object> getUser(String userName) {
+		String sql = "SELECT * FROM im_user WHERE username = ? AND status = ?";
+		return jdbc.queryForMap(sql, userName,
+				UserAccountStatus.success.name());
 	}
 }
