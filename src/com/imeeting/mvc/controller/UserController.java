@@ -54,6 +54,7 @@ public class UserController extends ExceptionController {
 		userDao = ContextLoader.getUserDAO();
 		vosClient = ContextLoader.getVOSClient();
 		config = ContextLoader.getConfiguration();
+		smsClient = ContextLoader.getSMSClient();
 	}
 
 	@Deprecated
@@ -483,13 +484,12 @@ public class UserController extends ExceptionController {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-			String newPwd = RandomString.getPassword();
+			String newPwd = RandomString.genRandomNum(6);
 			int rows = userDao.changePassword(userName, MD5Util.md5(newPwd));
 			if (rows > 0) {
 				String msg = String.format(
-						"您的新密码是%s，请登录后及时修改您的密码。[AngolaCall]", newPwd);
-				String bindPhone = (String) user.get("bindphone");
-				smsClient.sendTextMessage(bindPhone, msg);
+						"您的新密码是%s，请登录后及时修改您的密码。[智会]", newPwd);
+				smsClient.sendTextMessage(userName, msg);
 			} else {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}
