@@ -95,7 +95,7 @@ public class WeiXinController {
             ("kh".equalsIgnoreCase(content) || "开会".equals(content) ||
              "kaihui".equalsIgnoreCase(content) || "hk".equalsIgnoreCase(content) ||
              "開會".equals(content)) ){
-            confId = RandomString.genRandomNum(5);
+            confId = RandomString.genRandomNum(4);
             DonkeyHttpResponse donkeyResp =
                 donkeyClient.createNoControlConference(confId, null, null, "weixin");
             if (null == donkeyResp || !donkeyResp.isAccepted()){
