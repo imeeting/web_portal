@@ -20,6 +20,7 @@ if (null == confId){
               "\n[转发邀请好友加入会议]";
     funflag = "1";
 }
+content += "\n Android用户可以下载客户端程序，功能更强，使用更方便！下载地址：http://t.cn/zj7nxPo";
 %>
    <xml>
     <ToUserName><![CDATA[<%=toUser %>]]></ToUserName>
