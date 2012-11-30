@@ -2,6 +2,7 @@ package com.imeeting.mvc.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +27,7 @@ import com.imeeting.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MD5Util;
+import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
@@ -51,6 +54,7 @@ public class UserController extends ExceptionController {
 		userDao = ContextLoader.getUserDAO();
 		vosClient = ContextLoader.getVOSClient();
 		config = ContextLoader.getConfiguration();
+		smsClient = ContextLoader.getSMSClient();
 	}
 
 	@Deprecated
@@ -467,5 +471,31 @@ public class UserController extends ExceptionController {
 		boolean isExist = userDao.isExistsLoginName(userName);
 		ret.put("result", isExist);
 		response.getWriter().print(ret.toString());
+	}
+	
+	@RequestMapping("/getUserPwd")
+	public void getUserPassword(HttpServletResponse response,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		try {
+			Map<String, Object> user = userDao.getUser(userName);
+			if (user == null) {
+				log.info("user is null");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+			String newPwd = RandomString.genRandomNum(6);
+			int rows = userDao.changePassword(userName, MD5Util.md5(newPwd));
+			if (rows > 0) {
+				String msg = String.format(
+						"您的新密码是%s，请登录后及时修改您的密码。[智会]", newPwd);
+				smsClient.sendTextMessage(userName, msg);
+			} else {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			}
+		} catch (DataAccessException e) {
+			// e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
 	}
 }
