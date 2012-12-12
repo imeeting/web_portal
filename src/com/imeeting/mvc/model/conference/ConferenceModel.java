@@ -216,7 +216,7 @@ public class ConferenceModel {
 			}
 			if (numberList.length() > 0) {
 				String content = "您被邀请加入群聊（群聊号：" + conferenceId
-						+ " ) 拨打0551-2379997或访问www.wetalking.net加入群聊。";
+						+ " ) 拨打0551-62379997或访问www.wetalking.net加入群聊。";
 				try {
 					ContextLoader.getSMSClient().sendTextMessage(
 							numberList.toString(), content);

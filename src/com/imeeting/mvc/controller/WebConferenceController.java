@@ -186,6 +186,65 @@ public class WebConferenceController {
 		return mv;
 	}
 	
+	@RequestMapping(value="ajax", method=RequestMethod.GET)
+	public ModelAndView joinConf(HttpSession session,
+	        @RequestParam(value = "confId") String confId){
+	    ModelAndView mv = new ModelAndView();
+	    ConferenceModel conference = conferenceManager.getConference(confId);
+        mv.addObject("conference", conference);
+        mv.setViewName("webconf/conf");
+        return mv;
+	}
+	
+	@RequestMapping(value="ajax", method=RequestMethod.POST)
+	public @ResponseBody String joinByAjax(HttpSession session,
+	        @RequestParam(value = "confId") String confId) throws JSONException{
+	    UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+	    JSONObject result = new JSONObject();
+        ConferenceModel conference = conferenceManager.getConference(confId);
+        if (null == conference) {
+            result.put("result", "noconference");
+            return result.toString();
+        }
+        
+        AttendeeModel attendee = conference.getAttendee(user.getUserName());
+        if (null == attendee) {
+            attendee = new AttendeeModel(user.getUserName());
+            attendee.setNickname(user.getNickName());
+            conference.addAttendee(attendee);
+            conferenceDao.saveAttendee(confId, attendee);
+
+            // add attendees to audio conference
+            DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(
+                    conference.getAudioConfId(), attendee.getUsername(),
+                    conference.getConferenceId());
+            if (null == donkeyResp || !donkeyResp.isAccepted()) {
+                log.error("Add attenddes to audio conference <"
+                        + conference.getAudioConfId()
+                        + "> error : "
+                        + (null == donkeyResp ? "NULL Response" : donkeyResp
+                                .getStatusCode()));
+                
+                result.put("result", "donkeyFailed");
+                return result.toString();
+            }
+        }
+        
+        if (attendee.isKickout()) {
+            result.put("result", "kickout");
+            return result.toString();
+        }
+
+        attendee.join();
+        attendee.heartBeat();
+
+        // notify all attendees to update attendee list
+        conference.notifyAttendeesToUpdateMemberList();
+
+        result.put("result", "success");
+	    return result.toString();
+	}
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView join(HttpSession session,
 			@RequestParam(value = "confId") String confId) {

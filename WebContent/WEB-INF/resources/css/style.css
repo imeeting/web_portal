@@ -220,3 +220,7 @@ footer span {
 	left: 55%;
 	margin-left: -245px;
 }
+
+#dlg_join_conf form {
+    margin: 0;
+}

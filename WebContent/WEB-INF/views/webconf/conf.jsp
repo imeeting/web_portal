@@ -25,7 +25,7 @@
     <div class="container">
     	<div class="clearfix">
 			<h1><%=conference.getConferenceId() %>&nbsp;
-				<small>请拨打号码0551-2379997加入群聊，或者点击<span class="label label-success">Call Me</span>按钮，系统会向您发起呼叫。</small>
+				<small>请拨打号码0551-62379997加入群聊，或者点击<span class="label label-success">Call Me</span>按钮，系统会向您发起呼叫。</small>
 			</h1>
 			<h1>
 				欢迎您：<%=user.getDisplayName()%>
