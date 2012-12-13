@@ -2,11 +2,8 @@
 
 body {
 	font-family: 微软雅黑;
-	/*
-    background-color: #9EDFE8;	
-    */
     background: url(../img/bg-face.jpg);
-    background-color: #EBEBEB;  
+    background-color: #91673F;  
 }
 
 .navbar-inner {
@@ -17,10 +14,6 @@ body {
 	padding: 50px 0;
 	background: url(../img/bg.png);
 	box-shadow: 0 20px 30px #91673F;
-}
-
-.im-blue {
-    color: #0082CB;
 }
 
 footer {
