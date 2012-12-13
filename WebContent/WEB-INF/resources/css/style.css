@@ -3,9 +3,9 @@
 body {
 	font-family: 微软雅黑;
 	/*
-    background: url(../img/bg2.png);
     background-color: #9EDFE8;	
     */
+    background: url(../img/bg-face.jpg);
     background-color: #EBEBEB;  
 }
 
@@ -15,7 +15,8 @@ body {
 
 .im-container {
 	padding: 50px 0;
-    background-color: #FFF;  
+	background: url(../img/bg.png);
+	box-shadow: 0 20px 30px #91673F;
 }
 
 .im-blue {
@@ -27,6 +28,8 @@ footer {
 	color: #999;
 	padding: 10px 10px 50px 10px; 
 	margin-bottom: 50px;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 0 20px 30px #91673F;
 }
 
 footer span {
@@ -48,7 +51,7 @@ footer span {
 
 #signin-form {
 	margin-top: 50px;
-	margin-bottom: 200px;
+	margin-bottom: 100px;
 }
 
 .im-form input, button {
