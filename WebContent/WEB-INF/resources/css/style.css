@@ -109,6 +109,12 @@ footer span {
 	border: solid 1px #BCE8F1;
 }
 
+#divConfTitle, 
+#divAttendeeList {
+	padding: 10px 20px;
+    background: url(../img/bg.png);
+}
+
 .im-video {
     width: 270px;
     height: 360px;
@@ -246,4 +252,19 @@ footer span {
 
 #dlg_join_conf form {
     margin: 0;
+}
+
+/* 联系我们 */
+.im-contact-header {
+	padding: 20px;
+    border-radius: 10px;
+    background: url(../img/bg2.png);
+    box-shadow: 0 20px 30px #91673F;
+}
+
+.im-contact-body {
+    padding: 20px;
+    border-radius: 10px;
+    background: url(../img/bg.png);
+    box-shadow: 0 20px 30px #91673F;    
 }

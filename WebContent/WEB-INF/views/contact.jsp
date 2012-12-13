@@ -9,23 +9,27 @@
 
   <body>
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid">
     		<div class="span10 offset1">
-				<div class="page-header">
+				<div class="page-header im-contact-header">
 					<h2>联系我们</h2>
 					<p>感谢您对智会的关注，智会尚在发展中，需要不断地改进和完善。希望您多提意见，为智会的成长提供养分。</p>
 				</div>
     		</div> 
     	</div>
-    	<div class="row">
-    	   <div class="span3 offset1">
-    	       <h2>给我们打电话</h2>
+    	<div class="row-fluid">
+    	   <div class="span5 offset1 im-contact-body">
+    	       <h4>电话：0551-62379996</h4>
+    	       <h4>Email：zhihui@richitec.com</h4>
+    	       <h4>QQ：1622122511</h4>
     	   </div>
-           <div class="span3">
-                <h2>发邮件给我们</h2>
-           </div> 
-           <div class="span3">
-                <h2>使用微信与我们互动</h2>
+           <div class="span5 im-contact-body">
+                <h4>使用微信与我们互动</h4>
+                <div>
+	                <img class="pull-left" src="/imeeting/img/qrcode_for_gh_258.jpg"></img>
+	                <p>微信扫描二维码，或者微信搜号码“youyun_zhihui”，即可添加“智会”为好友。</p>
+	                <p>添加好友之后，只需向“智会”发送“kh”就可以创建电话会议。</p>
+                </div>
            </div>
     	</div>
     </div> <!-- /container -->

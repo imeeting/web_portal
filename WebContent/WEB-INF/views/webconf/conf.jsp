@@ -23,18 +23,18 @@
     <jsp:include page="../common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="clearfix">
-			<h1><%=conference.getConferenceId() %>&nbsp;
-				<small>请拨打号码0551-62379997加入群聊，或者点击<span class="label label-success">Call Me</span>按钮，系统会向您发起呼叫。</small>
-			</h1>
-			<h1>
-				欢迎您：<%=user.getDisplayName()%>
+    	<div id="divConfTitle" class="clearfix">
+    	   <div class="pull-left">
+			   <h4>会议号：<%=conference.getConferenceId() %></h4>
+			   <p>提示：电话拨打 0551-62379997 可以加入群聊。</p>
+    	   </div>
+    	   <p class="pull-right">
 				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>
                 <% if (conference.getOwnerName().equals(user.getUserName())) { %>
 				<a id="btnCallAll" class="btn btn-success btn-large">全体呼叫</a>
 				<% } %>
 				<a class="btn btn-danger btn-large" href="/imeeting/webconf/unjoin?confId=<%=conference.getConferenceId()%>">离开群聊</a>
-			</h1>  	
+			</p>
     	</div>
     	<div class="im-flash">
 	    	<div id="flashContent">
@@ -119,7 +119,6 @@
 				}
 			%>
 		</div>
-		<jsp:include page="../common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
     <div>
         <input id="iptCallAllStatus" type="hidden" value="NotCall">
