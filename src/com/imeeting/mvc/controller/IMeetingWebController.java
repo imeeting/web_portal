@@ -103,6 +103,11 @@ public class IMeetingWebController {
 		return "error/500";
 	}	
 	
+    @RequestMapping(value="/contact")
+    public String contact(){
+        return "contact";
+    }	
+	
 	@RequestMapping("/getDownloadPageUrl")
 	public void getDownloadPageUrl(HttpServletResponse response, @RequestParam String phoneNumber) throws JSONException, IOException {
 		String url = ContextLoader.getConfiguration().getAppDonwloadPageUrl();

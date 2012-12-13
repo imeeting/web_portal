@@ -2,17 +2,44 @@
 
 body {
 	font-family: 微软雅黑;
+	/*
+    background: url(../img/bg2.png);
+    background-color: #9EDFE8;	
+    */
+    background-color: #EBEBEB;  
+}
+
+.navbar-inner {
+    background: url(../img/bg2.png);
+}
+
+.im-container {
+	padding: 50px 0;
+    background-color: #FFF;  
+}
+
+.im-blue {
+    color: #0082CB;
 }
 
 footer {
+    background: url(../img/bg2.png); 
 	color: #999;
-	border-top: #999 solid 1px;
-	padding: 10px 0px 50px; 
-	margin-top: 50px;
+	padding: 10px 10px 50px 10px; 
+	margin-bottom: 50px;
 }
 
 footer span {
 	padding: 0 5px;
+}
+
+.icon-weibo {
+	background: url(../img/is.png) no-repeat;
+	background-position: 0 -115px;
+    display: inline-block;
+	width: 28px;
+	height: 28px;
+	margin-right: 3px;
 }
 
 .hidden {

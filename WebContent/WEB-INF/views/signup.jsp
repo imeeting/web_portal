@@ -88,7 +88,7 @@
   	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     	<% if (null != errorCode && HttpServletResponse.SC_OK == errorCode) { %>
     	   <div class="span4 offset4">
     	       <h2>恭喜你，注册成功！<a href="/imeeting/signin">点此登录</a></h2>

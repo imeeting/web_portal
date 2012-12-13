@@ -40,7 +40,7 @@ if (nicknameRetCode != null) {
     <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-		<div class="row">
+		<div class="row-fluid im-container">
 			<div class="span6 offset3 tabbable tabs-left">
 				<ul class="nav nav-tabs">
 					<li class="active">

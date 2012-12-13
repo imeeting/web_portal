@@ -16,7 +16,7 @@
 	%>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     		<div class="span6 offset3">
     			<h2>请选择你喜欢的充值方式</h2>
     			<small>如需帮助请联系客服，QQ： 1622122511，电话： 0551-62379996</small>

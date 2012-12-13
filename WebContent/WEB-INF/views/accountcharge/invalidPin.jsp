@@ -12,7 +12,7 @@
     <jsp:include page="../common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
 	    	<div class="hero-unit">
 				<h1>亲，卡号&nbsp;<%=pin %>&nbsp;不存在！</h1>
 				<hr>

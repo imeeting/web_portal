@@ -14,7 +14,7 @@
     <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     		<div class="span8 offset2">
 		    	<div class="clearfix">
 		    		<div class="pull-left">

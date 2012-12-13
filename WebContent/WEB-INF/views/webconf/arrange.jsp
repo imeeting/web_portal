@@ -20,7 +20,7 @@
 	<jsp:include page="../common/afterlogin_navibar.jsp"></jsp:include>
 
 	<div class="container">
-		<div class="row">
+		<div class="row-fluid im-container">
 			<form id="formJoinConference" action="./webconf"
 				class="span8 offset2" method="post">
 				<div class="control-group">

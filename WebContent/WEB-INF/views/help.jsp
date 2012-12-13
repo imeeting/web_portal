@@ -116,7 +116,7 @@
                 <p>网站：<a href="http://www.wetalking.net">http://www.wetalking.net</a></p>
                 <p>客服QQ：1622122511</p>
                 <p>微信：youyun_zhihui</p>
-                <p>客服电话：0551-2379996</p>
+                <p>客服电话：0551-62379996</p>
                 <p>客服邮箱：zhihui@richitec.com</p>
                 <p>新浪微博：<a href="http://weibo.com/u/2952506540">优云智会</a></p>
                             </div>

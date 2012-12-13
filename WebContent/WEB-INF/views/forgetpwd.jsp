@@ -11,7 +11,7 @@
   	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     		<form id="formResetPassword" action="user/resetpassword" class="im-form span6 offset3">
                 <h2>重新设置密码</h2>
                 <hr>
