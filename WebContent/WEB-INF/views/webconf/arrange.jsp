@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>智会-创建群聊</title>
+<title>智会-创建会议</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 
@@ -24,10 +24,10 @@
 			<form id="formJoinConference" action="./webconf"
 				class="span8 offset2" method="post">
 				<div class="control-group">
-					<label class="control-label">给你的群聊起个名字吧</label>
+					<label class="control-label">给你的会议起个名字吧</label>
 					<div class="controls">
 					<input id="iptConfTitle" name="confTitle" maxlength="32"
-						class="span8" type="text" placeholder="默认使用群聊号作为标题" />
+						class="span8" type="text" placeholder="默认使用会议号作为标题" />
 					</div>
 				</div>
 				<div class="control-group clearfix">
@@ -70,7 +70,7 @@
 				</div>
 				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
-					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">开始群聊</button>
+					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">开始会议</button>
 				</div>
 			</form>
 		</div>

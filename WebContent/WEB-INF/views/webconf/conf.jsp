@@ -15,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>智会-群聊<%=conference.getConferenceId() %></title>
+    <title>智会-会议<%=conference.getConferenceId() %></title>
 	<jsp:include page="../common/_head.jsp"></jsp:include>
   </head>
 
@@ -26,7 +26,7 @@
     	<div id="divConfTitle" class="clearfix">
     	   <div class="pull-left">
 			   <h4>会议号：<%=conference.getConferenceId() %></h4>
-			   <p>提示：电话拨打 0551-62379997 可以加入群聊。</p>
+			   <p>提示：电话拨打 0551-62379997 可以加入会议。</p>
     	   </div>
     	   <p class="pull-right">
 				<a id="btnPhoneCall" class="btn btn-success btn-large">Call&nbsp;Me</a>

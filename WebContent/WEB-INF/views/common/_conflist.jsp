@@ -47,7 +47,7 @@
 				</div>
 				<div class="pull-right">
 					<p>
-					          群聊号：<strong><%=conf.getId() %></strong><br>
+					          会议号：<strong><%=conf.getId() %></strong><br>
 						<strong><%=year %></strong>年<strong><%=month %></strong>月<strong><%=day %></strong>日<br>
 						<%=week %><br>
 						<strong><%=ap %>&nbsp;<%=hour %></strong>
@@ -84,5 +84,5 @@
 			</script>
 <% 		} //End of IF %>
 <% } else { // END if (confList.size() >0 ) %>
-	<small>你还没有参加任何群聊</small>	
+	<small>你还没有参加任何会议</small>	
 <% } %>
