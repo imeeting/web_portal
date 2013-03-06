@@ -45,7 +45,7 @@ public class ConferenceDB {
 			throws DataAccessException {
 		insert(conference.getConferenceId());
 		if (title == null || title.equals("")) {
-			title = "群聊号: " + conference.getConferenceId();
+			title = "会议密码: " + conference.getConferenceId();
 		}
 		editConferenceTitle(conference.getConferenceId(), title);
 		Collection<AttendeeModel> attendeeCollection = conference
