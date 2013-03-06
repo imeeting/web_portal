@@ -30,7 +30,7 @@ public class ConferenceDB {
 	private JdbcTemplate jdbc;
 
 	public enum ConferenceStatus {
-		OPEN, CLOSE
+		OPEN, CLOSE, SCHEDULE
 	};
 
 	public enum UserConfStatus {
@@ -40,7 +40,12 @@ public class ConferenceDB {
 	public void setDataSource(DataSource ds) {
 		jdbc = new JdbcTemplate(ds);
 	}
-
+	
+	public void saveScheduledConference(String confId, String scheduleTime){
+		String sql = "INSERT INTO im_conference(conferenceId, status, scheduled_time) VALUES {?,?,?}";
+		jdbc.update(sql, confId, ConferenceStatus.SCHEDULE, scheduleTime);
+	}
+	
 	public void saveConference(ConferenceModel conference, String title)
 			throws DataAccessException {
 		insert(conference.getConferenceId());
