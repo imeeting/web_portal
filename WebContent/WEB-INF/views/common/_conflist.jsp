@@ -47,7 +47,7 @@
 				</div>
 				<div class="pull-right">
 					<p>
-					          会议号：<strong><%=conf.getId() %></strong><br>
+					          会议密码：<strong><%=conf.getId() %></strong><br>
 						<strong><%=year %></strong>年<strong><%=month %></strong>月<strong><%=day %></strong>日<br>
 						<%=week %><br>
 						<strong><%=ap %>&nbsp;<%=hour %></strong>
