@@ -42,8 +42,9 @@ public class ConferenceDB {
 	}
 	
 	public void saveScheduledConference(String confId, String scheduleTime){
-		String sql = "INSERT INTO im_conference(conferenceId, status, scheduled_time) VALUES {?,?,?}";
-		jdbc.update(sql, confId, ConferenceStatus.SCHEDULE, scheduleTime);
+		String sql = "INSERT INTO im_conference(conferenceId, status, created, title) VALUES (?,?,?,?)";
+		String title = confId;
+		jdbc.update(sql, confId, ConferenceStatus.SCHEDULE.name(), scheduleTime, title);
 	}
 	
 	public void saveConference(ConferenceModel conference, String title)
