@@ -1,7 +1,8 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +31,6 @@ import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.imeeting.web.user.UserBean;
-import com.mongodb.DBObject;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;
@@ -69,41 +69,102 @@ public class WebConferenceController {
 	public ModelAndView arrange(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		List<DBObject> contacts = addressBookDao.getAllContacts(user.getUserName(),
-				null);
-		mv.addObject(WebConstants.addressbook.name(), contacts);
+		//测试程序，临时注册
+//		List<DBObject> contacts = addressBookDao.getAllContacts(user.getUserName(),
+//				null);
+		
+		mv.addObject(WebConstants.addressbook.name(), null);
 
 		mv.setViewName("webconf/arrange");
 		return mv;
 	}
+	
+	@RequestMapping(value="schedule", method=RequestMethod.POST)
+	public void schedule(
+			HttpSession session,
+			HttpServletResponse response,
+			@RequestParam(value = "attendees", required = false) String attendeeList,
+			@RequestParam(value="scheduleTime", required = true) String scheduleTime )
+			throws JSONException, IOException {
+		//step 1. save conference
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		String conferenceId = RandomString.genRandomNum(6);
+		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
+		
+		// step 2. save attendees
+		if (attendeeList != null && attendeeList.length() > 0) {
+			JSONArray jsonArray = new JSONArray(attendeeList);
+			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
+		}
+		
+		//TODO: save attendees to contact database.
+		//TODO: send Email or SMS to all attendess. 
+		
+		// step 3. response to user
+		JSONObject ret = new JSONObject();
+		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
+		ret.put(ConferenceConstants.schedule_time.name(), scheduleTime);
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.getWriter().print(ret.toString());
+	}
+	
+	@RequestMapping(value="scheduleNow", method=RequestMethod.POST)
+	public void scheduleNow(HttpSession session,
+			HttpServletResponse response,
+			@RequestParam(value = "attendees", required = false) String attendeeList) 
+			throws JSONException, IOException{
+		//step 1. save conference
+		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+		String conferenceId = RandomString.genRandomNum(6);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date now = new Date();
+		String scheduleTime = df.format(now);
+		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
+		
+		// step 2. save attendees
+		if (attendeeList != null && attendeeList.length() > 0) {
+			JSONArray jsonArray = new JSONArray(attendeeList);
+			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
+		}
+		
+		//TODO: save attendees to contact database.
+		
+		// step 3. create audio conference
+		ConferenceModel conference = conferenceManager.creatConference(
+				conferenceId, user.getUserName());
+		conference.setAudioConfId(conferenceId);
+		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(user.getUserName());
+		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
+				conferenceId, vosPhoneNumber.toString(),
+				conference.getAllAttendeeName(), conferenceId);
+		if (null == donkeyResp || !donkeyResp.isAccepted()) {
+			log.error("Create audio conference error : "
+					+ (null == donkeyResp ? "NULL Response" : donkeyResp
+							.getStatusCode()));
+			conferenceManager.removeConference(conferenceId);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Cannot create audio conference");
+			return;
+		}
+		session.setAttribute(ConferenceConstants.conferenceId.name(), conferenceId);
+		
+		//TODO: send Email or SMS to all attendess. 
+		
+		// step 3. response to user
+		JSONObject ret = new JSONObject();
+		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.getWriter().print(ret.toString());
+	}
 
-	@RequestMapping(value = "create")
+	@RequestMapping(value = "create", method=RequestMethod.POST)
 	public void create(
 			HttpServletResponse response,
 			HttpSession session,
-			@RequestParam(value = "title", required = false) String title,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws JSONException, IOException {
 		log.info("attendees: " + attendeeList);
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		
-		//step 0. check account balance
-		/*
-		Double balance = vosClient.getAccountBalance(user.getUserName());
-		if (balance == null) {
-			log.warn("Error balance (" +  balance +") for user <" + 
-					user.getUserName() + "> to create conference.");
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			return;
-		}
-		
-		if (balance < 1.0){
-			log.warn("Not enough money (" +  balance +") for user <" + 
-					user.getUserName() + "> to create conference.");
-			response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
-			return;
-		}
-        */
 		
 		// step 1. create ConferenceModel in memory
 		String conferenceId = RandomString.genRandomNum(6);
@@ -118,9 +179,12 @@ public class WebConferenceController {
 			try {
 				JSONArray attendeesJsonArray = new JSONArray(attendeeList);
 				for (int i = 0; i < attendeesJsonArray.length(); i++) {
-					String userName = attendeesJsonArray.getString(i);
-					AttendeeModel attendee = new AttendeeModel(userName);
-					conference.addAttendee(attendee);
+					JSONObject attendee = attendeesJsonArray.getJSONObject(i);
+					String nickName = attendee.getString("nickname");
+					String phone = attendee.getString("phone");
+					String email = attendee.getString("email");
+					Boolean save = attendee.getBoolean("save");
+					conference.addAttendee(new AttendeeModel(phone));
 				}
 				conference.fillNicknameForEachAttendee();
 				conference.sendSMSToAttendees(attendeesJsonArray);
@@ -133,7 +197,7 @@ public class WebConferenceController {
 
 		// step 2. save ConferenceModel in Database.
 		try {
-			conferenceDao.saveConference(conference, title);
+			conferenceDao.saveConference(conference, user.getUserName());
 		} catch (DataAccessException e) {
 			log.error("\nSave conference <" + conferenceId
 					+ "> to database error : \n" + "Message : "
@@ -157,7 +221,6 @@ public class WebConferenceController {
 					"Cannot create audio conference");
 			return;
 		}
-
 		session.setAttribute(ConferenceConstants.conferenceId.name(), conferenceId);
 		// step 4. response to user
 		JSONObject ret = new JSONObject();
@@ -168,21 +231,14 @@ public class WebConferenceController {
 
 	@RequestMapping(value = "enterConf")
 	public ModelAndView joinOwnerToConf(HttpSession session) {
-		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		String conferenceId = (String) session.getAttribute(ConferenceConstants.conferenceId.name());
-		ModelAndView mv = new ModelAndView();
-		
 		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		AttendeeModel attendee = conference.getAttendee(user.getUserName());
-		
-		attendee.heartBeat();
-
 		// notify all attendees to update attendee list
 		conference.notifyAttendeesToUpdateMemberList();
 
+		ModelAndView mv = new ModelAndView();
 		mv.addObject("conference", conference);
 		mv.setViewName("webconf/conf");
-		
 		return mv;
 	}
 	
@@ -199,49 +255,14 @@ public class WebConferenceController {
 	@RequestMapping(value="ajax", method=RequestMethod.POST)
 	public @ResponseBody String joinByAjax(HttpSession session,
 	        @RequestParam(value = "confId") String confId) throws JSONException{
-	    UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 	    JSONObject result = new JSONObject();
         ConferenceModel conference = conferenceManager.getConference(confId);
         if (null == conference) {
             result.put("result", "noconference");
-            return result.toString();
-        }
-        
-        AttendeeModel attendee = conference.getAttendee(user.getUserName());
-        if (null == attendee) {
-            attendee = new AttendeeModel(user.getUserName());
-            attendee.setNickname(user.getNickName());
-            conference.addAttendee(attendee);
-            conferenceDao.saveAttendee(confId, attendee);
-
-            // add attendees to audio conference
-            DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(
-                    conference.getAudioConfId(), attendee.getUsername(),
-                    conference.getConferenceId());
-            if (null == donkeyResp || !donkeyResp.isAccepted()) {
-                log.error("Add attenddes to audio conference <"
-                        + conference.getAudioConfId()
-                        + "> error : "
-                        + (null == donkeyResp ? "NULL Response" : donkeyResp
-                                .getStatusCode()));
-                
-                result.put("result", "donkeyFailed");
-                return result.toString();
-            }
-        }
-        
-        if (attendee.isKickout()) {
-            result.put("result", "kickout");
-            return result.toString();
+        } else {
+        	result.put("result", "success");
         }
 
-        attendee.join();
-        attendee.heartBeat();
-
-        // notify all attendees to update attendee list
-        conference.notifyAttendeesToUpdateMemberList();
-
-        result.put("result", "success");
 	    return result.toString();
 	}
 	

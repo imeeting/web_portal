@@ -20,7 +20,7 @@
 		SimpleDateFormat ef = new SimpleDateFormat("E");
 		for (int i=0; i<confList.size(); i++) { 
 			ConferenceBean conf = confList.get(i);
-			Date date = new Date(conf.getCreatedTimeStamp());
+			Date date = new Date(conf.getScheduledTimeStamp());
 			String year = yearf.format(date);
 			String month = monthf.format(date);
 			String day = dayf.format(date);
@@ -38,10 +38,11 @@
 						<% for (int j=0; j<attendeeList.size(); j++) {
 								AttendeeBean attendee = attendeeList.get(j);
 						%>
-						<a class="im-attendee im-attendee-history im-attendee-name pull-left" 
-						   title="<%=attendee.getUserName() %>">
-							<i class="icon-user"></i>&nbsp;<%=attendee.getDisplayName() %>
-						</a>
+						<div class="im-attendee im-attendee-history im-attendee-name pull-left">
+							<div><i class="icon-user"></i>&nbsp;<%=attendee.getDisplayName() %></div>
+							<div><i class="icon-envelope"></i>&nbsp;<%=attendee.getEmail() %></div>
+							<div><i class="icon-comment"></i>&nbsp;<%=attendee.getPhone() %></div>
+						</div>
 						<% } %>
 					</div>
 				</div>
@@ -84,5 +85,5 @@
 			</script>
 <% 		} //End of IF %>
 <% } else { // END if (confList.size() >0 ) %>
-	<small>你还没有参加任何会议</small>	
+	<small>你还没有安排任何会议</small>	
 <% } %>

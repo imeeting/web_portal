@@ -3,8 +3,6 @@ $(function() {
 	
 	var _confId = $("#iptConfId").val();
 	var _userId = $("#iptUserId").val();
-	var $_btnPhoneCall = $("#btnPhoneCall");
-	var $_btnCallAll = $("#btnCallAll");
 	var $_divAttendeeList = $("#divAttendeeList");
 	
 	var SocketIOClient = {
@@ -81,7 +79,7 @@ $(function() {
 		$_divAttendeeList.load("/imeeting/webconf/attendeeList", 
 				{conferenceId: _confId}, 
 				function() {
-					bindClickToBtnAttendeePhoneCall();
+					//
 				});
 	}
 	
@@ -93,59 +91,12 @@ $(function() {
 	}
 	
 	function onUpdateStatus(event){
-		var attendeeId = event.attendee.username;
-		if (_userId == attendeeId){
-			updateSelfStatus(event.attendee);
-		} else {
-			updateAttendeeStatus(event.attendee);
-		}
-	};
-	
-	function updateSelfStatus(attendee){
-		$("#iptMyPhoneCallStatus").val(attendee.telephone_status);
-		switch(attendee.telephone_status){
-		case "CallWait":
-			$_btnPhoneCall.html("取消呼叫");
-			break;
-		case "Terminated":
-			$_btnPhoneCall.html("Call Me");
-			break;
-		case "Failed":
-			$_btnPhoneCall.html("Call Me");
-			break;
-		case "Established":
-			$_btnPhoneCall.html("挂 断");
-			break;
-		default:
-			break;
-		}
+		updateAttendeeStatus(event.attendee);
 	};
 	
 	function updateAttendeeStatus(attendee){
 		var attendeeId = attendee.username;
 		var $div = $("#div" + attendeeId);
-		
-		var $signinIcon = $div.find(".im-signin-icon");
-		$signinIcon.removeClass("im-icon-signin-offline im-icon-signin-online");
-		$signinIcon.addClass("im-icon-signin-" + attendee.online_status);
-		
-		var $videoIcon = $div.find(".im-video-icon");
-		$videoIcon.removeClass("im-icon-video-on im-icon-video-off");
-		$videoIcon.addClass("im-icon-video-" + attendee.video_status);
-		
-		var $videoHiddenInput = $div.find(".iptAttendeeId");
-		$videoHiddenInput.removeClass("im-icon-video-on im-icon-video-off");
-		$videoHiddenInput.addClass("im-icon-video-" + attendee.video_status);		
-		
-		var $videoText = $div.find(".im-video-text");
-		$videoText.html(" " + getVideoStatusText(attendee.video_status));
-		
-		var flash = document.getElementById("imeeting_flash");
-		if (attendee.video_status == "on"){
-			flash.flexAddUserToVideoList(attendeeId, attendeeId);
-		} else {
-			flash.flexRemoveUserFromVideoList(attendeeId);
-		}
 		
 		var $phoneIcon = $div.find(".im-phone-icon");
 		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
@@ -154,17 +105,6 @@ $(function() {
 		
 		var $phoneText = $div.find(".im-phone-text");
 		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
-		
-		//moderator UI
-		var $phoneCallStatus = $div.find(".iptAttendeePhoneCallStatus");
-		if ($phoneCallStatus){
-			$phoneCallStatus.val(attendee.telephone_status);
-		}
-		
-		var $btnPhoneCall = $div.find(".btnAttendeePhoneCall");
-		if ($btnPhoneCall){
-			$btnPhoneCall.html(getPhoneCallButtonText(attendee.telephone_status));
-		}
 	};
 	
 	function getPhoneStatusText(status){
@@ -180,78 +120,6 @@ $(function() {
 			return status;
 		}
 	}
-	
-	function getVideoStatusText(status){
-		if (status == "on") {
-			return "视频已打开";
-		} else if (status == "off") {
-			return "视频不可用";
-		} else {
-			return status;
-		}
-	}
-	
-	function getPhoneCallButtonText(status){
-		if (status == "CallWait"){
-			return "取消呼叫";
-		} else if (status == "Terminated"){
-			return "呼叫";
-		} else if (status == "Failed") {
-			return "重新呼叫";
-		} else if (status == "Established"){
-			return "挂断";
-		} else {
-			return status;
-		}
-	}
-	
-	$_btnPhoneCall.click(function(){
-		var currentPhoneCallStatus = $("#iptMyPhoneCallStatus").val();
-		if ("Terminated" == currentPhoneCallStatus ||
-			"Failed" == currentPhoneCallStatus){
-			$.post("/imeeting/webconf/call", 
-					{
-						conferenceId: _confId,
-						dstUserName: _userId
-					}, 
-					function(){
-						$("#iptMyPhoneCallStatus").val("CallWait");
-					});
-		} else 
-		if ("CallWait" == currentPhoneCallStatus ||
-			"Established" == currentPhoneCallStatus){
-			$.post("/imeeting/webconf/hangup", 
-					{
-						conferenceId: _confId,
-						dstUserName: _userId
-					}, 
-					function(){
-						$("#iptMyPhoneCallStatus").val("TermWait");
-					});
-		} else {
-			//do nothing
-		}
-	});
-	
-	$_btnCallAll.click(function(){
-		var status = $("#iptCallAllStatus").val();
-		if ("NotCall" == status){
-			$.post("/imeeting/webconf/callAll",
-					{ conferenceId: _confId	},
-					function(){
-						$("#iptCallAllStatus").val("Called");
-						$_btnCallAll.html("全部挂断");
-					});
-		} else 
-		if ("Called" == status){
-			$.post("/imeeting/webconf/hangupAll",
-					{ conferenceId: _confId	},
-					function(){
-						$("#iptCallAllStatus").val("NotCall");
-						$_btnCallAll.html("全体呼叫");
-					});			
-		}
-	});
 	
 	function bindClickToBtnAttendeePhoneCall(){
 		$(".divAttendeePhone").each(function(){
@@ -289,7 +157,6 @@ $(function() {
 		});
 	}
 	
-	bindClickToBtnAttendeePhoneCall();
 	SocketIOClient.setup(_confId, _userId, onNotify);
 	
 	function heartbeat(){

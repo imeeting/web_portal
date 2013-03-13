@@ -19,14 +19,14 @@
 		    	<div class="clearfix">
 		    		<div class="pull-left">
 		    			<% if (null == confCount || confCount<=0) { %>
-		    			<h2>您还没有参加过任何会议</h2>
+		    			<h2>您还没有安排过任何会议</h2>
 		    			<% } else { %>
-		    			<h2>我参加过<%=confCount %>次会议</h2>
+		    			<h2>我有<%=confCount %>次会议</h2>
 		    			<% } %>
 		    		</div>
 		    		<div class="pull-right">
 			    		<a class="btn btn-success btn-large im-btn" href="./webconf/arrange">创建新的会议</a>
-			    		<a href="#dlg_join_conf" class="btn btn-success btn-large" data-toggle="modal">加入会议</a>
+			    		<a href="#dlg_join_conf" class="btn btn-success btn-large" data-toggle="modal">进入会议</a>
 		    		</div>
 		    	</div>
 		    	<hr>
@@ -42,7 +42,7 @@
        <form id="formJoinConference" action="./webconf" method="post">
        <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3>加入会议</h3>
+          <h3>进入会议</h3>
        </div>
        <div class="modal-body">
            <label for="iptConfId">请输入会议密码</label>
@@ -51,7 +51,7 @@
        </div>
        <div class="modal-footer">
            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
-           <button type="submit" class="btn btn-success">加入会议</button>
+           <button type="submit" class="btn btn-success">进入会议</button>
        </div>
        </form>
     </div>

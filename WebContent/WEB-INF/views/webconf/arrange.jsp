@@ -23,13 +23,6 @@
 		<div class="row-fluid im-container">
 			<form id="formJoinConference" action="./webconf"
 				class="span8 offset2" method="post">
-				<div class="control-group">
-					<label class="control-label">给你的会议起个名字吧</label>
-					<div class="controls">
-					<input id="iptConfTitle" name="confTitle" maxlength="32"
-						class="span8" type="text" placeholder="默认使用会议号作为标题" />
-					</div>
-				</div>
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
 					    <label class="control-label">请选择参与者
@@ -68,9 +61,16 @@
 						</ul>
 					</div>
 				</div>
+				<div id="divSelectTime" class="clearfix control-group">
+					<input id="rdoNow" name="isScheduled" type="radio" value="now" checked="checked" class="pull-left"/>
+					<label for="rdoNow" class="pull-left">&nbsp;马上开始</label>
+					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" class="pull-left"/>
+					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>	
+					<input id="iptScheduleTime" type="text" class="pull-left"/>					
+				</div>
 				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
-					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">开始会议</button>
+					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">&nbsp;确&nbsp;&nbsp;定&nbsp;</button>
 				</div>
 			</form>
 		</div>
@@ -89,8 +89,13 @@
 				</ul>
 			</li>
 			<li class="selected_contact">
-				<strong class="name"></strong>
-				<div><span class="phone_number"></span><a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a></div>
+				<a class="remove_contact_bt" href="#">
+					<i class="icon-remove"></i>
+				</a>			
+				<input type="checkbox" class="save hidden" />
+				<div><strong class="name"></strong></div>
+				<div><span class="email"></span></div>
+				<div><span class="phone_number"></span></div>
 			</li>
 		</ul>
 	</div>
@@ -103,13 +108,18 @@
 			<h4>添加新成员</h4>
 		</div>
 		<div class="modal-body">
-			<!--  
-			<span>名&nbsp;&nbsp;称：</span>
-			<input id="newContactName" type="text" class="span3" />
-			<br/>
-			-->
-			<span>号&nbsp;&nbsp;码：</span>
-			<input id="newContactPhoneNumber" type="text" class="span3" />
+			<div class="">
+				<label for="newContactName">姓名：</label>
+				<input id="newContactName" type="text" class="span3" />
+				<label for="newContactPhoneNumber">手机：</label>
+				<input id="newContactPhoneNumber" type="text" class="span3" />
+				<label for="newContactEmail">电邮：</label>
+				<input id="newContactEmail" type="text" class="span3" />				
+				<div class="clearfix">
+					<input id="chkSaveContact" type="checkbox" checked="checked" class="pull-left"/>
+					<label for="chkSaveContact" >&nbsp;是否保存到常用联系人</label>
+				</div>
+			</div>
 		</div>
 		<div class="modal-footer">
 			<a href="#" id="add_cancel_bt" class="btn" data-dismiss="modal" aria-hidden="true">取消</a> 
@@ -144,6 +154,7 @@
 	<script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
 	<script src="/imeeting/js/lib/bootstrap.js"></script>
 	<script src="/imeeting/js/lib/json2.js"></script>
+	<script src="/imeeting/js/my97/WdatePicker.js"></script>
 	<script src="/imeeting/js/applib/common.js"></script>
 	<script src="/imeeting/js/webconf/arrange.js"></script>
 </body>
