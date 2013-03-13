@@ -139,7 +139,7 @@ public class DonkeyEventController {
 			
 			conference.addAttendee(attendee);
 			
-			conferenceDao.saveAttendee(requestId, attendee);
+//			conferenceDao.saveAttendee(requestId, attendee);
 			
 			attendee.statusCallEstablished();
 			conference.notifyAttendeesToUpdateMemberList();
