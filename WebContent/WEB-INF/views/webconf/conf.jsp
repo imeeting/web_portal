@@ -31,31 +31,10 @@
 			<%
 				for(AttendeeModel attendee : attendeeCollection) {
 						String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
-						
-	                    String phoneCallStatusText = "";
-	                    if (AttendeeModel.PhoneCallStatus.Terminated.equals(attendee.getPhoneCallStatus()) ){
-	                        phoneCallStatusText = "未接通";
-	                    } else 
-	                    if (AttendeeModel.PhoneCallStatus.Failed.equals(attendee.getPhoneCallStatus()) ){
-	                        phoneCallStatusText = "呼叫失败";
-	                    } else 
-	                    if(AttendeeModel.PhoneCallStatus.CallWait.equals(attendee.getPhoneCallStatus()) ) {
-	                        phoneCallStatusText = "正在呼叫";
-	                    } else 
-	                    if (AttendeeModel.PhoneCallStatus.Established.equals(attendee.getPhoneCallStatus()) ){
-	                        phoneCallStatusText = "已接通";
-	                    }
 			%>
 			<div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
-				<p>
-				    <span>&nbsp;<%=attendee.getDisplayName()%></span>
-				</p>
-				<p>
-				    <i class="<%=telephoneClass%> im-icon im-phone-icon"></i>
-				    <span>&nbsp;<%=attendee.getUsername()%></span><br>
-				    <i class="im-icon"></i>
-				    <span class="im-phone-text">&nbsp;<%=phoneCallStatusText%></span>
-				</p>
+				<div><i class="icon-user"></i>&nbsp;<%=attendee.getNickname() %></div>
+				<div><i class="<%=telephoneClass%> im-icon im-phone-icon"></i>&nbsp;<%=attendee.getUsername()%></div>
 			</div>
 			<%
 				}

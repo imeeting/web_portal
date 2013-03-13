@@ -99,24 +99,7 @@ $(function() {
 		$phoneIcon.removeClass("im-icon-phone-Terminated im-icon-phone-Failed"
 				+ " im-icon-phone-CallWait im-icon-phone-Established");
 		$phoneIcon.addClass("im-icon-phone-" + attendee.telephone_status);
-		
-		var $phoneText = $div.find(".im-phone-text");
-		$phoneText.html(" " + getPhoneStatusText(attendee.telephone_status));
 	};
-	
-	function getPhoneStatusText(status){
-		if (status == "CallWait"){
-			return "正在呼叫";
-		} else if (status == "Terminated"){
-			return "未接通";
-		} else if (status == "Failed") {
-			return "呼叫失败";
-		} else if (status == "Established"){
-			return "已接通";
-		} else {
-			return status;
-		}
-	}
 	
 	SocketIOClient.setup(_confId, _userId, onNotify);
 });
