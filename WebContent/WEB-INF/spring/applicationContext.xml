@@ -193,7 +193,6 @@
           class="org.springframework.scheduling.timer.TimerFactoryBean">
          <property name="scheduledTimerTasks">
             <list>
-                <ref bean="heartbeat_timer"/>
                 <ref bean="scheduled_conf_timer"/>
             </list>
          </property>
