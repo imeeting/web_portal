@@ -10,6 +10,7 @@ public class ConferenceBean {
 	private String id;
 	private String title;
 	private Long createdTimeStamp;
+	private Long scheduledTimeStamp;
 	private List<AttendeeBean> attendeeList;
 	
 	public ConferenceBean(){
@@ -38,6 +39,14 @@ public class ConferenceBean {
 	
 	public Long getCreatedTimeStamp(){
 		return createdTimeStamp;
+	}
+	
+	public void setScheduledTimeStamp(Long timestamp){
+		scheduledTimeStamp = timestamp;
+	}
+	
+	public Long getScheduledTimeStamp(){
+		return scheduledTimeStamp;
 	}
 	
 	public void addAttendee(AttendeeBean a){
