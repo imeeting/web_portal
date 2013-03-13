@@ -95,6 +95,9 @@ public class ConferenceManager {
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
 	}
 	
+	/**
+	 * 检查系统中所有会议成员的在线状态，如果30秒未收到心跳消息，则认为该用户不在线。
+	 */
 	public void checkAllConfAttendeeHeartBeat() {
 		Long currentTimeMillis = System.currentTimeMillis();
 		for (ConferenceModel conf : conferenceMap.values()) {
