@@ -32,27 +32,20 @@
 %>
 			
 			<div class="well clearfix">
-				<div class="im-conf-info pull-left">
-					<p class="im-conf-title"><%=conf.getTitle()%></p>
-					<div class="clearfix">
-						<% for (int j=0; j<attendeeList.size(); j++) {
-								AttendeeBean attendee = attendeeList.get(j);
-						%>
-						<div class="im-attendee im-attendee-history im-attendee-name pull-left">
-							<div><i class="icon-user"></i>&nbsp;<%=attendee.getDisplayName() %></div>
-							<div><i class="icon-envelope"></i>&nbsp;<%=attendee.getEmail() %></div>
-							<div><i class="icon-comment"></i>&nbsp;<%=attendee.getPhone() %></div>
-						</div>
-						<% } %>
-					</div>
+				<div class="im-conf-title clearfix">
+				<span class="pull-left"><%=year %>年<%=month %>月<%=day %>日&nbsp;<%=week %>&nbsp;<%=ap %>&nbsp;<%=hour %>	</span>
+				<span class="pull-right"> 会议密码：<strong><%=conf.getId() %></strong></span>
 				</div>
-				<div class="pull-right">
-					<p>
-					          会议密码：<strong><%=conf.getId() %></strong><br>
-						<strong><%=year %></strong>年<strong><%=month %></strong>月<strong><%=day %></strong>日<br>
-						<%=week %><br>
-						<strong><%=ap %>&nbsp;<%=hour %></strong>
-					</p>
+				<div class="clearfix">
+					<% for (int j=0; j<attendeeList.size(); j++) {
+							AttendeeBean attendee = attendeeList.get(j);
+					%>
+					<div class="im-attendee im-attendee-history im-attendee-name pull-left">
+						<div><i class="icon-user"></i>&nbsp;<%=attendee.getNickName() %></div>
+						<div><i class="icon-envelope"></i>&nbsp;<%=attendee.getEmail() %></div>
+						<div><i class="icon-comment"></i>&nbsp;<%=attendee.getPhone() %></div>
+					</div>
+					<% } %>
 				</div>
 			</div>
 <% } //End of FOR%>
