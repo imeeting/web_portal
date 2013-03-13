@@ -91,10 +91,7 @@ $(function() {
 	}
 	
 	function onUpdateStatus(event){
-		updateAttendeeStatus(event.attendee);
-	};
-	
-	function updateAttendeeStatus(attendee){
+		var attendee = event.attendee;
 		var attendeeId = attendee.username;
 		var $div = $("#div" + attendeeId);
 		
@@ -121,51 +118,5 @@ $(function() {
 		}
 	}
 	
-	function bindClickToBtnAttendeePhoneCall(){
-		$(".divAttendeePhone").each(function(){
-			var $this = $(this);
-			var $iptStatus = $this.find(".iptAttendeePhoneCallStatus");
-			var attendeeId = $this.find(".iptAttendeePhoneNumber").val();
-			var $btnPhoneCall = $this.find(".btnAttendeePhoneCall");
-			$btnPhoneCall.click(function(){
-				var phoneStatus = $iptStatus.val();
-				if ("Terminated" == phoneStatus ||
-						"Failed" == phoneStatus){
-					$.post("/imeeting/webconf/call", 
-							{
-						conferenceId: _confId,
-						dstUserName: attendeeId
-							}, 
-							function(){
-								$iptStatus.val("CallWait");
-							});
-				} else 
-					if ("CallWait" == phoneStatus ||
-							"Established" == phoneStatus){
-						$.post("/imeeting/webconf/hangup", 
-								{
-							conferenceId: _confId,
-							dstUserName: attendeeId
-								}, 
-								function(){
-									$iptStatus.val("TermWait");
-								});
-					} else {
-						//do nothing
-					}
-			});
-		});
-	}
-	
 	SocketIOClient.setup(_confId, _userId, onNotify);
-	
-	function heartbeat(){
-		$.post("/imeeting/webconf/heartbeat", 
-				{conferenceId: _confId},
-				function(data){
-					
-				});
-	}
-	
-	setInterval(heartbeat, 10000);
 });
