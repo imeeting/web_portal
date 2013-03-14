@@ -25,9 +25,7 @@
 				class="span8 offset2" method="post">
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
-					    <label class="control-label">请选择参与者
-					       <a data-toggle="modal" href="#upload_addressbook_help_dlg">（通过手机客户端上传通讯录）</a>
-					    </label>
+					    <label class="control-label">常用联系人</label>
 						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 

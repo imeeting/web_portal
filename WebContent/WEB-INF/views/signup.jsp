@@ -124,7 +124,7 @@
 		    		</div>
 		    	</div>
 		    	<div class="control-group <%=nicknameErrorInfo.isEmpty()? "" : "error" %>">
-		    	    <label class="control-label" for="iptNickname">名称</label>
+		    	    <label class="control-label" for="iptNickname">姓名</label>
 		    	    <div class="controls">
 		    		    <input type="text" name="nickname" maxlength="64" id="iptNickname" />
 		    		    <span id="spanNicknameInfo" class="help-inline">
