@@ -158,6 +158,10 @@
 
 	<bean id="addressbook_dao" class="com.imeeting.mvc.model.addressbook.AddressBookDAO">
 	</bean>
+	
+	<bean id="contact_dao" class="com.imeeting.nvc.model.addressbook.ContactDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
     
     <bean id="heartbeat_task" 
           class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">

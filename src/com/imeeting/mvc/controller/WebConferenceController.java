@@ -3,6 +3,7 @@ package com.imeeting.mvc.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,8 @@ import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.addressbook.AddressBookDAO;
+import com.imeeting.mvc.model.addressbook.ContactBean;
+import com.imeeting.mvc.model.addressbook.ContactDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
@@ -46,7 +49,7 @@ public class WebConferenceController {
 	private ConferenceManager conferenceManager;
 	private ConferenceDB conferenceDao;
 	private DonkeyClient donkeyClient;
-	private AddressBookDAO addressBookDao;
+	private ContactDAO contactDao;
 	private UserDAO userDao;
 	private VOSClient vosClient;
 
@@ -55,14 +58,9 @@ public class WebConferenceController {
 		conferenceManager = ContextLoader.getConferenceManager();
 		conferenceDao = ContextLoader.getConferenceDAO();
 		donkeyClient = ContextLoader.getDonkeyClient();
-		addressBookDao = ContextLoader.getAddressBookDAO();
+		contactDao = ContextLoader.getContactDAO();
 		userDao = ContextLoader.getUserDAO();
 		vosClient = ContextLoader.getVOSClient();
-	}
-
-	@RequestMapping(method = RequestMethod.GET)
-	public String join() {
-		return "webconf/join";
 	}
 
 	@RequestMapping(value = "arrange")
@@ -72,8 +70,9 @@ public class WebConferenceController {
 		//测试程序，临时注册
 //		List<DBObject> contacts = addressBookDao.getAllContacts(user.getUserName(),
 //				null);
+		List<ContactBean> contactList = contactDao.getContactList(user.getUserName());
 		
-		mv.addObject(WebConstants.addressbook.name(), null);
+		mv.addObject(WebConstants.addressbook.name(), contactList);
 
 		mv.setViewName("webconf/arrange");
 		return mv;
@@ -122,12 +121,13 @@ public class WebConferenceController {
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
 		
 		// step 2. save attendees
+		JSONArray jsonArray = new JSONArray(attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
-			JSONArray jsonArray = new JSONArray(attendeeList);
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 		}
 		
-		//TODO: save attendees to contact database.
+		// save attendees to contact database.
+		contactDao.saveJSONContact(user.getUserName(), jsonArray);
 		
 		// step 3. create audio conference
 		ConferenceModel conference = conferenceManager.creatConference(
@@ -228,22 +228,9 @@ public class WebConferenceController {
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}
-
-	@RequestMapping(value = "enterConf")
-	public ModelAndView joinOwnerToConf(HttpSession session) {
-		String conferenceId = (String) session.getAttribute(ConferenceConstants.conferenceId.name());
-		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		// notify all attendees to update attendee list
-		conference.notifyAttendeesToUpdateMemberList();
-
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("conference", conference);
-		mv.setViewName("webconf/conf");
-		return mv;
-	}
 	
 	@RequestMapping(value="ajax", method=RequestMethod.GET)
-	public ModelAndView joinConf(HttpSession session,
+	public ModelAndView show(HttpSession session,
 	        @RequestParam(value = "confId") String confId){
 	    ModelAndView mv = new ModelAndView();
 	    ConferenceModel conference = conferenceManager.getConference(confId);
@@ -266,260 +253,6 @@ public class WebConferenceController {
 	    return result.toString();
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
-	public ModelAndView join(HttpSession session,
-			@RequestParam(value = "confId") String confId) {
-		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		ModelAndView mv = new ModelAndView();
-		ConferenceModel conference = conferenceManager.getConference(confId);
-		if (null == conference) {
-			mv.addObject("errorInfo", "noconference");
-			mv.setViewName("webconf/join");
-			return mv;
-		}
-
-		AttendeeModel attendee = conference.getAttendee(user.getUserName());
-		if (null == attendee) {
-			attendee = new AttendeeModel(user.getUserName());
-			attendee.setNickname(user.getNickName());
-			conference.addAttendee(attendee);
-			conferenceDao.saveAttendee(confId, attendee);
-
-			// add attendees to audio conference
-			DonkeyHttpResponse donkeyResp = donkeyClient.addAttendee(
-					conference.getAudioConfId(), attendee.getUsername(),
-					conference.getConferenceId());
-			if (null == donkeyResp || !donkeyResp.isAccepted()) {
-				log.error("Add attenddes to audio conference <"
-						+ conference.getAudioConfId()
-						+ "> error : "
-						+ (null == donkeyResp ? "NULL Response" : donkeyResp
-								.getStatusCode()));
-				// TODO: join conference failed
-				mv.addObject("errorInfo", "donkeyFailed");
-				mv.setViewName("webconf/join");
-				return mv;
-			}
-		}
-
-		if (attendee.isKickout()) {
-			mv.addObject("errorInfo", "kickout");
-			mv.setViewName("webconf/join");
-			return mv;
-		}
-
-		attendee.join();
-		attendee.heartBeat();
-
-		// notify all attendees to update attendee list
-		conference.notifyAttendeesToUpdateMemberList();
-
-		mv.addObject("conference", conference);
-		mv.setViewName("webconf/conf");
-		return mv;
-	}
-
-	@RequestMapping(value = "unjoin", method = RequestMethod.GET)
-	public String unjoin(HttpSession session, HttpServletResponse response,
-			@RequestParam(value = "confId") String confId) throws IOException {
-		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		ConferenceModel conferenceModel = conferenceManager
-				.getConference(confId);
-		if (null == conferenceModel){
-		    log.error("Conference <" + confId + "> is null.");
-		    return "redirect:/myconference";
-		}
-		
-		AttendeeModel attendee = conferenceModel.getAttendee(user.getUserName());
-		if (attendee == null) {
-			// user are prohibited to join the conference for he isn't in it
-			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
-		} else {
-			// update the status
-			attendee.unjoin();
-
-			// update phone call status and hang up this call
-			if (attendee.statusHangup()) {
-				String sipUri = DonkeyClient.generateSipUriFromPhone(user
-						.getUserName());
-				DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
-						conferenceModel.getAudioConfId(), sipUri,
-						conferenceModel.getConferenceId());
-				if (null == donkeyResp || !donkeyResp.isAccepted()) {
-					log.error("Hangup <"
-							+ user.getUserName()
-							+ "> in conference <"
-							+ conferenceModel.getConferenceId()
-							+ "> failed : "
-							+ (null == donkeyResp ? "NULL Response"
-									: donkeyResp.getStatusCode()));
-				}
-			}
-
-			// notify other people that User has unjoined
-			conferenceModel.broadcastAttendeeStatus(attendee);
-
-//			conferenceManager.removeConferenceIfEmpty(confId);
-		}
-
-		return "redirect:/myconference";
-	}
-
-	@RequestMapping(value = "/call")
-	public void call(HttpServletResponse response,
-			@RequestParam(value = "conferenceId") String conferenceId,
-			@RequestParam(value = "dstUserName") String dstUserName)
-			throws IOException {
-		ConferenceModel conference = conferenceManager
-				.getConference(conferenceId);
-		AttendeeModel attendee = conference.getAttendee(dstUserName);
-		if (attendee == null) {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Invited!");
-			return;
-		}
-
-		// transfer attendee status from Initial to CallWait
-		if (!attendee.statusCall()) {
-			log.error("Cannot call <" + dstUserName
-					+ ">, beacuse attendee status is "
-					+ attendee.getPhoneCallStatus());
-			response.sendError(HttpServletResponse.SC_CONFLICT,
-					"Conflicted Command!");
-			return;
-		}
-
-		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
-		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
-				conference.getAudioConfId(), sipUri, conferenceId);
-		if (null == donkeyResp || !donkeyResp.isAccepted()) {
-			attendee.statusCallTerminated();
-			log.error("Call <"
-					+ dstUserName
-					+ "> in conferece <"
-					+ conferenceId
-					+ "> failed : "
-					+ (null == donkeyResp ? "NULL Response" : donkeyResp
-							.getStatusCode()));
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Call <" + dstUserName + "> failed!");
-			return;
-		}
-		conference.broadcastAttendeeStatus(attendee);
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-	
-	@RequestMapping(value = "/callAll")
-	public void callAll(
-			HttpServletResponse response,
-			@RequestParam(value = "conferenceId") String conferenceId){
-		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
-			callAttendee(conference, attendee);
-		}
-		conference.notifyAttendeesToUpdateMemberList();
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-	
-	private void callAttendee(ConferenceModel conference, AttendeeModel attendee){
-		// transfer attendee status from Initial to CallWait
-		if (!attendee.statusCall()) {
-			log.error("Cannot call <" + attendee.getUsername()
-					+ ">, beacuse attendee status is "
-					+ attendee.getPhoneCallStatus());
-			return;
-		}
-		
-		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
-		DonkeyHttpResponse donkeyResp = donkeyClient.callAttendee(
-				conference.getAudioConfId(), sipUri, conference.getConferenceId());
-		if (null == donkeyResp || !donkeyResp.isAccepted()) {
-			attendee.statusCallTerminated();
-			log.error("Call <"
-					+ attendee.getUsername()
-					+ "> in conferece <"
-					+ conference.getConferenceId()
-					+ "> failed : "
-					+ (null == donkeyResp ? "NULL Response" : donkeyResp
-							.getStatusCode()));
-			return;
-		}
-	}
-
-	@RequestMapping(value = "/hangup", method = RequestMethod.POST)
-	public void hangup(HttpServletResponse response,
-			@RequestParam(value = "conferenceId") String conferenceId,
-			@RequestParam(value = "dstUserName") String dstUserName)
-			throws IOException {
-		ConferenceModel conference = conferenceManager
-				.getConference(conferenceId);
-		AttendeeModel attendee = conference.getAttendee(dstUserName);
-		if (attendee == null) {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
-			return;
-		}
-
-		// transfer attendee status from Initial to CallWait
-		if (!attendee.statusHangup()) {
-			log.error("Cannot hangup <" + dstUserName
-					+ ">, beacuse attendee status is "
-					+ attendee.getPhoneCallStatus());
-			response.sendError(HttpServletResponse.SC_CONFLICT);
-			return;
-		}
-
-		String sipUri = DonkeyClient.generateSipUriFromPhone(dstUserName);
-		DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
-				conference.getAudioConfId(), sipUri, conferenceId);
-		if (null == donkeyResp || !donkeyResp.isAccepted()) {
-			log.error("Hangup <"
-					+ dstUserName
-					+ "> in conference <"
-					+ conferenceId
-					+ "> failed : "
-					+ (null == donkeyResp ? "NULL Response" : donkeyResp
-							.getStatusCode()));
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Hangup <" + dstUserName + "> failed!");
-			return;
-		}
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-	
-	@RequestMapping(value = "/hangupAll")
-	public void hangupAll(			
-			HttpServletResponse response,
-			@RequestParam(value = "conferenceId") String conferenceId){
-		ConferenceModel conference = conferenceManager.getConference(conferenceId);
-		for (AttendeeModel attendee : conference.getAvaliableAttendees()){
-			hangupAttendee(conference, attendee);
-		}
-		conference.notifyAttendeesToUpdateMemberList();
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-	
-	private void hangupAttendee(ConferenceModel conference, AttendeeModel attendee){
-		// transfer attendee status from Initial to CallWait
-		if (!attendee.statusHangup()) {
-			log.error("Cannot hangup <" + attendee.getUsername()
-					+ ">, beacuse attendee status is "
-					+ attendee.getPhoneCallStatus());
-		}
-
-		String sipUri = DonkeyClient.generateSipUriFromPhone(attendee.getUsername());
-		DonkeyHttpResponse donkeyResp = donkeyClient.hangupAttendee(
-				conference.getAudioConfId(), sipUri, conference.getConferenceId());
-		if (null == donkeyResp || !donkeyResp.isAccepted()) {
-			log.error("Hangup <"
-					+ attendee.getUsername()
-					+ "> in conference <"
-					+ conference.getConferenceId()
-					+ "> failed : "
-					+ (null == donkeyResp ? "NULL Response" : donkeyResp
-							.getStatusCode()));
-			return;
-		}
-	}
-	
 	@RequestMapping(value = "/attendeeList")
 	public ModelAndView attendeeList(@RequestParam String conferenceId)
 			throws IOException {
@@ -531,22 +264,4 @@ public class WebConferenceController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/heartbeat", method = RequestMethod.POST)
-	public @ResponseBody
-	String heartbeat(HttpSession session,
-			@RequestParam(value = "conferenceId") String conferenceId) {
-		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		ConferenceModel conference = conferenceManager
-				.getConference(conferenceId);
-		if (null == conference){
-		    log.error("heartbeat to null conference <" + conferenceId + ">");
-		    return "null";
-		}
-		AttendeeModel attendee = conference.getAttendee(user.getUserName());
-		if (null != attendee) {
-			attendee.heartBeat();
-		}
-
-		return "ok";
-	}
 }

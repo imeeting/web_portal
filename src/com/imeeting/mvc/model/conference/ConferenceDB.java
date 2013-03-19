@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.ConferenceConstants;
+import com.imeeting.mvc.model.addressbook.ContactBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 
@@ -79,7 +80,7 @@ public class ConferenceDB {
 	
 	public void saveJSONAttendee(String confId, JSONArray jsonArray) throws JSONException{
 		log.info(jsonArray);
-		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES(?,?,?,?)";
+		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES (?,?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject attendee = jsonArray.getJSONObject(i);
