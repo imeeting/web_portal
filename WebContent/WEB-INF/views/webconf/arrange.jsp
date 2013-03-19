@@ -82,11 +82,20 @@
 	<!-- template region  -->
 	<div id="template" class="hidden">
 		<ul>
-			<li class="ab_contact">
-				<strong class="name"></strong>
-				<ul class="number_ul unstyled">
-					<li class="number_li"><span class="phone_number"></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
-				</ul>
+			<li class="ab_contact im-attendee-name">
+				<div>
+					<i class="icon-user"></i>
+					<span class="name"></span>
+					<a class="add_contact_bt" href="#"><i class="icon-plus"></i></a>
+				</div>
+				<div>
+					<i class="icon-envelope"></i>
+					<span class="email"></span>
+				</div>
+				<div>
+					<i class="icon-comment"></i>
+					<span class="phone_number"></span>
+				</div>
 			</li>
 			<li class="selected_contact im-attendee-name">
 				<div>

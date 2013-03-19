@@ -214,58 +214,27 @@ var ContactSelectionManager = {
 
 	searchAddressBook : function(name) {
 		Util.log("search: " + name);
-		if (name == null || name == "") {
-			// get all contacts
-			$.ajax({
-				type : "post",
-				url : "/imeeting/addressbook/allContacts",
-				dataType : "json",
-				data : {
-				},
-				success : function(data, textStatus, jqXHR) {
-					ContactSelectionManager.clearAddressBookUI();
-					if (data) {
-						for ( var i = 0; i < data.length; i++) {
-							var contact = data[i];
-							Util.log("contact: " + contact.display_name);
-							if (contact.phone_array && contact.phone_array.length > 0) {
-								ContactSelectionManager.addContactToAddressBook(contact.display_name, contact.phone_array);
-							}
-						}
+		$.ajax({
+			type : "post",
+			url : "/imeeting/contact/search",
+			dataType : "json",
+			data : {
+				searchWord : name
+			},			
+			success : function(data, textStatus, jqXHR) {
+				ContactSelectionManager.clearAddressBookUI();
+				if (data) {
+					for ( var i = 0; i < data.length; i++) {
+						var contact = data[i];
+						ContactSelectionManager.addContactToAddressBook(contact.nickname, contact.phone, contact.email);
 					}
-				},
-				error : function(jqXHR) {
-
 				}
+			},
+			error : function(jqXHR) {
 
-			});
-		} else {
-			// do search
-			$.ajax({
-				type : "post",
-				url : "/imeeting/addressbook/search",
-				dataType : "json",
-				data : {
-					searchWord : name
-				},
-				success : function(data, textStatus, jqXHR) {
-					ContactSelectionManager.clearAddressBookUI();
-					if (data) {
-						for ( var i = 0; i < data.length; i++) {
-							var contact = data[i];
-							Util.log("contact: " + contact.display_name);
-							if (contact.phone_array && contact.phone_array.length > 0) {
-								ContactSelectionManager.addContactToAddressBook(contact.display_name, contact.phone_array);
-							}
-						}
-					}
-				},
-				error : function(jqXHR) {
+			}
+		});		
 
-				}
-
-			});
-		}
 	},
 
 	stopSearchTask : function() {
@@ -279,21 +248,17 @@ var ContactSelectionManager = {
 		});
 	},
 
-	addContactToAddressBook : function(name, phoneArray) {
+	addContactToAddressBook : function(name, phone, email) {
 		$contactLiUI = $("#template .ab_contact").clone();
-		$contactLiUI.find(".name").html(name);
-		$numberUL = $contactLiUI.find(".number_ul");
-		$numberLI = $numberUL.find(".number_li");
-		$numberLI.remove();
+		
+		$nameUI = $contactLiUI.find(".name");
+		$nameUI.html(name);
 
-		if (phoneArray) {
-			for ( var i = 0; i < phoneArray.length; i++) {
-				var phoneNumber = phoneArray[i];
-				var $tempNumberLi = $numberLI.clone();
-				$tempNumberLi.find(".phone_number").html(phoneNumber);
-				$numberUL.append($tempNumberLi);
-			}
-		}
+		$numberUI = $contactLiUI.find(".phone_number");
+		$numberUI.html(phone);
+		
+		$emailUI = $contactLiUI.find(".email");
+		$emailUI.html(email);
 
 		$("#addressbook").append($contactLiUI);
 	}

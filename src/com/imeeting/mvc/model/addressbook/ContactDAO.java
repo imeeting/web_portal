@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 public class ContactDAO {
+	
+	private static Log log = LogFactory.getLog(ContactDAO.class);
 	
 	private JdbcTemplate jdbc;
 
@@ -54,7 +58,17 @@ public class ContactDAO {
 	}	
 	
 	public List<ContactBean> getContactList(String owner){
+		return getContactList(owner, null);
+	}
+	
+	public List<ContactBean> getContactList(String owner, String word){
 		String sql = "SELECT id, nickname, email, phone, count FROM im_contact WHERE owner = '" + owner + "'";
+		if (null != word && word.length()>0){
+			sql = sql + " AND ( " +
+				"nickname LIKE '%" + word + "%' OR email LIKE '%" + word + "%' OR phone LIKE '%" + word + "%' )";;
+		}
+		sql = sql + " ORDER BY count DESC";
+		log.info(sql);
 		List<ContactBean> contactList = jdbc.query(sql, new RowMapper<ContactBean>(){
 			@Override
 			public ContactBean mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -68,5 +82,5 @@ public class ContactDAO {
 			}});
 		
 		return contactList;
-	}	
+	}
 }
