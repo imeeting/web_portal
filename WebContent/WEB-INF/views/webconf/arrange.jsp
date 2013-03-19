@@ -1,6 +1,6 @@
 <%@page import="com.imeeting.constants.AddressBookConstants"%>
 <%@page import="com.imeeting.constants.WebConstants"%>
-<%@page import="com.imeeting.mvc.model.addressbook.ContactBean"%>
+<%@page import="com.imeeting.mvc.model.contact.ContactBean"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.addressbook.ContactBean;
-import com.imeeting.mvc.model.addressbook.ContactDAO;
+import com.imeeting.mvc.model.contact.ContactBean;
+import com.imeeting.mvc.model.contact.ContactDAO;
 import com.imeeting.web.user.UserBean;
 
 @Controller

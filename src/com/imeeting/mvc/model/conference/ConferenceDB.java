@@ -21,9 +21,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.ConferenceConstants;
-import com.imeeting.mvc.model.addressbook.ContactBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.contact.ContactBean;
 
 public class ConferenceDB {
 	private static Log log = LogFactory.getLog(ConferenceDB.class);

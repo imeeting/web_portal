@@ -1,4 +1,4 @@
-package com.imeeting.mvc.model.addressbook;
+package com.imeeting.mvc.model.contact;
 
 public class ContactBean {
 	

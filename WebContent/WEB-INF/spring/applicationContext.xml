@@ -147,7 +147,7 @@
 		<property name="conferenceDao" ref="conference_dao"></property>
 	</bean>
 
-	<bean id="contact_dao" class="com.imeeting.mvc.model.addressbook.ContactDAO">
+	<bean id="contact_dao" class="com.imeeting.mvc.model.contact.ContactDAO">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
     

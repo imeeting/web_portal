@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.imeeting.mvc.model.addressbook.ContactDAO;
 import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
+import com.imeeting.mvc.model.contact.ContactDAO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mongodb.DB;
 import com.richitec.donkey.client.DonkeyClient;
