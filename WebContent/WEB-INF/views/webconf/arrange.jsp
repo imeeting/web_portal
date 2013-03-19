@@ -5,8 +5,6 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%
-	String confId = request.getParameter("confId");
-	String attendeeName = request.getParameter("attendeeName");
 	List<ContactBean> abContacts = (List<ContactBean>) request.getAttribute(WebConstants.addressbook.name());
 %>
 <!DOCTYPE html>
@@ -44,7 +42,7 @@
 										</div>
 										<div>
 											<i class="icon-comment"></i>
-											<span class="phone_number"><%=contact.getPhone() %></span>
+											<span class="phone"><%=contact.getPhone() %></span>
 										</div>
 									</li>
 						<%
@@ -94,7 +92,7 @@
 				</div>
 				<div>
 					<i class="icon-comment"></i>
-					<span class="phone_number"></span>
+					<span class="phone"></span>
 				</div>
 			</li>
 			<li class="selected_contact im-attendee-name">
@@ -103,7 +101,7 @@
 					<a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a>
 				</div>
 				<div><i class="icon-envelope"></i><span class="email"></span></div>
-				<div><i class="icon-comment"></i><span class="phone_number"></span></div>
+				<div><i class="icon-comment"></i><span class="phone"></span></div>
 			</li>
 		</ul>
 	</div>

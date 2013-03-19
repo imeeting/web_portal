@@ -3,7 +3,7 @@ $(function() {
 	$("#addressbook").delegate(".add_contact_bt", "click", function() {
 		var $contactLi = $(this).parent().parent();
 		var nickName = $contactLi.find(".name").html();
-		var phoneNumber = $contactLi.find(".phone_number").html();
+		var phoneNumber = $contactLi.find(".phone").html();
 		var email = $contactLi.find(".email").html();
 
 		ContactSelectionManager.addContactToSelectedList(nickName, phoneNumber, email);
@@ -85,7 +85,7 @@ $(function() {
 				var li = $selectedContactsLis[i];
 				var $li = $(li);
 				var nameVal = $li.find(".name").html();
-				var phoneNumberVal = $li.find(".phone_number").html();
+				var phoneNumberVal = $li.find(".phone").html();
 				var emailVal = $li.find(".email").html();
 				contacts[i] = {nickname: nameVal, phone: phoneNumberVal,
 						email: emailVal};
@@ -171,7 +171,7 @@ var ContactSelectionManager = {
 		$nameUI = $contactLiUI.find(".name");
 		$nameUI.html(name);
 
-		$numberUI = $contactLiUI.find(".phone_number");
+		$numberUI = $contactLiUI.find(".phone");
 		$numberUI.html(number);
 		
 		$emailUI = $contactLiUI.find(".email");
@@ -186,7 +186,7 @@ var ContactSelectionManager = {
 		for ( var i = 0; i < $contactLis.length; i++) {
 			var li = $contactLis[i];
 			var $li = $(li);
-			var phoneNumber = $li.find(".phone_number").html();
+			var phoneNumber = $li.find(".phone").html();
 			var emailVal = $li.find(".email").html();
 			if ( (number != "" && number == phoneNumber) || 
 				 (email != "" && email == emailVal) ) {
@@ -254,7 +254,7 @@ var ContactSelectionManager = {
 		$nameUI = $contactLiUI.find(".name");
 		$nameUI.html(name);
 
-		$numberUI = $contactLiUI.find(".phone_number");
+		$numberUI = $contactLiUI.find(".phone");
 		$numberUI.html(phone);
 		
 		$emailUI = $contactLiUI.find(".email");
