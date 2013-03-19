@@ -7,7 +7,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.imeeting.mvc.model.addressbook.AddressBookDAO;
 import com.imeeting.mvc.model.addressbook.ContactDAO;
 import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
@@ -77,13 +76,6 @@ public class ContextLoader extends ContextLoaderListener {
 
 	public static ChargeDAO getChargeDAO() {
 		return (ChargeDAO) appContext.getBean("charge_dao");
-	}
-	
-	public static AddressBookDAO getAddressBookDAO() {
-		AddressBookDAO dao = (AddressBookDAO) appContext.getBean("addressbook_dao");
-		DB db = MongoDBManager.getInstance().getImeetingDB();
-		dao.setDb(db);
-		return dao;
 	}
 	
 	public static ContactDAO getContactDAO(){

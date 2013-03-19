@@ -33,15 +33,6 @@
 		<property name="appDonwloadPageUrl">
 		    <value>${app_download_page_url}</value>
 		</property>
-		<property name="mongoServerAddress">
-		    <value>${mongo.server.address}</value>
-		</property>
-		<property name="mongoServerPort">
-		    <value>${mongo.server.port}</value>
-		</property>
-		<property name="mongoDBName">
-		    <value>${mongo.db.name}</value>
-		</property>
 		<property name="appvcenterUrl">
 		    <value>${appvcenter_url}</value>
 		</property>
@@ -154,9 +145,6 @@
 		
 	<bean id="conference_manager" class="com.imeeting.mvc.model.conference.ConferenceManager">
 		<property name="conferenceDao" ref="conference_dao"></property>
-	</bean>
-
-	<bean id="addressbook_dao" class="com.imeeting.mvc.model.addressbook.AddressBookDAO">
 	</bean>
 
 	<bean id="contact_dao" class="com.imeeting.mvc.model.addressbook.ContactDAO">
