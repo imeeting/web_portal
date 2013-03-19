@@ -1,18 +1,17 @@
 $(function() {
 
 	$("#addressbook").delegate(".add_contact_bt", "click", function() {
-		var $number_li = $(this).parent();
-		var phoneNumber = $number_li.find(".phone_number").html();
+		var $contactLi = $(this).parent().parent();
+		var nickName = $contactLi.find(".name").html();
+		var phoneNumber = $contactLi.find(".phone_number").html();
+		var email = $contactLi.find(".email").html();
 
-		var $name_text = $number_li.parent().prev(".name");
-		var name = $name_text.html();
-
-		ContactSelectionManager.addContactToSelectedList(name, phoneNumber);
+		ContactSelectionManager.addContactToSelectedList(nickName, phoneNumber, email);
 		return false;
 	});
 
 	$("#selected_contacts").delegate(".remove_contact_bt", "click", function() {
-		$li = $(this).parent();
+		$li = $(this).parent().parent();
 		$li.remove();
 		return false;
 	});
@@ -30,7 +29,6 @@ $(function() {
 		var name = $("#newContactName").val();
 		var number = $("#newContactPhoneNumber").val();
 		var email = $("#newContactEmail").val();
-		var save = $("#chkSaveContact").is(":checked");
 		
 		if(number == "" && email == ""){
 			alert("手机号码和电子邮件不能同时为空");
@@ -55,7 +53,7 @@ $(function() {
 		$("#newContactName").val("");
 		$("#newContactPhoneNumber").val("");
 		$("#newContactEmail").val("");
-		ContactSelectionManager.addContactToSelectedList(name, number, email, save);
+		ContactSelectionManager.addContactToSelectedList(name, number, email);
 		
 		return false;
 	});
@@ -89,9 +87,8 @@ $(function() {
 				var nameVal = $li.find(".name").html();
 				var phoneNumberVal = $li.find(".phone_number").html();
 				var emailVal = $li.find(".email").html();
-				var saveVal = $li.find(".save").is(":checked");
 				contacts[i] = {nickname: nameVal, phone: phoneNumberVal,
-						email: emailVal, save:saveVal};
+						email: emailVal};
 			}
 		}
 		var attendeesString = JSON.stringify(contacts);
@@ -120,7 +117,7 @@ $(function() {
 			},
 			statusCode : {
 				201 : function(result) {
-					window.location = "/imeeting/webconf/enterConf";
+					window.location = "/imeeting/webconf/ajax?confId=" + result.conferenceId;
 				}
 			},
 			error : function(jqXHR) {
@@ -164,7 +161,7 @@ var ContactSelectionManager = {
 	prevSearchWord : "",
 	currentSearchWord : "",
 
-	addContactToSelectedList : function(name, number, email, save) {
+	addContactToSelectedList : function(name, number, email) {
 		if (ContactSelectionManager.isContactSelected(number, email)) {
 			alert("联系人已经添加啦！");
 			return;
@@ -179,9 +176,6 @@ var ContactSelectionManager = {
 		
 		$emailUI = $contactLiUI.find(".email");
 		$emailUI.html(email);
-		
-		$saveUI = $contactLiUI.find(".save");
-		$saveUI.attr("checked", save);
 
 		ContactSelectionManager.$selectedContactUI.append($contactLiUI);
 	},

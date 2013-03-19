@@ -1,13 +1,13 @@
 <%@page import="com.imeeting.constants.AddressBookConstants"%>
 <%@page import="com.imeeting.constants.WebConstants"%>
-<%@page import="com.mongodb.DBObject"%>
+<%@page import="com.imeeting.mvc.model.addressbook.ContactBean"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%
 	String confId = request.getParameter("confId");
 	String attendeeName = request.getParameter("attendeeName");
-	List<DBObject> abContacts = (List<DBObject>) request.getAttribute(WebConstants.addressbook.name());
+	List<ContactBean> abContacts = (List<ContactBean>) request.getAttribute(WebConstants.addressbook.name());
 %>
 <!DOCTYPE html>
 <html lang="zh">
@@ -30,22 +30,24 @@
 						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {
-								for (DBObject contact : abContacts) {
-									String displayName = (String) contact.get(AddressBookConstants.display_name.name());
-									List<String> phones = (List<String>) contact.get(AddressBookConstants.phone_array.name());
-									
-									if (phones != null && phones.size() > 0) {
+								for (ContactBean contact : abContacts) {
 						%>
-										<li class="ab_contact">
-											<strong class="name"><%=displayName %></strong>
-											<ul class="unstyled">
-											<% for (String phone : phones) { %>
-												<li><span class="phone_number"><%=phone %></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
-											<% } %>
-											</ul>
-										</li>
+									<li class="ab_contact im-attendee-name">
+										<div>
+											<i class="icon-user"></i>
+											<span class="name"><%=contact.getNickName() %></span>
+											<a class="add_contact_bt" href="#"><i class="icon-plus"></i></a>
+										</div>
+										<div>
+											<i class="icon-envelope"></i>
+											<span class="email"><%=contact.getEmail() %></span>
+										</div>
+										<div>
+											<i class="icon-comment"></i>
+											<span class="phone_number"><%=contact.getPhone() %></span>
+										</div>
+									</li>
 						<%
-									}
 								}
 							}
 						%>
@@ -86,14 +88,13 @@
 					<li class="number_li"><span class="phone_number"></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
 				</ul>
 			</li>
-			<li class="selected_contact">
-				<a class="remove_contact_bt" href="#">
-					<i class="icon-remove"></i>
-				</a>			
-				<input type="checkbox" class="save hidden" />
-				<div><strong class="name"></strong></div>
-				<div><span class="email"></span></div>
-				<div><span class="phone_number"></span></div>
+			<li class="selected_contact im-attendee-name">
+				<div>
+					<i class="icon-user"></i><span class="name"></span>
+					<a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a>
+				</div>
+				<div><i class="icon-envelope"></i><span class="email"></span></div>
+				<div><i class="icon-comment"></i><span class="phone_number"></span></div>
 			</li>
 		</ul>
 	</div>
@@ -109,14 +110,10 @@
 			<div class="">
 				<label for="newContactName">姓名：</label>
 				<input id="newContactName" type="text" class="span3" />
+				<label for="newContactEmail">电邮：</label>
+				<input id="newContactEmail" type="text" class="span3" />
 				<label for="newContactPhoneNumber">手机：</label>
 				<input id="newContactPhoneNumber" type="text" class="span3" />
-				<label for="newContactEmail">电邮：</label>
-				<input id="newContactEmail" type="text" class="span3" />				
-				<div class="clearfix">
-					<input id="chkSaveContact" type="checkbox" checked="checked" class="pull-left"/>
-					<label for="chkSaveContact" >&nbsp;是否保存到常用联系人</label>
-				</div>
 			</div>
 		</div>
 		<div class="modal-footer">
