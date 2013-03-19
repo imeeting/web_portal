@@ -1,4 +1,3 @@
-<%@page import="com.imeeting.constants.AddressBookConstants"%>
 <%@page import="com.imeeting.constants.WebConstants"%>
 <%@page import="com.imeeting.mvc.model.contact.ContactBean"%>
 <%@page import="java.util.List"%>
