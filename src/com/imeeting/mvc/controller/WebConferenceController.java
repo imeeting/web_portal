@@ -25,7 +25,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
-import com.imeeting.mvc.model.addressbook.AddressBookDAO;
 import com.imeeting.mvc.model.addressbook.ContactBean;
 import com.imeeting.mvc.model.addressbook.ContactDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
@@ -51,7 +50,6 @@ public class WebConferenceController {
 	private DonkeyClient donkeyClient;
 	private ContactDAO contactDao;
 	private UserDAO userDao;
-	private VOSClient vosClient;
 
 	@PostConstruct
 	public void init() {
@@ -60,20 +58,14 @@ public class WebConferenceController {
 		donkeyClient = ContextLoader.getDonkeyClient();
 		contactDao = ContextLoader.getContactDAO();
 		userDao = ContextLoader.getUserDAO();
-		vosClient = ContextLoader.getVOSClient();
 	}
 
 	@RequestMapping(value = "arrange")
 	public ModelAndView arrange(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		//测试程序，临时注册
-//		List<DBObject> contacts = addressBookDao.getAllContacts(user.getUserName(),
-//				null);
 		List<ContactBean> contactList = contactDao.getContactList(user.getUserName());
-		
 		mv.addObject(WebConstants.addressbook.name(), contactList);
-
 		mv.setViewName("webconf/arrange");
 		return mv;
 	}
