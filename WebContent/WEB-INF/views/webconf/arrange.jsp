@@ -158,6 +158,6 @@
 	<script src="/imeeting/js/lib/json2.js"></script>
 	<script src="/imeeting/js/my97/WdatePicker.js"></script>
 	<script src="/imeeting/js/applib/common.js"></script>
-	<script src="/imeeting/js/webconf/arrange.js"></script>
+	<script src="/imeeting/js/arrange.js"></script>
 </body>
 </html>
