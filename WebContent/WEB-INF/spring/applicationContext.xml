@@ -219,4 +219,19 @@
 			<value>${privateKeyPwd}</value>
 		</property>
 	</bean>
+	
+	<bean id="mail_sender" class="com.richitec.util.MailSender">
+	     <property name="host">
+	         <value>${smtp_server}</value>
+	     </property>
+	     <property name="user">
+	         <value>${mail_auth_user}</value>
+	     </property>
+	     <property name="pwd">
+	         <value>${mail_auth_pwd}</value>
+	     </property>
+	     <property name="from">
+	         <value>${mail_from_address}</value>
+	     </property>
+	</bean>	
 </beans>
