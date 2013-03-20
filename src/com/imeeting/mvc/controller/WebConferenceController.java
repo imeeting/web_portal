@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,8 +27,6 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.imeeting.mvc.model.contact.ContactBean;
 import com.imeeting.mvc.model.contact.ContactDAO;
 import com.imeeting.web.user.UserBean;
@@ -37,7 +34,6 @@ import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.RandomString;
-import com.richitec.vos.client.VOSClient;
 
 @Controller
 @RequestMapping(value = "/webconf")
@@ -83,12 +79,14 @@ public class WebConferenceController {
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
 		
 		// step 2. save attendees
+		JSONArray jsonArray = new JSONArray(attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
-			JSONArray jsonArray = new JSONArray(attendeeList);
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 		}
 		
-		//TODO: save attendees to contact database.
+		// save attendees to contact database.
+		contactDao.saveJSONContact(user.getUserName(), jsonArray);
+		
 		//TODO: send Email or SMS to all attendess. 
 		
 		// step 3. response to user
