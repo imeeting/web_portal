@@ -82,20 +82,6 @@ public class ContextLoader extends ContextLoaderListener {
 		return (ContactDAO) appContext.getBean("contact_dao");
 	}
 
-	public static APNSProviderClient getDevAPNSProviderClient() {
-		APNSProviderClient client = (APNSProviderClient) appContext
-				.getBean("apns_provider_dev");
-		client.initAPNS();
-		return client;
-	}
-
-	public static APNSProviderClient getDistAPNSProviderClient() {
-		APNSProviderClient client = (APNSProviderClient) appContext
-				.getBean("apns_provider_dist");
-		client.initAPNS();
-		return client;
-	}
-
 	public static VOSClient getVOSClient() {
 		return (VOSClient) appContext.getBean("vos_client");
 	}
