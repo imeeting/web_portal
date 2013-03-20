@@ -1,11 +1,15 @@
 package com.imeeting.mvc.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -66,6 +70,38 @@ public class WebConferenceController {
 		return mv;
 	}
 	
+	private void sendSMSEmailNotice(String confId, String scheduleTime, JSONArray jsonArray) throws JSONException{
+		StringBuffer allPhone = new StringBuffer();
+		LinkedList<String> emailList = new LinkedList<String>();
+		for(int i=0; i< jsonArray.length(); i++){
+			JSONObject attendee = jsonArray.getJSONObject(i);
+			String phone = (String)attendee.get("phone");
+			if (null != phone && phone.length()>0){
+				allPhone.append(phone).append(",");
+			}
+			String email = (String)attendee.get("email");
+			if (null != email && email.length()>0){
+				emailList.add(email);
+			}
+		}
+		
+		String subject = "电话会议通知";
+		String content = "您在" + scheduleTime + "有电话会议，会议密码：" + confId
+		+ "，到时拨打 0551-62379997 加入会议。";
+		
+		try {
+			ContextLoader.getSMSClient().sendTextMessage(
+					allPhone.toString(), content);
+			ContextLoader.getMailSender().sendMail(emailList, subject, content);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (AddressException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@RequestMapping(value="schedule", method=RequestMethod.POST)
 	public void schedule(
 			HttpSession session,
@@ -82,12 +118,10 @@ public class WebConferenceController {
 		JSONArray jsonArray = new JSONArray(attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
+			contactDao.saveJSONContact(user.getUserName(), jsonArray);
 		}
 		
-		// save attendees to contact database.
-		contactDao.saveJSONContact(user.getUserName(), jsonArray);
-		
-		//TODO: send Email or SMS to all attendess. 
+		sendSMSEmailNotice(conferenceId, scheduleTime, jsonArray);
 		
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
@@ -138,7 +172,7 @@ public class WebConferenceController {
 		}
 		session.setAttribute(ConferenceConstants.conferenceId.name(), conferenceId);
 		
-		//TODO: send Email or SMS to all attendess. 
+		sendSMSEmailNotice(conferenceId, scheduleTime, jsonArray);
 		
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
