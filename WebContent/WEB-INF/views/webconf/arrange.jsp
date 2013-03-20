@@ -61,9 +61,9 @@
 					</div>
 				</div>
 				<div id="divSelectTime" class="clearfix control-group">
-					<input id="rdoNow" name="isScheduled" type="radio" value="now" checked="checked" class="pull-left"/>
+					<input id="rdoNow" name="isScheduled" type="radio" value="now" class="pull-left"/>
 					<label for="rdoNow" class="pull-left">&nbsp;马上开始</label>
-					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" class="pull-left"/>
+					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" checked="checked" class="pull-left"/>
 					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>	
 					<input id="iptScheduleTime" type="text" class="pull-left"/>					
 				</div>
