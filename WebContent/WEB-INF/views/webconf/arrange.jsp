@@ -53,7 +53,9 @@
 					</div>
 					<div class="selection-list pull-right">
 					    <label class="control-label">已选中参与者</label>
-					    <div class="blank"><button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button></div>
+					    <div class="blank">
+					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button>
+					    </div>
 						<ul id="selected_contacts" class="well unstyled">
 						</ul>
 					</div>
@@ -126,6 +128,22 @@
 			<a href="#" id="add_cancel_bt" class="btn" data-dismiss="modal" aria-hidden="true">取消</a> 
 			<a href="#" id="add_confirm_bt" class="btn btn-primary">确定</a>
 		</div>
+	</div>
+	
+	<div id="schedule_success_dlg" class="modal hide fade">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+			<h4>安排会议成功！</h4>
+		</div>
+		<div class="modal-body">
+			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
+			<p><span>接入号码：</span><strong id="">0551-62379997</strong></p>
+			<p><span>会议时间：</span><strong id="schedule_conf_time"></strong></p>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-success" data-dismiss="modal" aria-hidden="true">我知道了</a> 
+		</div>	
 	</div>
 	
 	<div id="upload_addressbook_help_dlg" class="modal hide fade">

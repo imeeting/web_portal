@@ -141,7 +141,7 @@ $(function() {
 			},
 			statusCode : {
 				201 : function(data) {
-					alert("安排会议成功！" + data.conferenceId);
+					showScheduleSuccessDlg(data);
 				}
 			},
 			error : function(jqXHR) {
@@ -152,7 +152,14 @@ $(function() {
 				}
 			}
 		});
-	}	
+	}
+	
+	function showScheduleSuccessDlg(data){
+		var $scheduledSuccessDlg = $("#schedule_success_dlg");
+		$scheduledSuccessDlg.find("#schedule_conf_id").html(data.conferenceId);
+		$scheduledSuccessDlg.find("#schedule_conf_time").html(data.schedule_time);
+		$scheduledSuccessDlg.modal();
+	}
 });
 
 var ContactSelectionManager = {
