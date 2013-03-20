@@ -26,7 +26,7 @@ public class ContactDAO {
 	
 	public void saveJSONContact(String owner, JSONArray jsonArray) throws JSONException{
 		List<ContactBean> contactList = getContactList(owner);
-		
+
 		for(int i=0; i<jsonArray.length(); i++){
 			JSONObject contact = jsonArray.getJSONObject(i);
 			String email = contact.getString("email");
@@ -34,7 +34,9 @@ public class ContactDAO {
 			String nickname = contact.getString("nickname");
 			boolean isNewContact = true;
 			for(ContactBean c : contactList){
-				if(email.equals(c.getEmail()) || phone.equals(c.getPhone())){
+				if( (email != null && email.length()>0 && email.equals(c.getEmail()) ) || 
+					(phone != null && phone.length()>0 && phone.equals(c.getPhone()) ) )
+				{
 					updateContactCount(c);
 					isNewContact = false;
 					break;
@@ -54,7 +56,7 @@ public class ContactDAO {
 	
 	private int updateContactCount(ContactBean contact){
 		String sql = "UPDATE im_contact SET count=? WHERE id=?";
-		return jdbc.update(sql, contact.getId(), contact.getCount()+1);
+		return jdbc.update(sql, contact.getCount()+1, contact.getId());
 	}	
 	
 	public List<ContactBean> getContactList(String owner){
