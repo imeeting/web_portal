@@ -90,9 +90,13 @@ public class WebConferenceController {
 		+ "，到时拨打 0551-62379997 加入会议。";
 		
 		try {
-			ContextLoader.getSMSClient().sendTextMessage(
-					allPhone.toString(), content);
-			ContextLoader.getMailSender().sendMail(emailList, subject, content);
+			if(allPhone.length()>0){
+				ContextLoader.getSMSClient().sendTextMessage(
+						allPhone.toString(), content);
+			}
+			if (emailList.size()>0){
+				ContextLoader.getMailSender().sendMail(emailList, subject, content);
+			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (AddressException e) {
