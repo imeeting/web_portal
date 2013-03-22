@@ -149,8 +149,8 @@
 			<h4>安排会议成功！</h4>
 		</div>
 		<div class="modal-body">
-			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
 			<p><span>接入号码：</span><strong id="">0551-62379997</strong></p>
+			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
 			<p><span>会议时间：</span><strong id="schedule_conf_time"></strong></p>
 		</div>
 		<div class="modal-footer">
