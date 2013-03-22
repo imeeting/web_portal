@@ -23,7 +23,7 @@
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
 					    <label class="control-label">常用联系人</label>
-						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="输入 姓名/手机/Email 搜索" /></div>
+						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="姓名/手机/Email" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {
@@ -64,8 +64,11 @@
 					<input id="rdoNow" name="isScheduled" type="radio" value="now" class="pull-left"/>
 					<label for="rdoNow" class="pull-left">&nbsp;马上开始</label>
 					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" checked="checked" class="pull-left"/>
-					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>	
-					<input id="iptScheduleTime" type="text" class="pull-left"/>					
+					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>
+					<div id="divScheduleTime" class="input-append pull-left">
+						<input id="iptScheduleTime" type="text"/>					
+						<span class="add-on"><i class="icon-calendar"></i></span>
+					</div>
 				</div>
 				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>

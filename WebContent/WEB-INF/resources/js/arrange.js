@@ -73,7 +73,17 @@ $(function() {
 			dateFmt: 'yyyy-MM-dd HH:mm',
 			minDate: '%y-%M-%d %H:{%m+30}:%s',
 			maxDate: '%y-%M-{%d+60} %H:%m:%s',
+			errDealMode: 1
 		});
+	});
+	
+	$("#divSelectTime input[name='isScheduled']").change(function(){
+		var value = $(this).val();
+		if(value == "now"){
+			$("#divScheduleTime").hide(200);
+		} else {
+			$("#divScheduleTime").show(200);
+		}
 	});
 	
 	$("#create_conf_bt").click(function() {
@@ -101,7 +111,11 @@ $(function() {
 		} else {
 			//get scheduled time
 			var scheduleTimeVal = $("#iptScheduleTime").val();
-			scheduleRequest(attendeesString, scheduleTimeVal);
+			if (scheduleTimeVal != ""){
+				scheduleRequest(attendeesString, scheduleTimeVal);
+			} else {
+				alert("请选择会议时间！");
+			}
 		}
 		
 		return false;
