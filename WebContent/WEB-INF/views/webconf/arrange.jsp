@@ -54,7 +54,7 @@
 					<div class="selection-list pull-right">
 					    <label class="control-label">已选中参与者</label>
 					    <div class="blank">
-					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button>
+					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">手动输入参会者</button>
 					    </div>
 						<ul id="selected_contacts" class="well unstyled">
 						</ul>
