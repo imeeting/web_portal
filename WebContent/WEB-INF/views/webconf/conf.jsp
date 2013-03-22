@@ -32,7 +32,7 @@
 				for(AttendeeModel attendee : attendeeCollection) {
 						String telephoneClass = "im-icon-phone-" + attendee.getPhoneCallStatus().name();
 			%>
-			<div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf im-attendee-name pull-left">
+			<div id="div<%=attendee.getUsername()%>" class="im-attendee im-attendee-conf pull-left">
 				<div><i class="icon-user"></i>&nbsp;<%=attendee.getNickname() %></div>
 				<div><i class="<%=telephoneClass%> im-icon im-phone-icon"></i>&nbsp;<%=attendee.getUsername()%></div>
 			</div>

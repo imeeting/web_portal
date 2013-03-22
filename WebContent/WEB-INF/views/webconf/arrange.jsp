@@ -29,7 +29,7 @@
 							if (abContacts != null) {
 								for (ContactBean contact : abContacts) {
 						%>
-									<li class="ab_contact im-attendee-name">
+									<li class="ab_contact">
 										<div>
 											<i class="icon-user"></i>
 											<span class="name"><%=contact.getNickName() %></span>
@@ -84,7 +84,7 @@
 	<!-- template region  -->
 	<div id="template" class="hidden">
 		<ul>
-			<li class="ab_contact im-attendee-name">
+			<li class="ab_contact">
 				<div>
 					<i class="icon-user"></i>
 					<span class="name"></span>
@@ -99,7 +99,7 @@
 					<span class="phone"></span>
 				</div>
 			</li>
-			<li class="selected_contact im-attendee-name">
+			<li class="selected_contact">
 				<div>
 					<i class="icon-user"></i><span class="name"></span>
 					<a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a>
@@ -118,13 +118,22 @@
 			<h4>添加新成员</h4>
 		</div>
 		<div class="modal-body">
-			<div class="">
-				<label for="newContactName">姓名：</label>
-				<input id="newContactName" type="text" class="span3" />
-				<label for="newContactEmail">电邮：</label>
-				<input id="newContactEmail" type="text" class="span3" />
-				<label for="newContactPhoneNumber">手机：</label>
-				<input id="newContactPhoneNumber" type="text" class="span3" />
+			<div class="pull-left">
+				<div class="clearfix">
+					<label for="newContactName" class="pull-left">姓名</label>
+					<input id="newContactName" type="text" class="span3 pull-left" />
+				</div>
+				<div>
+					<label for="newContactEmail" class="pull-left">电邮</label>
+					<input id="newContactEmail" type="text" class="span3 pull-left" />
+				</div>
+				<div>
+					<label for="newContactPhoneNumber" class="pull-left">手机</label>
+					<input id="newContactPhoneNumber" type="text" class="span3 pull-left" />
+				</div>
+			</div>
+			<div class="span2 pull-right">
+				提示：系统会自动保存该联系人信息，以后可以直接从常用联系人中查找。
 			</div>
 		</div>
 		<div class="modal-footer">

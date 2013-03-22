@@ -250,20 +250,11 @@ footer span {
 	border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 4px 4px 4px 4px;
 }
-/*
-.name,
-.email,
-.phone {
-	margin-left: 5px;	
+
+#add_new_contact_dlg label {
+	margin: 5px 5px 0 0;
 }
-*/
-/*
-#add_new_contact_dlg {
-	width: 360px;
-	left: 55%;
-	margin-left: -245px;
-}
-*/
+
 #dlg_join_conf form {
     margin: 0;
 }
