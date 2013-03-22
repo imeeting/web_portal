@@ -41,9 +41,9 @@
 							AttendeeBean attendee = attendeeList.get(j);
 					%>
 					<div class="im-attendee im-attendee-history im-attendee-name pull-left">
-						<div><i class="icon-user"></i>&nbsp;<%=attendee.getNickName() %></div>
-						<div><i class="icon-envelope"></i>&nbsp;<%=attendee.getEmail() %></div>
-						<div><i class="icon-comment"></i>&nbsp;<%=attendee.getPhone() %></div>
+						<div><i class="icon-user"></i><%=attendee.getNickName() %></div>
+						<div><i class="icon-envelope"></i><%=attendee.getEmail() %></div>
+						<div><i class="icon-comment"></i><%=attendee.getPhone() %></div>
 					</div>
 					<% } %>
 				</div>

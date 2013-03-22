@@ -21,17 +21,23 @@
 			</a> <a class="brand" href="/imeeting/home">智会</a>
 			<ul class="nav">
 				<li><a id="username" class="im-attendee-name" title="<%=userBean.getUserName()%>">
-				    <i class="icon-user"></i>&nbsp;<%=userBean.getDisplayName()%></a>
+				    <i class="icon-user"></i><%=userBean.getDisplayName()%></a>
 				</li>
-				<li><a id="logout" href="/imeeting/signout">退出登录</a></li>
+				<li>
+					<a id="logout" href="/imeeting/signout"><i class="icon-off"></i>退出登录</a>
+				</li>
 			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
 					<!-- 
 					<li class="<%="accountcharge".equals(pageName) ? "active" : ""%>"><a href="/imeeting/accountcharge">充值账户</a></li>
 					-->
-					<li class="<%="myconference".equals(pageName) ? "active" : ""%>"><a href="/imeeting/myconference">我的会议</a></li>
-					<li class="<%="setting".equals(pageName) ? "active" : ""%>"><a href="/imeeting/setting">系统设置</a></li>
+					<li class="<%="myconference".equals(pageName) ? "active" : ""%>">
+						<a href="/imeeting/myconference"><i class="icon-th-list"></i>我的会议</a>
+					</li>
+					<li class="<%="setting".equals(pageName) ? "active" : ""%>">
+						<a href="/imeeting/setting"><i class="icon-wrench"></i>系统设置</a>
+					</li>
 				</ul>
 			</div>
 		</div>

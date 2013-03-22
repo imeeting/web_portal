@@ -23,7 +23,7 @@
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
 					    <label class="control-label">常用联系人</label>
-						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
+						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="输入 姓名/手机/Email 搜索" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {

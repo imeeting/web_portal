@@ -1,9 +1,13 @@
 @CHARSET "UTF-8";
 
 body {
-	font-family: 微软雅黑;
+	/*font-family: 微软雅黑;*/
     background: url(../img/bg-face.jpg);
     background-color: #91673F;  
+}
+
+i {
+	margin-right: 3px;
 }
 
 .navbar-inner {
@@ -93,11 +97,11 @@ footer span {
 	font-size: 18px;
 	margin-bottom: 10px;
 }
-
+/*
 .im-attendee-name {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
+*/
 .im-attendee-conf,
 .im-attendee-history {
 	background-color: #D9EDF7;
@@ -245,13 +249,13 @@ footer span {
 	border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 4px 4px 4px 4px;
 }
-
+/*
 .name,
 .email,
 .phone {
 	margin-left: 5px;	
 }
-
+*/
 /*
 #add_new_contact_dlg {
 	width: 360px;

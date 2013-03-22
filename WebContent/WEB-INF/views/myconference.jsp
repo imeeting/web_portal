@@ -29,7 +29,6 @@
 			    		<a href="#dlg_join_conf" class="btn btn-success btn-large" data-toggle="modal">进入会议</a>
 		    		</div>
 		    	</div>
-		    	<hr>
 				<div id="divConfListContainer">
 					<small>正在加载数据...</small>
 				</div>
