@@ -102,7 +102,8 @@ public class UserController extends ExceptionController {
 			json.put("userkey", user.getUserKey());
 			json.put("nickname", user.getNickName());
 			session.setAttribute(UserBean.SESSION_BEAN, user);
-			userDao.recordDeviceInfo(user.getUserId(), brand, model, release, sdk, width, height);
+			userDao.recordDeviceInfo(user.getUserId(), brand, model, release,
+					sdk, width, height);
 		} else {
 			json.put("result", "1");
 		}
@@ -191,10 +192,7 @@ public class UserController extends ExceptionController {
 		String sessionPhoneNumber = (String) session
 				.getAttribute("phonenumber");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		/*
-		 * if (null == sessionPhoneCode || null == sessionPhoneNumber) {
-		 * mv.addObject(ErrorCode, HttpServletResponse.SC_GONE); return mv; }
-		 */
+
 		if (phoneNumber.isEmpty() || phoneCode.isEmpty() || password.isEmpty()
 				|| confirmPassword.isEmpty() || nickname.isEmpty()) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
@@ -361,30 +359,33 @@ public class UserController extends ExceptionController {
 		}
 
 		if ("0".equals(result)) { // insert success
-			// Integer vosphone = userDao.getVOSPhoneNumber(phone);
 			Map<String, Object> user = userDao.getUser(phone);
 			String userId = (String) user.get("id");
 			Integer vosphone = (Integer) user.get("vosphone");
+			String status = (String) user.get("status");
 
-			result = addUserToVOS(userId, vosphone.toString());
-
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
+			if (UserAccountStatus.success.name().equals(status)) {
+				vosClient.setAccountName(userId, phone);
+			} else {
+				result = addUserToVOS(userId, vosphone.toString());
+				if ("0".equals(result)) {
+					int affectedRows = userDao.updateUserAccountStatus(userId,
+							UserAccountStatus.success);
+					if (affectedRows > 0) {
+						result = "0";
+					} else {
+						result = "1";
+					}
+				} else if ("2001".equals(result)) {
+					userDao.updateUserAccountStatus(userId,
+							UserAccountStatus.vos_account_error);
+				} else if ("2002".equals(result)) {
+					userDao.updateUserAccountStatus(userId,
+							UserAccountStatus.vos_phone_error);
+				} else if ("2003".equals(result)) {
+					userDao.updateUserAccountStatus(userId,
+							UserAccountStatus.vos_suite_error);
 				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_suite_error);
 			}
 		}
 
@@ -602,8 +603,9 @@ public class UserController extends ExceptionController {
 					ret.put("userId", id);
 					ret.put("userkey", userBean.get("userkey"));
 				}
-				
-				userDao.recordDeviceInfo(id, brand, model, release, sdk, width, height);
+
+				userDao.recordDeviceInfo(id, brand, model, release, sdk, width,
+						height);
 			}
 			ret.put("result", result);
 		}

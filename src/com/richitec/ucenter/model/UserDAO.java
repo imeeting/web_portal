@@ -268,12 +268,12 @@ public class UserDAO {
 	/**
 	 * 获得userkey
 	 * 
-	 * @param phone
+	 * @param userId
 	 * @return
 	 */
-	public String getUserKey(String phone) {
-		String sql = "SELECT userkey FROM im_user WHERE username = ?";
-		Object[] params = new Object[] { phone };
+	public String getUserKey(String userId) {
+		String sql = "SELECT userkey FROM im_user WHERE id = ?";
+		Object[] params = new Object[] { userId };
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
