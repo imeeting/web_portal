@@ -88,7 +88,7 @@
   	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     	<% if (null != errorCode && HttpServletResponse.SC_OK == errorCode) { %>
     	   <div class="span4 offset4">
     	       <h2>恭喜你，注册成功！<a href="/imeeting/signin">点此登录</a></h2>
@@ -124,7 +124,7 @@
 		    		</div>
 		    	</div>
 		    	<div class="control-group <%=nicknameErrorInfo.isEmpty()? "" : "error" %>">
-		    	    <label class="control-label" for="iptNickname">名称</label>
+		    	    <label class="control-label" for="iptNickname">姓名</label>
 		    	    <div class="controls">
 		    		    <input type="text" name="nickname" maxlength="64" id="iptNickname" />
 		    		    <span id="spanNicknameInfo" class="help-inline">

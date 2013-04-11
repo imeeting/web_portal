@@ -11,12 +11,12 @@
     <jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
 			<form id="signin-form" action="" class="span4 offset4 well">
 			    <div id="divUserNameAlert" class="control-group">
 				    <label class="control-label" for="username">手机号码</label>
 				    <div class="controls">
-					    <input id="iptUserName" name="loginName" class="span4" 
+					    <input id="iptUserName" name="loginName" class="span12" 
 					    type="text" pattern="[0-9]{11}" maxlength="11"/>
 	                    <span id="spanUserNameAlert" class="help-block"></span>
 				    </div>
@@ -24,7 +24,7 @@
                 <div id="divPasswordAlert" class="control-group">			
 					<label class="control-panel" for="password">密码</label>
 					<div class="controls">
-					   <input id="iptPassword" name="loginPwd" class="span4" type="password" />
+					   <input id="iptPassword" name="loginPwd" class="span12" type="password" />
 	                   <span id="spanPasswordAlert" class="help-block"></span>
 					</div>
 				</div>

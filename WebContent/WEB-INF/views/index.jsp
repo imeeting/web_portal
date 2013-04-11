@@ -12,15 +12,11 @@
 	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
     		<div class="span4 offset2">
-    			<div class="row">
-    				<div class="span3 offset1">
-    					<div class="app_demo_view">
-		    				<img alt="iphone" src="./img/app_screen.png"/>
-	    				</div>
-    				</div>
-    			</div>
+ 			    <div class="app_demo_view">
+   				 <img alt="iphone" src="./img/app_screen.png"/>
+  				</div>
     		</div>
     		<div class="span4">
     			<h1>智会&nbsp;<small>高效能人士的智慧选择</small></h1>
@@ -34,7 +30,7 @@
     			<!-- <h3>现在注册就送<strong>100元</strong>话费<br>&nbsp;</h3>-->
     			<!-- <h3>立刻下载开始你的智会之旅<br>&nbsp;</h3> -->
     			<div>
-    				<a class="btn" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
+    				<a class="btn btn-inverse" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/iphone.png">
     						<div class="pull-right">
@@ -42,7 +38,7 @@
     						</div>
     					</div>
     				</a>
-    				<a class="btn" href="/imeeting/downloadAppClient/android">
+    				<a class="btn btn-inverse" href="/imeeting/downloadAppClient/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">
@@ -72,7 +68,7 @@
     	
     	<jsp:include page="common/_footer.jsp"></jsp:include>
     </div> <!-- /container -->
-
+    
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

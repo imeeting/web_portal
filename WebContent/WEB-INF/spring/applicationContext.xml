@@ -33,15 +33,6 @@
 		<property name="appDonwloadPageUrl">
 		    <value>${app_download_page_url}</value>
 		</property>
-		<property name="mongoServerAddress">
-		    <value>${mongo.server.address}</value>
-		</property>
-		<property name="mongoServerPort">
-		    <value>${mongo.server.port}</value>
-		</property>
-		<property name="mongoDBName">
-		    <value>${mongo.db.name}</value>
-		</property>
 		<property name="appvcenterUrl">
 		    <value>${appvcenter_url}</value>
 		</property>
@@ -156,7 +147,8 @@
 		<property name="conferenceDao" ref="conference_dao"></property>
 	</bean>
 
-	<bean id="addressbook_dao" class="com.imeeting.mvc.model.addressbook.AddressBookDAO">
+	<bean id="contact_dao" class="com.imeeting.mvc.model.contact.ContactDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
     
     <bean id="heartbeat_task" 
@@ -174,42 +166,42 @@
          <property name="timerTask"><ref bean="heartbeat_task"/></property>
     </bean>
     
+    <bean id="scheduled_conf_task" 
+          class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+         <property name="targetObject" ref="conference_manager"></property>
+         <property name="targetMethod">
+           <value>checkAllScheduledConference</value>
+         </property>
+    </bean>    
+    
+    <bean id="scheduled_conf_timer"
+          class="org.springframework.scheduling.timer.ScheduledTimerTask">
+         <property name="delay"><value>30000</value></property>
+         <property name="period"><value>300000</value></property>
+         <property name="timerTask"><ref bean="scheduled_conf_task"/></property>
+    </bean>    
+    
     <bean id="timer_factory" 
           class="org.springframework.scheduling.timer.TimerFactoryBean">
          <property name="scheduledTimerTasks">
             <list>
-                <ref bean="heartbeat_timer"/>
+                <ref bean="scheduled_conf_timer"/>
             </list>
          </property>
     </bean>
 	
-	<bean id="apns_provider_dev" class="com.richitec.notify.APNSProviderClient">
-		<property name="notifyThreadsMaxNumber">
-			<value>${notifyThreadsMaxNumber}</value>
-		</property>
-		<property name="production">
-			<value>false</value>
-		</property>
-		<property name="cerFilePath">
-			<value>${cerFilePath}</value>
-		</property>
-		<property name="privateKeyPwd">
-			<value>${privateKeyPwd}</value>
-		</property>
-	</bean>
-	
-	<bean id="apns_provider_dist" class="com.richitec.notify.APNSProviderClient">
-		<property name="notifyThreadsMaxNumber">
-			<value>${notifyThreadsMaxNumber}</value>
-		</property>
-		<property name="production">
-			<value>true</value>
-		</property>
-		<property name="cerFilePath">
-			<value>${cerFilePath}</value>
-		</property>
-		<property name="privateKeyPwd">
-			<value>${privateKeyPwd}</value>
-		</property>
-	</bean>
+	<bean id="mail_sender" class="com.richitec.util.MailSender">
+	     <property name="host">
+	         <value>${smtp_server}</value>
+	     </property>
+	     <property name="user">
+	         <value>${mail_auth_user}</value>
+	     </property>
+	     <property name="pwd">
+	         <value>${mail_auth_pwd}</value>
+	     </property>
+	     <property name="from">
+	         <value>${mail_from_address}</value>
+	     </property>
+	</bean>	
 </beans>

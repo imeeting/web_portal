@@ -40,7 +40,7 @@ if (nicknameRetCode != null) {
     <jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-		<div class="row">
+		<div class="row-fluid im-container">
 			<div class="span6 offset3 tabbable tabs-left">
 				<ul class="nav nav-tabs">
 					<li class="active">
@@ -49,9 +49,6 @@ if (nicknameRetCode != null) {
 					<li>
 						<a href="#pane-change-password" data-toggle="tab">修改密码</a>
 					</li>
-					<li>
-						<a href="#pane-user-avatar" data-toggle="tab">设置头像</a>
-					</li>					
 				</ul>
 				<div class="tab-content">	
                     <div class="tab-pane active" id="pane-user-info">
@@ -106,11 +103,6 @@ if (nicknameRetCode != null) {
 						</form>
 					</div>
 
-					<div class="tab-pane" id="pane-user-avatar">
-						<h3>设置头像</h3>
-						<hr>
-						<p>我们正在紧张开发中，请耐心等待。。。</p>
-					</div>	
 				</div>
 			</div>
 		</div>    	

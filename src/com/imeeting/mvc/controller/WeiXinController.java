@@ -95,9 +95,9 @@ public class WeiXinController {
             ("kh".equalsIgnoreCase(content) || "开会".equals(content) ||
              "kaihui".equalsIgnoreCase(content) || "hk".equalsIgnoreCase(content) ||
              "開會".equals(content)) ){
-            confId = RandomString.genRandomNum(5);
+            confId = RandomString.genRandomNum(4);
             DonkeyHttpResponse donkeyResp =
-                donkeyClient.createNoMediaConference(confId, null, null, "weixin");
+                donkeyClient.createNoControlConference(confId, null, null, "weixin");
             if (null == donkeyResp || !donkeyResp.isAccepted()){
                 confId = "0";
                 log.error("Create audio conference error : "

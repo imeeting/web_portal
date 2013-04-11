@@ -10,7 +10,7 @@
     <link href="/imeeting/css/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
-        padding-top: 80px; /* 80px to make the container go all the way to the bottom of the topbar */
+        padding-top: 40px; /* 80px to make the container go all the way to the bottom of the topbar */
       }
     </style>
     <link href="/imeeting/css/bootstrap-responsive.min.css" rel="stylesheet">

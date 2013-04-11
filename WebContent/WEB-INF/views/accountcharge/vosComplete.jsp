@@ -18,7 +18,7 @@
     <jsp:include page="../common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
 	    	<div class="hero-unit">
 	    		<% if (vosResp.getHttpStatusCode() != 200) { %>
 	    		<h1>操作失败，请原谅。</h1>

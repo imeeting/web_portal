@@ -139,8 +139,6 @@ public class DonkeyEventController {
 			
 			conference.addAttendee(attendee);
 			
-			conferenceDao.saveAttendee(requestId, attendee);
-			
 			attendee.statusCallEstablished();
 			conference.notifyAttendeesToUpdateMemberList();
 		} else {
@@ -148,11 +146,6 @@ public class DonkeyEventController {
 			conference.broadcastAttendeeStatus(attendee);
 		}
 		log.info("onAttendeeCallEstablished - attendee: " + attendee.toJson().toString());
-		
-		if (attendeeName.equals(conference.getOwnerName())) {
-			// when owner's phone is established, notify all attendees to join
-			conference.notifyAttendeesInvited();
-		}
 	}
 	
 	private void onAttendeeCallFailed(DonkeyEvent event){

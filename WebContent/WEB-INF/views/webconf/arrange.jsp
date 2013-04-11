@@ -1,18 +1,15 @@
-<%@page import="com.imeeting.constants.AddressBookConstants"%>
 <%@page import="com.imeeting.constants.WebConstants"%>
-<%@page import="com.mongodb.DBObject"%>
+<%@page import="com.imeeting.mvc.model.contact.ContactBean"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%
-	String confId = request.getParameter("confId");
-	String attendeeName = request.getParameter("attendeeName");
-	List<DBObject> abContacts = (List<DBObject>) request.getAttribute(WebConstants.addressbook.name());
+	List<ContactBean> abContacts = (List<ContactBean>) request.getAttribute(WebConstants.addressbook.name());
 %>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>智会-创建群聊</title>
+<title>智会-创建会议</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 
@@ -20,41 +17,34 @@
 	<jsp:include page="../common/afterlogin_navibar.jsp"></jsp:include>
 
 	<div class="container">
-		<div class="row">
+		<div class="row-fluid im-container">
 			<form id="formJoinConference" action="./webconf"
 				class="span8 offset2" method="post">
-				<div class="control-group">
-					<label class="control-label">给你的群聊起个名字吧</label>
-					<div class="controls">
-					<input id="iptConfTitle" name="confTitle" maxlength="32"
-						class="span8" type="text" placeholder="默认使用群聊号作为标题" />
-					</div>
-				</div>
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
-					    <label class="control-label">请选择参与者
-					       <a data-toggle="modal" href="#upload_addressbook_help_dlg">（通过手机客户端上传通讯录）</a>
-					    </label>
+					    <label class="control-label">常用联系人</label>
 						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {
-								for (DBObject contact : abContacts) {
-									String displayName = (String) contact.get(AddressBookConstants.display_name.name());
-									List<String> phones = (List<String>) contact.get(AddressBookConstants.phone_array.name());
-									
-									if (phones != null && phones.size() > 0) {
+								for (ContactBean contact : abContacts) {
 						%>
-										<li class="ab_contact">
-											<strong class="name"><%=displayName %></strong>
-											<ul class="unstyled">
-											<% for (String phone : phones) { %>
-												<li><span class="phone_number"><%=phone %></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
-											<% } %>
-											</ul>
-										</li>
+									<li class="ab_contact im-attendee-name">
+										<div>
+											<i class="icon-user"></i>
+											<span class="name"><%=contact.getNickName() %></span>
+											<a class="add_contact_bt" href="#"><i class="icon-plus"></i></a>
+										</div>
+										<div>
+											<i class="icon-envelope"></i>
+											<span class="email"><%=contact.getEmail() %></span>
+										</div>
+										<div>
+											<i class="icon-comment"></i>
+											<span class="phone"><%=contact.getPhone() %></span>
+										</div>
+									</li>
 						<%
-									}
 								}
 							}
 						%>
@@ -63,14 +53,23 @@
 					</div>
 					<div class="selection-list pull-right">
 					    <label class="control-label">已选中参与者</label>
-					    <div class="blank"><button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button></div>
+					    <div class="blank">
+					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button>
+					    </div>
 						<ul id="selected_contacts" class="well unstyled">
 						</ul>
 					</div>
 				</div>
+				<div id="divSelectTime" class="clearfix control-group">
+					<input id="rdoNow" name="isScheduled" type="radio" value="now" class="pull-left"/>
+					<label for="rdoNow" class="pull-left">&nbsp;马上开始</label>
+					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" checked="checked" class="pull-left"/>
+					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>	
+					<input id="iptScheduleTime" type="text" class="pull-left"/>					
+				</div>
 				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
-					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">开始群聊</button>
+					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">&nbsp;确&nbsp;&nbsp;定&nbsp;</button>
 				</div>
 			</form>
 		</div>
@@ -82,15 +81,28 @@
 	<!-- template region  -->
 	<div id="template" class="hidden">
 		<ul>
-			<li class="ab_contact">
-				<strong class="name"></strong>
-				<ul class="number_ul unstyled">
-					<li class="number_li"><span class="phone_number"></span><a class="add_contact_bt" href="#"><i class="icon-plus"></i></a></li>
-				</ul>
+			<li class="ab_contact im-attendee-name">
+				<div>
+					<i class="icon-user"></i>
+					<span class="name"></span>
+					<a class="add_contact_bt" href="#"><i class="icon-plus"></i></a>
+				</div>
+				<div>
+					<i class="icon-envelope"></i>
+					<span class="email"></span>
+				</div>
+				<div>
+					<i class="icon-comment"></i>
+					<span class="phone"></span>
+				</div>
 			</li>
-			<li class="selected_contact">
-				<strong class="name"></strong>
-				<div><span class="phone_number"></span><a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a></div>
+			<li class="selected_contact im-attendee-name">
+				<div>
+					<i class="icon-user"></i><span class="name"></span>
+					<a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a>
+				</div>
+				<div><i class="icon-envelope"></i><span class="email"></span></div>
+				<div><i class="icon-comment"></i><span class="phone"></span></div>
 			</li>
 		</ul>
 	</div>
@@ -103,18 +115,35 @@
 			<h4>添加新成员</h4>
 		</div>
 		<div class="modal-body">
-			<!--  
-			<span>名&nbsp;&nbsp;称：</span>
-			<input id="newContactName" type="text" class="span3" />
-			<br/>
-			-->
-			<span>号&nbsp;&nbsp;码：</span>
-			<input id="newContactPhoneNumber" type="text" class="span3" />
+			<div class="">
+				<label for="newContactName">姓名：</label>
+				<input id="newContactName" type="text" class="span3" />
+				<label for="newContactEmail">电邮：</label>
+				<input id="newContactEmail" type="text" class="span3" />
+				<label for="newContactPhoneNumber">手机：</label>
+				<input id="newContactPhoneNumber" type="text" class="span3" />
+			</div>
 		</div>
 		<div class="modal-footer">
 			<a href="#" id="add_cancel_bt" class="btn" data-dismiss="modal" aria-hidden="true">取消</a> 
 			<a href="#" id="add_confirm_bt" class="btn btn-primary">确定</a>
 		</div>
+	</div>
+	
+	<div id="schedule_success_dlg" class="modal hide fade">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+			<h4>安排会议成功！</h4>
+		</div>
+		<div class="modal-body">
+			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
+			<p><span>接入号码：</span><strong id="">0551-62379997</strong></p>
+			<p><span>会议时间：</span><strong id="schedule_conf_time"></strong></p>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-success" data-dismiss="modal" aria-hidden="true">我知道了</a> 
+		</div>	
 	</div>
 	
 	<div id="upload_addressbook_help_dlg" class="modal hide fade">
@@ -144,7 +173,8 @@
 	<script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
 	<script src="/imeeting/js/lib/bootstrap.js"></script>
 	<script src="/imeeting/js/lib/json2.js"></script>
+	<script src="/imeeting/js/my97/WdatePicker.js"></script>
 	<script src="/imeeting/js/applib/common.js"></script>
-	<script src="/imeeting/js/webconf/arrange.js"></script>
+	<script src="/imeeting/js/arrange.js"></script>
 </body>
 </html>

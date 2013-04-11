@@ -27,12 +27,14 @@
 					<% if (userBean == null) { %>
 						<a href="/imeeting/signin">登录</a>
 					<% } else {	%>
-						<a href="/imeeting/accountcharge">进入账户</a>
+						<a href="/imeeting/myconference">进入账户</a>
 					<% } %>
 					</li>
+					<!-- 
 				    <li class="<%="deposite".equals(pageName) ? "active" : ""%>">
 				        <a href="/imeeting/deposite">在线充值</a>
                     </li>
+                     -->
 				</ul>
 			</div>
 		</div>

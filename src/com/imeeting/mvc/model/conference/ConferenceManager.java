@@ -95,6 +95,9 @@ public class ConferenceManager {
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
 	}
 	
+	/**
+	 * 检查系统中所有会议成员的在线状态，如果30秒未收到心跳消息，则认为该用户不在线。
+	 */
 	public void checkAllConfAttendeeHeartBeat() {
 		Long currentTimeMillis = System.currentTimeMillis();
 		for (ConferenceModel conf : conferenceMap.values()) {
@@ -117,5 +120,15 @@ public class ConferenceManager {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 每隔5分钟从数据库中查询所有预约会议，
+	 * 如果会议预约时间和当前系统时间相差是否在5分钟之内，
+	 * 向donkey发送请求开启一个会议，并把会议状态置为OPEN。
+	 */
+	public void checkAllScheduledConference() {
+		//
+		log.info("checkAllScheduledConference");
 	}
 }

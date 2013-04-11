@@ -29,7 +29,7 @@
 
 
     <div class="container">
-		<div class="row">
+		<div class="row-fluid im-container">
 			<div class="span6 offset3">
 			    <div class="clearfix">
 					<h2 class="pull-left">账户余额：￥<%=strBalance %></h2>

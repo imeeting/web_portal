@@ -23,6 +23,7 @@ import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
+import com.imeeting.mvc.model.contact.ContactBean;
 
 public class ConferenceDB {
 	private static Log log = LogFactory.getLog(ConferenceDB.class);
@@ -30,7 +31,7 @@ public class ConferenceDB {
 	private JdbcTemplate jdbc;
 
 	public enum ConferenceStatus {
-		OPEN, CLOSE
+		OPEN, CLOSE, SCHEDULE
 	};
 
 	public enum UserConfStatus {
@@ -40,14 +41,21 @@ public class ConferenceDB {
 	public void setDataSource(DataSource ds) {
 		jdbc = new JdbcTemplate(ds);
 	}
-
-	public void saveConference(ConferenceModel conference, String title)
+	
+	public void saveScheduledConference(String confId, String scheduleTime, String owner){
+		String sql = 
+			"INSERT INTO im_conference(conferenceId, status, scheduled_time, title, owner) " +
+			"VALUES (?,?,?,?,?)";
+		String title = confId;
+		jdbc.update(sql, confId, ConferenceStatus.SCHEDULE.name(), scheduleTime, title, owner);
+	}
+	
+	public void saveConference(ConferenceModel conference, String owner)
 			throws DataAccessException {
-		insert(conference.getConferenceId());
-		if (title == null || title.equals("")) {
-			title = "群聊号: " + conference.getConferenceId();
-		}
-		editConferenceTitle(conference.getConferenceId(), title);
+		String sql = "INSERT INTO im_conference (conferenceId, title, owner) " +
+				"VALUES (?,?,?,?)";
+		int i = jdbc.update(sql, conference.getConferenceId(), conference.getConferenceId(), owner);
+
 		Collection<AttendeeModel> attendeeCollection = conference
 				.getAllAttendees();
 		saveAttendeeBeans(conference.getConferenceId(), attendeeCollection);
@@ -56,10 +64,10 @@ public class ConferenceDB {
 	public void saveAttendeeBeans(String conferenceId,
 			Collection<AttendeeModel> attendeeCollection)
 			throws DataAccessException {
-		String sql = "INSERT INTO im_attendee(conferenceId, username, nickname) VALUES(?,?,?)";
+		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES(?,?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeModel attendee : attendeeCollection) {
-			params.add(new Object[] { conferenceId, attendee.getUsername(), attendee.getNickname() });
+			params.add(new Object[] { conferenceId, attendee.getNickname() });
 		}
 		jdbc.batchUpdate(sql, params);
 	}
@@ -68,6 +76,23 @@ public class ConferenceDB {
 		Collection<AttendeeModel> attendees = new ArrayList<AttendeeModel>();
 		attendees.add(attendee);
 		saveAttendeeBeans(conferenceId, attendees);
+	}
+	
+	public void saveJSONAttendee(String confId, JSONArray jsonArray) throws JSONException{
+		log.info(jsonArray);
+		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES (?,?,?,?)";
+		List<Object[]> params = new ArrayList<Object[]>();
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject attendee = jsonArray.getJSONObject(i);
+			log.info(attendee);
+			params.add(new Object[] {
+					confId,
+					attendee.getString("nickname"), 
+					attendee.getString("phone"),
+					attendee.getString("email")
+				});
+		}
+		jdbc.batchUpdate(sql, params);
 	}
 	
 	public void removeAttendee(String conferenceId, AttendeeModel attendee) {
@@ -93,20 +118,22 @@ public class ConferenceDB {
 	}
 
 	/**
-	 * 获取所有的会议
+	 * 获取所有的会议, MyConferenceController 显示会议总数和会议列表分页使用。
 	 * 
 	 * @param username
 	 * @return
 	 */
 	public int getAllConferenceCount(String username) {
-		String sql = "SELECT COUNT(c.conferenceId) FROM im_conference AS c "
-				+ "INNER JOIN im_attendee AS a ON c.conferenceId=a.conferenceId "
-				+ "AND a.username=? ORDER BY c.created DESC";
+//		String sql = "SELECT COUNT(c.conferenceId) FROM im_conference AS c "
+//				+ "INNER JOIN im_attendee AS a ON c.conferenceId=a.conferenceId "
+//				+ "AND a.username=? ORDER BY c.created DESC";
+		String sql = "SELECT COUNT(conferenceId) FROM im_conference " +
+				"WHERE owner = ? ORDER BY scheduled_time DESC";
 		return jdbc.queryForInt(sql, username);
 	}
 
 	/**
-	 * 获取VISIBLE状态的会议
+	 * 获取VISIBLE状态的会议总数，手机客户端显示需要
 	 * 
 	 * @param username
 	 * @return
@@ -122,12 +149,24 @@ public class ConferenceDB {
 		return jdbc.queryForInt(sql, username, UserConfStatus.VISIABLE.name());
 	}
 
+	/**
+	 * Web页面显示会议列表需要使用该函数获取会议数据。
+	 * 
+	 * @param userName
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
 	public List<ConferenceBean> getConferenceList(String userName, int offset,
 			int pageSize) {
-		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
-				+ "FROM im_conference AS c INNER JOIN im_attendee AS a "
-				+ "ON c.conferenceId = a.conferenceId AND a.username = ? "
-				+ "ORDER BY c.created DESC LIMIT ?, ?";
+//		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
+//				+ "FROM im_conference AS c INNER JOIN im_attendee AS a "
+//				+ "ON c.conferenceId = a.conferenceId AND a.username = ? "
+//				+ "ORDER BY c.created DESC LIMIT ?, ?";
+		
+		String sql = "SELECT conferenceId AS id, UNIX_TIMESTAMP(created) AS created, " +
+				"UNIX_TIMESTAMP(scheduled_time) AS scheduled_time, status, title " +
+				"FROM im_conference WHERE owner = ? ORDER BY scheduled_time DESC LIMIT ?, ?";
 
 		int startIndex = (offset - 1) * pageSize;
 		List<Map<String, Object>> confResultList = jdbc.queryForList(sql,
@@ -138,6 +177,7 @@ public class ConferenceDB {
 			bean.setId((String) c.get("id"));
 			bean.setTitle((String) c.get("title"));
 			bean.setCreatedTimeStamp((Long) c.get("created") * 1000);
+			bean.setScheduledTimeStamp((Long) c.get("scheduled_time") * 1000);
 			beanList.add(bean);
 		}
 		return beanList;
@@ -344,7 +384,7 @@ public class ConferenceDB {
 				confIdString += ", ";
 			}
 		}
-		return jdbc.query("SELECT conferenceId, username, nickname FROM im_attendee "
+		return jdbc.query("SELECT conferenceId, phone, email, nickname FROM im_attendee "
 				+ "WHERE conferenceId IN (" + confIdString + ")",
 				new RowMapper<AttendeeBean>() {
 					@Override
@@ -352,7 +392,8 @@ public class ConferenceDB {
 							throws SQLException {
 						AttendeeBean bean = new AttendeeBean();
 						bean.setConferenceId(rs.getString("conferenceId"));
-						bean.setUserName(rs.getString("username"));
+						bean.setPhone(rs.getString("phone"));
+						bean.setEmail(rs.getString("email"));
 						bean.setNickName(rs.getString("nickname"));
 						return bean;
 					}

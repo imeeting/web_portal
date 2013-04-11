@@ -20,7 +20,7 @@
 		SimpleDateFormat ef = new SimpleDateFormat("E");
 		for (int i=0; i<confList.size(); i++) { 
 			ConferenceBean conf = confList.get(i);
-			Date date = new Date(conf.getCreatedTimeStamp());
+			Date date = new Date(conf.getScheduledTimeStamp());
 			String year = yearf.format(date);
 			String month = monthf.format(date);
 			String day = dayf.format(date);
@@ -32,26 +32,20 @@
 %>
 			
 			<div class="well clearfix">
-				<div class="im-conf-info pull-left">
-					<p class="im-conf-title"><%=conf.getTitle()%></p>
-					<div class="clearfix">
-						<% for (int j=0; j<attendeeList.size(); j++) {
-								AttendeeBean attendee = attendeeList.get(j);
-						%>
-						<a class="im-attendee im-attendee-history im-attendee-name pull-left" 
-						   title="<%=attendee.getUserName() %>">
-							<i class="icon-user"></i>&nbsp;<%=attendee.getDisplayName() %>
-						</a>
-						<% } %>
-					</div>
+				<div class="im-conf-title clearfix">
+				<span class="pull-left"><%=year %>年<%=month %>月<%=day %>日&nbsp;<%=week %>&nbsp;<%=ap %>&nbsp;<%=hour %>	</span>
+				<span class="pull-right"> 会议密码：<strong><%=conf.getId() %></strong></span>
 				</div>
-				<div class="pull-right">
-					<p>
-					          群聊号：<strong><%=conf.getId() %></strong><br>
-						<strong><%=year %></strong>年<strong><%=month %></strong>月<strong><%=day %></strong>日<br>
-						<%=week %><br>
-						<strong><%=ap %>&nbsp;<%=hour %></strong>
-					</p>
+				<div class="clearfix">
+					<% for (int j=0; j<attendeeList.size(); j++) {
+							AttendeeBean attendee = attendeeList.get(j);
+					%>
+					<div class="im-attendee im-attendee-history im-attendee-name pull-left">
+						<div><i class="icon-user"></i>&nbsp;<%=attendee.getNickName() %></div>
+						<div><i class="icon-envelope"></i>&nbsp;<%=attendee.getEmail() %></div>
+						<div><i class="icon-comment"></i>&nbsp;<%=attendee.getPhone() %></div>
+					</div>
+					<% } %>
 				</div>
 			</div>
 <% } //End of FOR%>
@@ -84,5 +78,5 @@
 			</script>
 <% 		} //End of IF %>
 <% } else { // END if (confList.size() >0 ) %>
-	<small>你还没有参加任何群聊</small>	
+	<small>你还没有安排任何会议</small>	
 <% } %>

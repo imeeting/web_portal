@@ -23,7 +23,7 @@
                         <div id="que0" class="accordion-body collapse in">
                             <div class="accordion-inner">
                                使用智会可以发起多方通话，首先从通讯录中选择需要参加多方通话的联系人；
-                               进入群聊后可以对参与者进行呼叫，挂断，移除，观看视频等多种操作。
+                               进入会议后可以对参与者进行呼叫，挂断，移除，观看视频等多种操作。
                                <a href="http://v.youku.com/v_show/id_XNDU3MDIxMjky.html">演示视频</a>
                             </div>
                         </div>
@@ -33,12 +33,12 @@
 		                <div class="accordion-heading">
 			                    <a class="accordion-toggle" data-toggle="collapse"
 			                        data-parent="#accordion-help" href="#que1">
-			                        固话号码可以加入群聊吗
+			                        固话号码可以加入会议吗
 			                    </a>
 		                </div>
 		                <div id="que1" class="accordion-body collapse in">
 		                    <div class="accordion-inner">
-		                        虽然智会使用手机号码注册，但是固话也可以加入由智会创建的群聊。发起人添加固
+		                        虽然智会使用手机号码注册，但是固话也可以加入由智会创建的会议。发起人添加固
 		                        话时候必须使用<strong>区号+号码</strong>的方式，如果没有区号，智会无法呼叫
 		                        成功。
 		                    </div>
@@ -49,12 +49,12 @@
                         <div class="accordion-heading">
                                 <a class="accordion-toggle" data-toggle="collapse"
                                     data-parent="#accordion-help" href="#que2">
-                                    每个群聊中最多可以有多少人同时对话
+                                    每个会议中最多可以有多少人同时对话
                                 </a>
                         </div>
                         <div id="que2" class="accordion-body collapse in">
                             <div class="accordion-inner">
-目前系统没有做出限制，但是我们推荐每个群聊中不要超过五路电话，后续版本会增加容量，让更多的人可以参与到群聊中。
+目前系统没有做出限制，但是我们推荐每个会议中不要超过五路电话，后续版本会增加容量，让更多的人可以参与到会议中。
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                         </div>
                         <div id="que3" class="accordion-body collapse in">
                             <div class="accordion-inner">
-每分钟0.2元人民币，一次群聊的总费用就是群聊中每路电话的通话时长之和乘以0.2元。
+每分钟0.2元人民币，一次会议的总费用就是会议中每路电话的通话时长之和乘以0.2元。
                             </div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                 <p>网站：<a href="http://www.wetalking.net">http://www.wetalking.net</a></p>
                 <p>客服QQ：1622122511</p>
                 <p>微信：youyun_zhihui</p>
-                <p>客服电话：0551-2379996</p>
+                <p>客服电话：0551-62379996</p>
                 <p>客服邮箱：zhihui@richitec.com</p>
                 <p>新浪微博：<a href="http://weibo.com/u/2952506540">优云智会</a></p>
                             </div>

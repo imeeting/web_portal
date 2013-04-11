@@ -11,7 +11,7 @@
     <jsp:include page="../common/beforelogin_navibar.jsp"></jsp:include>
 
     <div class="container">
-    	<div class="row">
+    	<div class="row-fluid im-container">
 	    	<div class="hero-unit">
 				<h1>404&nbsp;你找的页面，他不在。</h1>
 				<hr>

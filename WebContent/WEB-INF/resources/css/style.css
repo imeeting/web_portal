@@ -2,17 +2,40 @@
 
 body {
 	font-family: 微软雅黑;
+    background: url(../img/bg-face.jpg);
+    background-color: #91673F;  
+}
+
+.navbar-inner {
+    background: url(../img/bg2.png);
+}
+
+.im-container {
+	padding: 50px 0;
+	background: url(../img/bg.png);
+	box-shadow: 0 20px 30px #91673F;
 }
 
 footer {
+    background: url(../img/bg2.png); 
 	color: #999;
-	border-top: #999 solid 1px;
-	padding: 10px 0px 50px; 
-	margin-top: 50px;
+	padding: 10px 10px 50px 10px; 
+	margin-bottom: 50px;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 0 20px 30px #91673F;
 }
 
 footer span {
 	padding: 0 5px;
+}
+
+.icon-weibo {
+	background: url(../img/is.png) no-repeat;
+	background-position: 0 -115px;
+    display: inline-block;
+	width: 28px;
+	height: 28px;
+	margin-right: 3px;
 }
 
 .hidden {
@@ -21,7 +44,7 @@ footer span {
 
 #signin-form {
 	margin-top: 50px;
-	margin-bottom: 200px;
+	margin-bottom: 100px;
 }
 
 .im-form input, button {
@@ -66,13 +89,8 @@ footer span {
     margin: 10px 0;
 }
 
-.im-conf-info {
-	width: 80%;
-}
-
 .im-conf-title {
 	font-size: 18px;
-    line-height: 20px;
 	margin-bottom: 10px;
 }
 
@@ -84,6 +102,20 @@ footer span {
 .im-attendee-history {
 	background-color: #D9EDF7;
 	border: solid 1px #BCE8F1;
+}
+
+#rdoSchedule {
+	margin-left: 50px;
+}
+
+#iptScheduleTime {
+	margin-left: 10px;
+}
+
+#divConfTitle, 
+#divAttendeeList {
+	padding: 10px 20px;
+    background: url(../img/bg.png);
 }
 
 .im-video {
@@ -101,7 +133,6 @@ footer span {
 .im-attendee {
     padding: 5px;
     margin: 0 5px 5px 0;
-    width: 110px;
     overflow: hidden;
 }
 
@@ -215,8 +246,34 @@ footer span {
     border-radius: 4px 4px 4px 4px;
 }
 
+.name,
+.email,
+.phone {
+	margin-left: 5px;	
+}
+
+/*
 #add_new_contact_dlg {
 	width: 360px;
 	left: 55%;
 	margin-left: -245px;
+}
+*/
+#dlg_join_conf form {
+    margin: 0;
+}
+
+/* 联系我们 */
+.im-contact-header {
+	padding: 20px;
+    border-radius: 10px;
+    background: url(../img/bg2.png);
+    box-shadow: 0 20px 30px #91673F;
+}
+
+.im-contact-body {
+    padding: 20px;
+    border-radius: 10px;
+    background: url(../img/bg.png);
+    box-shadow: 0 20px 30px #91673F;    
 }

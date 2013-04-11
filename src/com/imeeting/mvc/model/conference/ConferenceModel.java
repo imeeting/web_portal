@@ -115,32 +115,6 @@ public class ConferenceModel {
 		return tokens;
 	}
 
-	public void notifyAttendeesInvited() {
-		log.info("notifyAttendeesInvited");
-		List<String> tokens = getTokensFromAttendees();
-		if (tokens == null || tokens.size() <= 0) {
-			return;
-		}
-
-		for (String token : tokens) {
-			log.info("token: " + token);
-		}
-
-		PushNotificationPayload payload = new PushNotificationPayload();
-		try {
-			payload.addAlert("" + ownerName + "邀请您加入讨论组");
-			payload.addCustomDictionary("conferenceId", conferenceId);
-			payload.addCustomDictionary("action", AttendeeAction.invited.name());
-			payload.addSound("default");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		ContextLoader.getDevAPNSProviderClient().pushNotification(tokens,
-				payload);
-		ContextLoader.getDistAPNSProviderClient().pushNotification(tokens,
-				payload);
-	}
-
 	public void broadcastAttendeeStatus(AttendeeModel attendee) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -216,7 +190,7 @@ public class ConferenceModel {
 			}
 			if (numberList.length() > 0) {
 				String content = "您被邀请加入群聊（群聊号：" + conferenceId
-						+ " ) 拨打0551-2379997或访问www.wetalking.net加入群聊。";
+						+ " ) 拨打0551-62379997或访问www.wetalking.net加入群聊。";
 				try {
 					ContextLoader.getSMSClient().sendTextMessage(
 							numberList.toString(), content);
