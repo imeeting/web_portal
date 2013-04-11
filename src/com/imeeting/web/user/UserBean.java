@@ -2,12 +2,20 @@ package com.imeeting.web.user;
 
 public class UserBean {
 	public static final String SESSION_BEAN = "userbean";
-	
+	private String userId;
 	private String username;
 	private String nickname;
 	private String userKey;
 	private String password;
 	
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public String getUserName() {
 		return username;
