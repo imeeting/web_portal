@@ -1,16 +1,23 @@
 package com.imeeting.mvc.model.conference;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 
+import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
@@ -71,9 +78,10 @@ public class ConferenceManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * close the conference and release all resources
+	 * 
 	 * @param conferenceId
 	 */
 	public void closeConference(String conferenceId) {
@@ -94,41 +102,78 @@ public class ConferenceManager {
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
 	}
-	
-	/**
-	 * 检查系统中所有会议成员的在线状态，如果30秒未收到心跳消息，则认为该用户不在线。
-	 */
-	public void checkAllConfAttendeeHeartBeat() {
-		Long currentTimeMillis = System.currentTimeMillis();
-		for (ConferenceModel conf : conferenceMap.values()) {
-			for (AttendeeModel attendee : conf.getAllAttendees()) {
-				if (!attendee.isJoined() || 
-					null == attendee.getLastHBTimeMillis()) {
-					continue;
-				}
 
-				if (attendee.isOnline()) {
-					if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30 * 1000) {
-						attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
-						conf.broadcastAttendeeStatus(attendee);
-					}
-				} else {
-					if (currentTimeMillis - attendee.getLastHBTimeMillis() <= 30 * 1000) {
-						attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
-						conf.broadcastAttendeeStatus(attendee);
-					}
-				}
-			}
-		}
-	}
-	
+	// /**
+	// * 检查系统中所有会议成员的在线状态，如果30秒未收到心跳消息，则认为该用户不在线。
+	// */
+	// public void checkAllConfAttendeeHeartBeat() {
+	// Long currentTimeMillis = System.currentTimeMillis();
+	// for (ConferenceModel conf : conferenceMap.values()) {
+	// for (AttendeeModel attendee : conf.getAllAttendees()) {
+	// if (!attendee.isJoined() ||
+	// null == attendee.getLastHBTimeMillis()) {
+	// continue;
+	// }
+	//
+	// if (attendee.isOnline()) {
+	// if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30 * 1000) {
+	// attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
+	// conf.broadcastAttendeeStatus(attendee);
+	// }
+	// } else {
+	// if (currentTimeMillis - attendee.getLastHBTimeMillis() <= 30 * 1000) {
+	// attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
+	// conf.broadcastAttendeeStatus(attendee);
+	// }
+	// }
+	// }
+	// }
+	// }
+
 	/**
-	 * 每隔5分钟从数据库中查询所有预约会议，
-	 * 如果会议预约时间和当前系统时间相差是否在5分钟之内，
+	 * 每隔5分钟从数据库中查询所有预约会议， 如果会议预约时间和当前系统时间相差是否在5分钟之内，
 	 * 向donkey发送请求开启一个会议，并把会议状态置为OPEN。
 	 */
 	public void checkAllScheduledConference() {
 		//
 		log.info("checkAllScheduledConference");
+	}
+
+	public void sendSMSEmailNotice(String confId, String scheduleTime,
+			JSONArray jsonArray) throws JSONException {
+		if (jsonArray == null) {
+			return;
+		}
+		StringBuffer allPhone = new StringBuffer();
+		LinkedList<String> emailList = new LinkedList<String>();
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject attendee = jsonArray.getJSONObject(i);
+			String phone = (String) attendee
+					.get(AttendeeConstants.phone.name());
+			if (null != phone && phone.length() > 0) {
+				allPhone.append(phone).append(",");
+			}
+			String email = (String) attendee
+					.get(AttendeeConstants.email.name());
+			if (null != email && email.length() > 0) {
+				emailList.add(email);
+			}
+		}
+
+		String subject = "电话会议通知";
+		String content = "您在" + scheduleTime + "有电话会议，会议密码：" + confId
+				+ "，到时拨打 0551-62379997 加入会议。";
+
+		try {
+			ContextLoader.getSMSClient().sendTextMessage(allPhone.toString(),
+					content);
+			ContextLoader.getMailSender().sendMail(emailList, subject, content);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (AddressException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -282,7 +282,13 @@ public class UserDAO {
 		Object[] params = new Object[] { username };
 		return jdbc.queryForInt(sql, params);
 	}
-
+	
+	public int getVOSPhoneNumberById(String userId) {
+		String sql = "SELECT vosphone FROM im_user WHERE id = ?";
+		Object[] params = new Object[] { userId };
+		return jdbc.queryForInt(sql, params);
+	}
+	
 	public String saveToken(String userName, String token) {
 		String retCode = "0";
 		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
@@ -347,6 +353,17 @@ public class UserDAO {
 		Map<String, Object> user = null;
 		try {
 			user = jdbc.queryForMap(sql, deviceId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		return user;
+	}
+	
+	public Map<String, Object> getUserById(String userId) {
+		String sql = "SELECT * FROM im_user WHERE id = ?";
+		Map<String, Object> user = null;
+		try {
+			user = jdbc.queryForMap(sql, userId);
 		} catch (Exception e) {
 			log.info(e.getMessage());
 		}

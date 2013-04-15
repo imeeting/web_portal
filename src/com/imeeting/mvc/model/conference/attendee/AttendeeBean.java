@@ -1,5 +1,10 @@
 package com.imeeting.mvc.model.conference.attendee;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.imeeting.constants.AttendeeConstants;
+
 public class AttendeeBean {
 
 	private String confId;
@@ -49,4 +54,16 @@ public class AttendeeBean {
 			return phone;
 		}
 	}	
+	
+	public JSONObject toJSONObject() {
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put(AttendeeConstants.nickname.name(), nickName);
+			obj.put(AttendeeConstants.phone.name(), phone);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return obj;
+	}
 }

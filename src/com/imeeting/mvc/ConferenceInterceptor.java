@@ -33,7 +33,7 @@ public class ConferenceInterceptor implements HandlerInterceptor {
 		if (null != conferenceId){
 			ConferenceManager conferenceManager = ContextLoader.getConferenceManager();
 			if (null == conferenceManager.getConference(conferenceId)){
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "CONFERENCE:"+conferenceId);
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "CONFERENCE: "+conferenceId);
 				return false;
 			}
 		}

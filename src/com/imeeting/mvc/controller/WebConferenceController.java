@@ -64,65 +64,36 @@ public class WebConferenceController {
 	public ModelAndView arrange(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		List<ContactBean> contactList = contactDao.getContactList(user.getUserName());
+		List<ContactBean> contactList = contactDao.getContactList(user
+				.getUserName());
 		mv.addObject(WebConstants.addressbook.name(), contactList);
 		mv.setViewName("webconf/arrange");
 		return mv;
 	}
-	
-	private void sendSMSEmailNotice(String confId, String scheduleTime, JSONArray jsonArray) throws JSONException{
-		StringBuffer allPhone = new StringBuffer();
-		LinkedList<String> emailList = new LinkedList<String>();
-		for(int i=0; i< jsonArray.length(); i++){
-			JSONObject attendee = jsonArray.getJSONObject(i);
-			String phone = (String)attendee.get("phone");
-			if (null != phone && phone.length()>0){
-				allPhone.append(phone).append(",");
-			}
-			String email = (String)attendee.get("email");
-			if (null != email && email.length()>0){
-				emailList.add(email);
-			}
-		}
-		
-		String subject = "电话会议通知";
-		String content = "您在" + scheduleTime + "有电话会议，会议密码：" + confId
-		+ "，到时拨打 0551-62379997 加入会议。";
-		
-		try {
-			ContextLoader.getSMSClient().sendTextMessage(
-					allPhone.toString(), content);
-			ContextLoader.getMailSender().sendMail(emailList, subject, content);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (AddressException e) {
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@RequestMapping(value="schedule", method=RequestMethod.POST)
+
+	@RequestMapping(value = "schedule", method = RequestMethod.POST)
 	public void schedule(
 			HttpSession session,
 			HttpServletResponse response,
 			@RequestParam(value = "attendees", required = false) String attendeeList,
-			@RequestParam(value="scheduleTime", required = true) String scheduleTime )
+			@RequestParam(value = "scheduleTime", required = true) String scheduleTime)
 			throws JSONException, IOException {
-		//step 1. save conference
+		// step 1. save conference
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		String conferenceId = RandomString.genRandomNum(6);
-		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
-		
+		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
+				user.getUserId());
+
 		// step 2. save attendees
 		JSONArray jsonArray = new JSONArray(attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 			contactDao.saveJSONContact(user.getUserName(), jsonArray);
 		}
-		
-		sendSMSEmailNotice(conferenceId, scheduleTime, jsonArray);
-		
+
+		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+				jsonArray);
+
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
@@ -130,29 +101,31 @@ public class WebConferenceController {
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}
-	
-	@RequestMapping(value="scheduleNow", method=RequestMethod.POST)
-	public void scheduleNow(HttpSession session,
+
+	@RequestMapping(value = "scheduleNow", method = RequestMethod.POST)
+	public void scheduleNow(
+			HttpSession session,
 			HttpServletResponse response,
-			@RequestParam(value = "attendees", required = false) String attendeeList) 
-			throws JSONException, IOException{
-		//step 1. save conference
+			@RequestParam(value = "attendees", required = false) String attendeeList)
+			throws JSONException, IOException {
+		// step 1. save conference
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		String conferenceId = RandomString.genRandomNum(6);
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		Date now = new Date();
 		String scheduleTime = df.format(now);
-		conferenceDao.saveScheduledConference(conferenceId, scheduleTime, user.getUserName());
-		
+		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
+				user.getUserName());
+
 		// step 2. save attendees
 		JSONArray jsonArray = new JSONArray(attendeeList);
 		if (attendeeList != null && attendeeList.length() > 0) {
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 		}
-		
+
 		// save attendees to contact database.
 		contactDao.saveJSONContact(user.getUserName(), jsonArray);
-		
+
 		// step 3. create audio conference
 		ConferenceModel conference = conferenceManager.creatConference(
 				conferenceId, user.getUserName());
@@ -170,41 +143,44 @@ public class WebConferenceController {
 					"Cannot create audio conference");
 			return;
 		}
-		session.setAttribute(ConferenceConstants.conferenceId.name(), conferenceId);
-		
-		sendSMSEmailNotice(conferenceId, scheduleTime, jsonArray);
-		
+		session.setAttribute(ConferenceConstants.conferenceId.name(),
+				conferenceId);
+
+		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+				jsonArray);
+
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}
-	
-	@RequestMapping(value="ajax", method=RequestMethod.GET)
-	public ModelAndView show(HttpSession session,
-	        @RequestParam(value = "confId") String confId){
-	    ModelAndView mv = new ModelAndView();
-	    ConferenceModel conference = conferenceManager.getConference(confId);
-        mv.addObject("conference", conference);
-        mv.setViewName("webconf/conf");
-        return mv;
-	}
-	
-	@RequestMapping(value="ajax", method=RequestMethod.POST)
-	public @ResponseBody String joinByAjax(HttpSession session,
-	        @RequestParam(value = "confId") String confId) throws JSONException{
-	    JSONObject result = new JSONObject();
-        ConferenceModel conference = conferenceManager.getConference(confId);
-        if (null == conference) {
-            result.put("result", "noconference");
-        } else {
-        	result.put("result", "success");
-        }
 
-	    return result.toString();
+	@RequestMapping(value = "ajax", method = RequestMethod.GET)
+	public ModelAndView show(HttpSession session,
+			@RequestParam(value = "confId") String confId) {
+		ModelAndView mv = new ModelAndView();
+		ConferenceModel conference = conferenceManager.getConference(confId);
+		mv.addObject("conference", conference);
+		mv.setViewName("webconf/conf");
+		return mv;
 	}
-	
+
+	@RequestMapping(value = "ajax", method = RequestMethod.POST)
+	public @ResponseBody
+	String joinByAjax(HttpSession session,
+			@RequestParam(value = "confId") String confId) throws JSONException {
+		JSONObject result = new JSONObject();
+		ConferenceModel conference = conferenceManager.getConference(confId);
+		if (null == conference) {
+			result.put("result", "noconference");
+		} else {
+			result.put("result", "success");
+		}
+
+		return result.toString();
+	}
+
 	@RequestMapping(value = "/attendeeList")
 	public ModelAndView attendeeList(@RequestParam String conferenceId)
 			throws IOException {

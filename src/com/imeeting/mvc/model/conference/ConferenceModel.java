@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javapns.notification.PushNotificationPayload;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -20,7 +18,6 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel.VideoStatus;
 import com.richitec.notify.Notifier;
 
 public class ConferenceModel {
@@ -61,16 +58,13 @@ public class ConferenceModel {
 	/**
 	 * get all attendees in conference that status is not kickout.
 	 */
-	public final Collection<AttendeeModel> getAvaliableAttendees() {
-		List<AttendeeModel> result = new LinkedList<AttendeeModel>();
-		for (AttendeeModel attendee : attendeeMap.values()) {
-			if (attendee.isKickout()) {
-				continue;
-			}
-			result.add(attendee);
-		}
-		return result;
-	}
+//	public final Collection<AttendeeModel> getAvaliableAttendees() {
+//		List<AttendeeModel> result = new LinkedList<AttendeeModel>();
+//		for (AttendeeModel attendee : attendeeMap.values()) {
+//			result.add(attendee);
+//		}
+//		return result;
+//	}
 
 	public Collection<String> getAllAttendeeName() {
 		List<String> list = new LinkedList<String>();
@@ -164,13 +158,6 @@ public class ConferenceModel {
 				attendee.setOnlineStatus(OnlineStatus.online);
 			} else if (onlineStatus.equals(OnlineStatus.offline.name())) {
 				attendee.setOnlineStatus(OnlineStatus.offline);
-			}
-		}
-		if (videoStatus != null) {
-			if (videoStatus.equals(VideoStatus.on.name())) {
-				attendee.setVideoStatus(VideoStatus.on);
-			} else if (videoStatus.equals(VideoStatus.off.name())) {
-				attendee.setVideoStatus(VideoStatus.off);
 			}
 		}
 
