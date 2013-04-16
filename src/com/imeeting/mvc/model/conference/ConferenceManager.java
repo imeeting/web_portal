@@ -37,7 +37,7 @@ public class ConferenceManager {
 	private Map<String, ConferenceModel> conferenceMap = null;
 	private ConferenceDB conferenceDao;
 	private long TIME_INTERVAL = 5 * 60 * 1000;
-
+	private long LEADING_TIME = 10 * 60 * 1000;
 	public ConferenceManager() {
 		conferenceMap = new ConcurrentHashMap<String, ConferenceModel>();
 	}
@@ -158,7 +158,7 @@ public class ConferenceManager {
 						.name());
 				
 				log.info("confid: " + confId + " owner: " + owner );
-				if (Math.abs(System.currentTimeMillis() - schedTime) < TIME_INTERVAL) {
+				if (Math.abs(System.currentTimeMillis() - (schedTime - LEADING_TIME)) < TIME_INTERVAL) {
 					// open the conference
 					log.info("open conf for " + confId + "owner: " + owner + " sched time: " + new Date(schedTime).toString());
 			
