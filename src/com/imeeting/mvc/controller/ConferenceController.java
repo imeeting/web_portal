@@ -192,7 +192,7 @@ public class ConferenceController extends ExceptionController {
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
-		ret.put(ConferenceConstants.schedule_time.name(), scheduleTime);
+		ret.put(ConferenceConstants.scheduled_time.name(), scheduleTime);
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}
@@ -225,7 +225,7 @@ public class ConferenceController extends ExceptionController {
 				try {
 					String phone = attObj.getString(AttendeeConstants.phone
 							.name());
-					if (!"".equals(phone)) {
+					if (phone != null && !"".equals(phone)) {
 						AttendeeModel attendee = new AttendeeModel(phone);
 						attendee.setPhone(phone);
 						conference.addAttendee(attendee);

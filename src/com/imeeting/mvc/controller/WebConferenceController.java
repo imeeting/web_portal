@@ -97,7 +97,7 @@ public class WebConferenceController {
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
-		ret.put(ConferenceConstants.schedule_time.name(), scheduleTime);
+		ret.put(ConferenceConstants.scheduled_time.name(), scheduleTime);
 		response.setStatus(HttpServletResponse.SC_CREATED);
 		response.getWriter().print(ret.toString());
 	}

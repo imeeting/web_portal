@@ -432,4 +432,12 @@ public class ConferenceDB {
 		List<String> tokens = jdbc.queryForList(sql, String.class);
 		return tokens;
 	}
+	
+	public List<Map<String, Object>> getAllScheduledConference() {
+		log.info("getAllScheduledConference");
+		String sql = "SELECT conferenceId, UNIX_TIMESTAMP(created) AS created, " +
+				"UNIX_TIMESTAMP(scheduled_time) AS scheduled_time, status, title, owner " +
+				"FROM im_conference WHERE status = ?";
+		return jdbc.queryForList(sql, ConferenceStatus.SCHEDULE.name());
+	}
 }

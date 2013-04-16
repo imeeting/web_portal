@@ -2,8 +2,11 @@ package com.imeeting.mvc.model.conference;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,9 +21,13 @@ import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 
 import com.imeeting.constants.AttendeeConstants;
+import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.framework.ContextLoader;
+import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
+import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
+import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.notify.Notifier;
 
 public class ConferenceManager {
@@ -29,6 +36,7 @@ public class ConferenceManager {
 
 	private Map<String, ConferenceModel> conferenceMap = null;
 	private ConferenceDB conferenceDao;
+	private long TIME_INTERVAL = 5 * 60 * 1000;
 
 	public ConferenceManager() {
 		conferenceMap = new ConcurrentHashMap<String, ConferenceModel>();
@@ -135,8 +143,64 @@ public class ConferenceManager {
 	 * 向donkey发送请求开启一个会议，并把会议状态置为OPEN。
 	 */
 	public void checkAllScheduledConference() {
-		//
 		log.info("checkAllScheduledConference");
+		try {
+			List<Map<String, Object>> confs = conferenceDao
+					.getAllScheduledConference();
+			log.info("confs: " + confs);
+			for (Map<String, Object> conf : confs) {
+				log.info("conf: " + conf);
+				String confId = (String) conf
+						.get(ConferenceConstants.conferenceId.name());
+				Long schedTime = ((Long) conf
+						.get(ConferenceConstants.scheduled_time.name())) * 1000;
+				String owner = (String) conf.get(ConferenceConstants.owner
+						.name());
+				
+				log.info("confid: " + confId + " owner: " + owner );
+				if (Math.abs(System.currentTimeMillis() - schedTime) < TIME_INTERVAL) {
+					// open the conference
+					log.info("open conf for " + confId + "owner: " + owner + " sched time: " + new Date(schedTime).toString());
+			
+					ConferenceModel conference = creatConference(confId, owner);
+
+					List<String> confIdList = new ArrayList<String>();
+					confIdList.add(confId);
+					List<AttendeeBean> attendees = conferenceDao
+							.getConferenceAttendees(confIdList);
+					for (AttendeeBean att : attendees) {
+						if (att.getPhone() != null && !"".equals(att.getPhone())) {
+							AttendeeModel attModel = new AttendeeModel(
+									att.getPhone());
+							attModel.setPhone(att.getPhone());
+							attModel.setNickname(att.getNickName());
+							conference.addAttendee(attModel);
+						}
+					}
+					conference.setAudioConfId(confId);
+					Integer vosPhoneNumber = ContextLoader.getUserDAO()
+							.getVOSPhoneNumberById(owner);
+					DonkeyHttpResponse donkeyResp = ContextLoader
+							.getDonkeyClient().createNoControlConference(
+									confId, vosPhoneNumber.toString(),
+									conference.getAllAttendeeName(), confId);
+					if (null == donkeyResp || !donkeyResp.isAccepted()) {
+						log.info("Create audio conference error : "
+								+ (null == donkeyResp ? "NULL Response"
+										: donkeyResp.getStatusCode()));
+						removeConference(confId);
+					} else {
+						log.info("conf created! set status open");
+						conferenceDao.updateStatus(confId,
+								ConferenceStatus.OPEN);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void sendSMSEmailNotice(String confId, String scheduleTime,

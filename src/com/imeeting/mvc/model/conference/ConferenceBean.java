@@ -78,7 +78,7 @@ public class ConferenceBean {
 		try {
 			obj.put(ConferenceConstants.conferenceId.name(), id);
 			obj.put(ConferenceConstants.created_time.name(), createdTimeStamp);
-			obj.put(ConferenceConstants.schedule_time.name(), scheduledTimeStamp);
+			obj.put(ConferenceConstants.scheduled_time.name(), scheduledTimeStamp);
 			obj.put(ConferenceConstants.title.name(), title);
 			obj.put(ConferenceConstants.status.name(), status);
 			JSONArray attendeeArray = new JSONArray();
