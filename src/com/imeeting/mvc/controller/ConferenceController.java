@@ -410,7 +410,11 @@ public class ConferenceController extends ExceptionController {
 			confIdList.add(conferenceId);
 			List<AttendeeBean> attendees = conferenceDao
 					.getConferenceAttendees(confIdList);
-
+			if (attendees != null) {
+				for (AttendeeBean attendee : attendees) {
+					ret.put(attendee.toJSONObject());
+				}
+			}
 		}
 
 		response.getWriter().print(ret.toString());

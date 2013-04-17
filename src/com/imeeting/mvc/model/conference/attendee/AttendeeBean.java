@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.imeeting.constants.AttendeeConstants;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 
 public class AttendeeBean {
 
@@ -60,6 +61,7 @@ public class AttendeeBean {
 		try {
 			obj.put(AttendeeConstants.nickname.name(), nickName);
 			obj.put(AttendeeConstants.phone.name(), phone);
+			obj.put(AttendeeConstants.online_status.name(), OnlineStatus.offline.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
