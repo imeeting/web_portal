@@ -17,7 +17,6 @@ import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.attendee.AttendeeAction;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.richitec.notify.Notifier;
 
 public class ConferenceModel {
@@ -69,7 +68,7 @@ public class ConferenceModel {
 	public Collection<String> getAllAttendeeName() {
 		List<String> list = new LinkedList<String>();
 		for (AttendeeModel a : getAllAttendees()) {
-			list.add(a.getUsername());
+			list.add(a.getPhone());
 		}
 		return list;
 	}
@@ -87,14 +86,14 @@ public class ConferenceModel {
 	}
 
 	public void addAttendee(AttendeeModel attendee) {
-		attendeeMap.put(attendee.getUsername(), attendee);
+		attendeeMap.put(attendee.getPhone(), attendee);
 	}
 
 	public List<String> getTokensFromAttendees() {
 		StringBuffer userNames = new StringBuffer();
 		for (AttendeeModel ab : this.attendeeMap.values()) {
-			if (!ab.getUsername().equals(ownerName)) {
-				userNames.append(ab.getUsername()).append(',');
+			if (!ab.getPhone().equals(ownerName)) {
+				userNames.append(ab.getPhone()).append(',');
 			}
 		}
 		if (userNames.length() > 0
@@ -147,23 +146,6 @@ public class ConferenceModel {
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
 	}
 
-	public void updateAttendeeStatus(String username, String onlineStatus,
-			String videoStatus) {
-		AttendeeModel attendee = getAttendee(username);
-		if (attendee == null) {
-			return;
-		}
-		if (onlineStatus != null) {
-			if (onlineStatus.equals(OnlineStatus.online.name())) {
-				attendee.setOnlineStatus(OnlineStatus.online);
-			} else if (onlineStatus.equals(OnlineStatus.offline.name())) {
-				attendee.setOnlineStatus(OnlineStatus.offline);
-			}
-		}
-
-		broadcastAttendeeStatus(attendee);
-	}
-
 	public void sendSMSToAttendees(JSONArray attendeesJsonArray) {
 		if (attendeesJsonArray != null) {
 			StringBuffer numberList = new StringBuffer();
@@ -193,7 +175,7 @@ public class ConferenceModel {
 		if (attendees.size() > 0) {
 			StringBuffer attendeeList = new StringBuffer();
 			for (AttendeeModel attendee : attendees) {
-				attendeeList.append(attendee.getUsername()).append(',');
+				attendeeList.append(attendee.getPhone()).append(',');
 			}
 			if (attendeeList.toString().endsWith(",")) {
 				attendeeList.deleteCharAt(attendeeList.length() - 1);
@@ -204,7 +186,7 @@ public class ConferenceModel {
 					String userName = (String) user.get(AttendeeConstants.username.name());
 					String nickname = (String) user.get(AttendeeConstants.nickname.name());
 					for (AttendeeModel attendee : attendees) {
-						if (attendee.getUsername().equals(userName)) {
+						if (attendee.getPhone().equals(userName)) {
 							attendee.setNickname(nickname);
 							break;
 						}

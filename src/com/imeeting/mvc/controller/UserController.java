@@ -57,31 +57,6 @@ public class UserController extends ExceptionController {
 		smsClient = ContextLoader.getSMSClient();
 	}
 
-	@Deprecated
-	@RequestMapping("/loginold")
-	public void loginold(
-			@RequestParam(value = "loginName") String loginName,
-			@RequestParam(value = "loginPwd") String loginPwd,
-			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
-			@RequestParam(value = "model", required = false, defaultValue = "") String model,
-			@RequestParam(value = "release", required = false, defaultValue = "") String release,
-			@RequestParam(value = "sdk", required = false, defaultValue = "") String sdk,
-			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
-			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
-			HttpServletResponse response, HttpSession session) throws Exception {
-		JSONObject jsonUser = userDao.login(loginName, loginPwd);
-		log.info("result: " + jsonUser.toString());
-		String result = jsonUser.getString("result");
-		if (result != null && result.equals("0")) {
-			// login success, add UserBean to Session
-			UserBean userBean = new UserBean();
-			userBean.setUserName(loginName);
-			userBean.setPassword(loginPwd);
-			session.setAttribute(UserBean.SESSION_BEAN, userBean);
-		}
-		response.getWriter().print(jsonUser.toString());
-	}
-
 	@RequestMapping("/login")
 	public void login(
 			@RequestParam(value = "loginName") String loginName,
@@ -231,49 +206,6 @@ public class UserController extends ExceptionController {
 
 		String result = userDao.regUser(phoneNumber, "", nickname, password,
 				confirmPassword);
-		if ("0".equals(result)) { // insert success
-			Map<String, Object> user = userDao.getUser(phoneNumber);
-			String userId = (String) user.get("id");
-			Integer vosphone = (Integer) user.get("vosphone");
-			result = addUserToVOS(userId, vosphone.toString());
-
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
-				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(userId,
-						UserAccountStatus.vos_suite_error);
-			}
-		}
-
-		// if ("0".equals(result)) {
-		// Double money = config.getSignupGift();
-		// if (money != null && money > 0) {
-		// VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber,
-		// money);
-		// if (depositeResp.getHttpStatusCode() != 200
-		// || !depositeResp.isOperationSuccess()) {
-		// log.error("\nCannot deposite gift for user : "
-		// + phoneNumber + "\nVOS Http Response : "
-		// + depositeResp.getHttpStatusCode()
-		// + "\nVOS Status Code : "
-		// + depositeResp.getVOSStatusCode()
-		// + "\nVOS Response Info ："
-		// + depositeResp.getVOSResponseInfo());
-		// }
-		// }
-		// }
 
 		if ("0".equals(result)) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_OK);
@@ -336,6 +268,16 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
+	/**
+	 * used to bind phone number
+	 * @param password
+	 * @param password1
+	 * @param deviceId
+	 * @param nickname
+	 * @param response
+	 * @param session
+	 * @throws Exception
+	 */
 	@RequestMapping("/regUser")
 	public void regUser(
 			@RequestParam(value = "password") String password,
@@ -357,64 +299,6 @@ public class UserController extends ExceptionController {
 			result = userDao.regUser(phone, deviceId, nickname, password,
 					password1);
 		}
-
-		if ("0".equals(result)) { // insert success
-			Map<String, Object> user = userDao.getUser(phone);
-			String userId = (String) user.get("id");
-			Integer vosphone = (Integer) user.get("vosphone");
-			String status = (String) user.get("status");
-
-			if (UserAccountStatus.success.name().equals(status)) {
-				vosClient.setAccountName(userId, phone);
-			} else {
-				result = addUserToVOS(userId, vosphone.toString());
-				if ("0".equals(result)) {
-					int affectedRows = userDao.updateUserAccountStatus(userId,
-							UserAccountStatus.success);
-					if (affectedRows > 0) {
-						result = "0";
-					} else {
-						result = "1";
-					}
-				} else if ("2001".equals(result)) {
-					userDao.updateUserAccountStatus(userId,
-							UserAccountStatus.vos_account_error);
-				} else if ("2002".equals(result)) {
-					userDao.updateUserAccountStatus(userId,
-							UserAccountStatus.vos_phone_error);
-				} else if ("2003".equals(result)) {
-					userDao.updateUserAccountStatus(userId,
-							UserAccountStatus.vos_suite_error);
-				}
-			}
-		}
-
-		// if ("0".equals(result)) {
-		// Double money = config.getSignupGift();
-		// if (money != null && money > 0) {
-		// VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
-		// if (depositeResp.getHttpStatusCode() != 200
-		// || !depositeResp.isOperationSuccess()) {
-		// log.error("\nCannot deposite gift for user : " + phone
-		// + "\nVOS Http Response : "
-		// + depositeResp.getHttpStatusCode()
-		// + "\nVOS Status Code : "
-		// + depositeResp.getVOSStatusCode()
-		// + "\nVOS Response Info ："
-		// + depositeResp.getVOSResponseInfo());
-		// } else {
-		// try {
-		// smsClient
-		// .sendTextMessage(
-		// phone,
-		// "欢迎您成为智会用户，"
-		// + "您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
-		// } catch (Exception e) {
-		// log.error("Cannot send SMS to new user: " + phone);
-		// }
-		// }
-		// }
-		// }
 
 		JSONObject jsonUser = new JSONObject();
 		try {

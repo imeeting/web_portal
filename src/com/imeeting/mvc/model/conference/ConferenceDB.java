@@ -68,7 +68,7 @@ public class ConferenceDB {
 		String sql = "INSERT INTO im_attendee(conferenceId, username, nickname, phone, email) VALUES(?,?,?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeModel attendee : attendeeCollection) {
-			params.add(new Object[] { conferenceId, attendee.getUsername(), attendee.getNickname(), attendee.getPhone(), "" });
+			params.add(new Object[] { conferenceId, attendee.getPhone(), attendee.getNickname(), attendee.getPhone(), "" });
 		}
 		jdbc.batchUpdate(sql, params);
 	}
@@ -99,7 +99,7 @@ public class ConferenceDB {
 	
 	public void removeAttendee(String conferenceId, AttendeeModel attendee) {
 		String sql = "DELETE FROM im_attendee WHERE conferenceId = ? AND username = ?";
-		jdbc.update(sql, conferenceId, attendee.getUsername());
+		jdbc.update(sql, conferenceId, attendee.getPhone());
 	}
 
 	public int insert(String conferenceId) throws DataAccessException {
