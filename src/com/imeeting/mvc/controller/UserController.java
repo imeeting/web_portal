@@ -28,8 +28,6 @@ import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
-import com.richitec.vos.client.VOSClient;
-import com.richitec.vos.client.VOSHttpResponse;
 
 @Controller
 @RequestMapping("/user")
@@ -38,7 +36,6 @@ public class UserController extends ExceptionController {
 	private static Log log = LogFactory.getLog(UserController.class);
 
 	private UserDAO userDao;
-	private VOSClient vosClient;
 	private SMSClient smsClient;
 	private Configuration config;
 
@@ -52,7 +49,6 @@ public class UserController extends ExceptionController {
 	@PostConstruct
 	public void init() {
 		userDao = ContextLoader.getUserDAO();
-		vosClient = ContextLoader.getVOSClient();
 		config = ContextLoader.getConfiguration();
 		smsClient = ContextLoader.getSMSClient();
 	}
@@ -270,6 +266,7 @@ public class UserController extends ExceptionController {
 
 	/**
 	 * used to bind phone number
+	 * 
 	 * @param password
 	 * @param password1
 	 * @param deviceId
@@ -307,50 +304,6 @@ public class UserController extends ExceptionController {
 			e.printStackTrace();
 		}
 		response.getWriter().print(jsonUser.toString());
-	}
-
-	private String addUserToVOS(String userId, String vosPhoneNumber) {
-		// create new account in VOS
-		VOSHttpResponse addAccountResp = vosClient.addAccount(userId);
-		if (addAccountResp.getHttpStatusCode() != 200
-				|| !addAccountResp.isOperationSuccess()) {
-			log.error("\nCannot create VOS accont for user : " + userId
-					+ "\nVOS Http Response : "
-					+ addAccountResp.getHttpStatusCode()
-					+ "\nVOS Status Code : "
-					+ addAccountResp.getVOSStatusCode()
-					+ "\nVOS Response Info ："
-					+ addAccountResp.getVOSResponseInfo());
-			return "2001";
-		}
-
-		// create new phone in VOS
-		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(userId,
-				vosPhoneNumber);
-		if (addPhoneResp.getHttpStatusCode() != 200
-				|| !addPhoneResp.isOperationSuccess()) {
-			log.error("\nCannot create VOS phone <" + vosPhoneNumber
-					+ "> for user : " + userId + "\nVOS Http Response : "
-					+ addPhoneResp.getHttpStatusCode() + "\nVOS Status Code : "
-					+ addPhoneResp.getVOSStatusCode() + "\nVOS Response Info ："
-					+ addPhoneResp.getVOSResponseInfo());
-			return "2002";
-		}
-
-		// add suite to account
-		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(userId,
-				config.getSuite0Id());
-		if (addSuiteResp.getHttpStatusCode() != 200
-				|| !addSuiteResp.isOperationSuccess()) {
-			log.error("\nCannot add VOS suite <" + config.getSuite0Id()
-					+ "> for user : " + userId + "\nVOS Http Response : "
-					+ addSuiteResp.getHttpStatusCode() + "\nVOS Status Code : "
-					+ addSuiteResp.getVOSStatusCode() + "\nVOS Response Info ："
-					+ addSuiteResp.getVOSResponseInfo());
-			return "2003";
-		}
-
-		return "0";
 	}
 
 	/**
@@ -427,30 +380,7 @@ public class UserController extends ExceptionController {
 		if (user != null) {
 			String id = (String) user.get("id");
 			String userKey = (String) user.get("userkey");
-			Integer vosphone = (Integer) user.get("vosphone");
-			String status = (String) user.get("status");
 			String result = "0";
-			if (!UserAccountStatus.success.name().equals(status)) {
-				result = addUserToVOS(id, vosphone.toString());
-				if ("0".equals(result)) {
-					try {
-						userDao.updateUserAccountStatus(id,
-								UserAccountStatus.success);
-						result = "0";
-					} catch (Exception e) {
-						result = "1";
-					}
-				} else if ("2001".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_account_error);
-				} else if ("2002".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_phone_error);
-				} else if ("2003".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_suite_error);
-				}
-			}
 			ret.put("userId", id);
 			ret.put("userkey", userKey);
 			ret.put("result", result);
@@ -461,32 +391,9 @@ public class UserController extends ExceptionController {
 				Map<String, Object> userBean = userDao
 						.getUserByDeviceId(deviceId);
 				String id = (String) userBean.get("id");
-				Integer vosPhone = (Integer) userBean.get("vosphone");
-				result = addUserToVOS(id, vosPhone.toString());
 
-				if ("0".equals(result)) {
-					int affectedRows = userDao.updateUserAccountStatus(id,
-							UserAccountStatus.success);
-					if (affectedRows > 0) {
-						result = "0";
-					} else {
-						result = "1";
-					}
-				} else if ("2001".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_account_error);
-				} else if ("2002".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_phone_error);
-				} else if ("2003".equals(result)) {
-					userDao.updateUserAccountStatus(id,
-							UserAccountStatus.vos_suite_error);
-				}
-
-				if ("0".equals(result)) {
-					ret.put("userId", id);
-					ret.put("userkey", userBean.get("userkey"));
-				}
+				ret.put("userId", id);
+				ret.put("userkey", userBean.get("userkey"));
 
 				userDao.recordDeviceInfo(id, brand, model, release, sdk, width,
 						height);

@@ -18,18 +18,6 @@
 		<property name="uploadDir">
 			<value>${upload_tmp_dir}</value>
 		</property>
-		<property name="suite0Id">
-			<value>${vos_suite0_id}</value>
-		</property>
-		<property name="suite5Id">
-			<value>${vos_suite5_id}</value>
-		</property>
-		<property name="suite10Id">
-			<value>${vos_suite10_id}</value>
-		</property>
-        <property name="signupGift">
-            <value>${vos_signup_gift}</value>
-        </property>		
 		<property name="appDonwloadPageUrl">
 		    <value>${app_download_page_url}</value>
 		</property>
@@ -63,18 +51,6 @@
 		<property name="appKey">
 			<value>${donkey_app_key}</value>
 		</property>		
-	</bean>
-	
-	<bean id="vos_client" class="com.richitec.vos.client.VOSClient">
-		<property name="baseUri">
-			<value>${vos_base_uri}</value>
-		</property>
-		<property name="loginName">
-			<value>${vos_loginName}</value>
-		</property>
-		<property name="loginPassword">
-			<value>${vos_loginPassword}</value>
-		</property>
 	</bean>
 	
 	<bean id="notifier" class="com.richitec.notify.Notifier">
@@ -132,10 +108,6 @@
 	</bean>	
 	
 	<bean id="user_dao" class="com.richitec.ucenter.model.UserDAO">
-		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
-	</bean>
-	
-	<bean id="charge_dao" class="com.imeeting.mvc.model.charge.ChargeDAO">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
 	

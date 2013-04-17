@@ -158,35 +158,6 @@ public class ConferenceController extends ExceptionController {
 	}
 
 	/**
-	 * destroy conference
-	 * 
-	 * @deprecated
-	 * @param response
-	 * @param userName
-	 * @param conferenceId
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	@RequestMapping(value = "/destroy")
-	public void destroy(HttpServletResponse response,
-			@RequestParam(value = "username") String userName,
-			@RequestParam String conferenceId) throws IOException {
-		log.debug("destroy conference");
-		ConferenceModel conference = conferenceManager
-				.getConference(conferenceId);
-
-		if (!userName.equals(conference.getOwnerName())) {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN,
-					"only owner can destory conference");
-			return;
-		}
-
-		conferenceManager.closeConference(conferenceId);
-		conferenceManager.notifyConferenceDestoryed(conferenceId);
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-
-	/**
 	 * Get all conferences by user name.
 	 * 
 	 * @param response
