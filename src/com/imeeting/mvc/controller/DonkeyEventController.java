@@ -136,7 +136,7 @@ public class DonkeyEventController {
 			String nickname = userDao.getNickname(attendeeName);
 			attendee = new AttendeeModel(attendeeName);
 			attendee.setNickname(nickname);
-			
+			attendee.setPhone(attendeeName);
 			conference.addAttendee(attendee);
 			
 			attendee.statusCallEstablished();
