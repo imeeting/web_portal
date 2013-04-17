@@ -175,15 +175,15 @@ public class UserDAO {
 		log.info("record device info - user id:  " + userId + " brand: "
 				+ brand);
 
-		String sql = "SELECT count(userId) FROM device_info WHERE userId = ?";
+		String sql = "SELECT count(userId) FROM im_device_info WHERE userId = ?";
 		int count = jdbc.queryForInt(sql, userId);
 		if (count > 0) {
 			jdbc.update(
-					"UPDATE device_info SET brand=?, model=?, "
+					"UPDATE im_device_info SET brand=?, model=?, "
 							+ "release_ver=?, sdk=?, width=?, height=? WHERE userId = ?",
 					brand, model, release, sdk, width, height, userId);
 		} else {
-			jdbc.update("INSERT INTO device_info VALUE(?,?,?,?,?,?,?)",
+			jdbc.update("INSERT INTO im_device_info VALUE(?,?,?,?,?,?,?)",
 					userId, brand, model, release, sdk, width, height);
 		}
 	}
