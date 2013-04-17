@@ -151,21 +151,6 @@
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
     
-    <bean id="heartbeat_task" 
-          class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
-         <property name="targetObject" ref="conference_manager"></property>
-         <property name="targetMethod">
-           <value>checkAllConfAttendeeHeartBeat</value>
-         </property>
-    </bean>
-    
-    <bean id="heartbeat_timer"
-          class="org.springframework.scheduling.timer.ScheduledTimerTask">
-         <property name="delay"><value>30000</value></property>
-         <property name="period"><value>10000</value></property>
-         <property name="timerTask"><ref bean="heartbeat_task"/></property>
-    </bean>
-    
     <bean id="scheduled_conf_task" 
           class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
          <property name="targetObject" ref="conference_manager"></property>
@@ -176,7 +161,7 @@
     
     <bean id="scheduled_conf_timer"
           class="org.springframework.scheduling.timer.ScheduledTimerTask">
-         <property name="delay"><value>30000</value></property>
+         <property name="delay"><value>5000</value></property>
          <property name="period"><value>300000</value></property>
          <property name="timerTask"><ref bean="scheduled_conf_task"/></property>
     </bean>    

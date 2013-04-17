@@ -123,6 +123,21 @@ public class VOSClient {
 		return execute(post);
 	}
 	
+	public VOSHttpResponse setAccountName(String account, String name) {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_account, account));
+		params.add(new BasicNameValuePair(P_name, name));
+		params.add(new BasicNameValuePair(P_operationType, "1"));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "setcustomer.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
+	}
+	
 	/**
 	 * 为账户设置套餐
 	 * @param account

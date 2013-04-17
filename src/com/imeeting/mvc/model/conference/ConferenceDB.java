@@ -50,6 +50,7 @@ public class ConferenceDB {
 		jdbc.update(sql, confId, ConferenceStatus.SCHEDULE.name(), scheduleTime, title, owner);
 	}
 	
+	@Deprecated
 	public void saveConference(ConferenceModel conference, String owner)
 			throws DataAccessException {
 		String sql = "INSERT INTO im_conference (conferenceId, title, owner) " +
@@ -58,16 +59,16 @@ public class ConferenceDB {
 
 		Collection<AttendeeModel> attendeeCollection = conference
 				.getAllAttendees();
-		saveAttendeeBeans(conference.getConferenceId(), attendeeCollection);
+		saveAttendees(conference.getConferenceId(), attendeeCollection);
 	}
 
-	public void saveAttendeeBeans(String conferenceId,
+	public void saveAttendees(String conferenceId,
 			Collection<AttendeeModel> attendeeCollection)
 			throws DataAccessException {
-		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES(?,?,?,?)";
+		String sql = "INSERT INTO im_attendee(conferenceId, username, nickname, phone, email) VALUES(?,?,?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (AttendeeModel attendee : attendeeCollection) {
-			params.add(new Object[] { conferenceId, attendee.getNickname() });
+			params.add(new Object[] { conferenceId, attendee.getUsername(), attendee.getNickname(), attendee.getPhone(), "" });
 		}
 		jdbc.batchUpdate(sql, params);
 	}
@@ -75,21 +76,22 @@ public class ConferenceDB {
 	public void saveAttendee(String conferenceId, AttendeeModel attendee) {
 		Collection<AttendeeModel> attendees = new ArrayList<AttendeeModel>();
 		attendees.add(attendee);
-		saveAttendeeBeans(conferenceId, attendees);
+		saveAttendees(conferenceId, attendees);
 	}
 	
 	public void saveJSONAttendee(String confId, JSONArray jsonArray) throws JSONException{
 		log.info(jsonArray);
-		String sql = "INSERT INTO im_attendee(conferenceId, nickname, phone, email) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO im_attendee(conferenceId, username, nickname, phone, email) VALUES (?,?,?,?,?)";
 		List<Object[]> params = new ArrayList<Object[]>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject attendee = jsonArray.getJSONObject(i);
 			log.info(attendee);
 			params.add(new Object[] {
 					confId,
-					attendee.getString("nickname"), 
-					attendee.getString("phone"),
-					attendee.getString("email")
+					attendee.getString(AttendeeConstants.phone.name()),
+					attendee.getString(AttendeeConstants.nickname.name()), 
+					attendee.getString(AttendeeConstants.phone.name()),
+					attendee.getString(AttendeeConstants.email.name())
 				});
 		}
 		jdbc.batchUpdate(sql, params);
@@ -120,16 +122,16 @@ public class ConferenceDB {
 	/**
 	 * 获取所有的会议, MyConferenceController 显示会议总数和会议列表分页使用。
 	 * 
-	 * @param username
+	 * @param owner
 	 * @return
 	 */
-	public int getAllConferenceCount(String username) {
+	public int getAllConferenceCount(String owner) {
 //		String sql = "SELECT COUNT(c.conferenceId) FROM im_conference AS c "
 //				+ "INNER JOIN im_attendee AS a ON c.conferenceId=a.conferenceId "
 //				+ "AND a.username=? ORDER BY c.created DESC";
 		String sql = "SELECT COUNT(conferenceId) FROM im_conference " +
-				"WHERE owner = ? ORDER BY scheduled_time DESC";
-		return jdbc.queryForInt(sql, username);
+				"WHERE owner = ? AND status IN ('OPEN', 'SCHEDULE') ORDER BY scheduled_time DESC";
+		return jdbc.queryForInt(sql, owner);
 	}
 
 	/**
@@ -139,6 +141,7 @@ public class ConferenceDB {
 	 * @return
 	 * @throws DataAccessException
 	 */
+	@Deprecated
 	public int getConferenceTotalCount(String username)
 			throws DataAccessException {
 		// query the total count of conference list related to username
@@ -152,12 +155,12 @@ public class ConferenceDB {
 	/**
 	 * Web页面显示会议列表需要使用该函数获取会议数据。
 	 * 
-	 * @param userName
+	 * @param owner
 	 * @param offset
 	 * @param pageSize
 	 * @return
 	 */
-	public List<ConferenceBean> getConferenceList(String userName, int offset,
+	public List<ConferenceBean> getConferenceList(String owner, int offset,
 			int pageSize) {
 //		String sql = "SELECT c.conferenceId AS id, UNIX_TIMESTAMP(c.created) AS created, c.status, c.title "
 //				+ "FROM im_conference AS c INNER JOIN im_attendee AS a "
@@ -166,11 +169,11 @@ public class ConferenceDB {
 		
 		String sql = "SELECT conferenceId AS id, UNIX_TIMESTAMP(created) AS created, " +
 				"UNIX_TIMESTAMP(scheduled_time) AS scheduled_time, status, title " +
-				"FROM im_conference WHERE owner = ? ORDER BY scheduled_time DESC LIMIT ?, ?";
+				"FROM im_conference WHERE owner = ? AND status IN ('OPEN', 'SCHEDULE') ORDER BY scheduled_time DESC LIMIT ?, ?";
 
 		int startIndex = (offset - 1) * pageSize;
 		List<Map<String, Object>> confResultList = jdbc.queryForList(sql,
-				userName, startIndex, pageSize);
+				owner, startIndex, pageSize);
 		ArrayList<ConferenceBean> beanList = new ArrayList<ConferenceBean>();
 		for (Map<String, Object> c : confResultList) {
 			ConferenceBean bean = new ConferenceBean();
@@ -178,11 +181,13 @@ public class ConferenceDB {
 			bean.setTitle((String) c.get("title"));
 			bean.setCreatedTimeStamp((Long) c.get("created") * 1000);
 			bean.setScheduledTimeStamp((Long) c.get("scheduled_time") * 1000);
+			bean.setStatus((String) c.get("status"));
 			beanList.add(bean);
 		}
 		return beanList;
 	}
 
+	@Deprecated
 	public JSONArray getConferenceWithAttendeesList(String userName,
 			int offset, int pageSize) throws DataAccessException {
 		// query conference list related to username
@@ -361,6 +366,7 @@ public class ConferenceDB {
 		return jdbc.update(sql, UserConfStatus.VISIABLE.name(), conferenceId);
 	}
 
+	@Deprecated
 	public int hideConference(String conferenceId, String userName)
 			throws DataAccessException {
 		String sql = "UPDATE im_attendee SET status = ? WHERE conferenceId = ? AND username = ?";
@@ -425,5 +431,13 @@ public class ConferenceDB {
 				+ userNames;
 		List<String> tokens = jdbc.queryForList(sql, String.class);
 		return tokens;
+	}
+	
+	public List<Map<String, Object>> getAllScheduledConference() {
+		log.info("getAllScheduledConference");
+		String sql = "SELECT conferenceId, UNIX_TIMESTAMP(created) AS created, " +
+				"UNIX_TIMESTAMP(scheduled_time) AS scheduled_time, status, title, owner " +
+				"FROM im_conference WHERE status = ?";
+		return jdbc.queryForList(sql, ConferenceStatus.SCHEDULE.name());
 	}
 }

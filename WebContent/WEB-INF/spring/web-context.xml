@@ -34,8 +34,6 @@
 			<bean class="com.imeeting.mvc.UserInterceptor" />
 		</mvc:interceptor>	
 		<mvc:interceptor>
-			<mvc:mapping path="/conference/attendeeList"/>
-			<mvc:mapping path="/conference/invite"/>
 			<mvc:mapping path="/conference/kickout"/>
 			<mvc:mapping path="/conference/unjoin"/>
 			<mvc:mapping path="/conference/updateAttendeeStatus"/>
@@ -52,6 +50,8 @@
 			<mvc:mapping path="/conference/list"/>
 			<mvc:mapping path="/conference/conflist"/>
 			<mvc:mapping path="/conference/create"/>
+			<mvc:mapping path="/conference/schedule"/>
+			<mvc:mapping path="/conference/scheduleNow"/>
 			<mvc:mapping path="/conference/attendeeList"/>
 			<mvc:mapping path="/conference/invite"/>
 			<mvc:mapping path="/conference/kickout"/>

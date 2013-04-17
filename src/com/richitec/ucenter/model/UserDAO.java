@@ -64,23 +64,43 @@ public class UserDAO {
 	/**
 	 * 注册
 	 * 
-	 * @param session
-	 * @param phone
-	 * @param password
-	 * @param password1
-	 * @param code
 	 * @return
 	 */
-	public String regUser(String phone, String nickname, String password,
-			String password1) {
-		String result = checkRegisterUser(phone, password, password1);
+	public String regUser(String userName, String deviceId, String nickname,
+			String password, String password1) {
+		String result = checkRegisterUser(userName, password, password1);
 		if (result.equals("0")) {
-			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey, nickname) VALUES (?,?,?,?)";
-			Object[] params = new Object[] { Long.parseLong(phone),
-					MD5Util.md5(password), userkey, nickname };
-			int resultCount = jdbc.update(sql, params);
-			result = resultCount > 0 ? "0" : "1001";
+			Map<String, Object> user = null;
+			if (!"".equals(deviceId)) {
+				user = getUserByDeviceId(deviceId);
+				if (user != null) {
+					String id = (String) user.get("id");
+					String sql = "UPDATE im_user SET username = ?, password = ?, nickname = ? WHERE id = ?";
+					try {
+						jdbc.update(sql, userName, MD5Util.md5(password),
+								nickname, id);
+						result = "0";
+					} catch (Exception e) {
+						log.info(e.getMessage());
+						result = "1001";
+					}
+				}
+			}
+
+			if (user == null) {
+				String id = RandomString.genRandomChars(20);
+				String userkey = MD5Util.md5(userName + password);
+				String sql = "INSERT INTO im_user(id, username, deviceId, password, userkey, nickname) VALUES (?,?,?,?,?,?)";
+				Object[] params = new Object[] { id, userName, deviceId,
+						MD5Util.md5(password), userkey, nickname };
+				try {
+					jdbc.update(sql, params);
+					result = "0";
+				} catch (Exception e) {
+					log.info(e.getMessage());
+					result = "1";
+				}
+			}
 		}
 		return result;
 	}
@@ -121,7 +141,7 @@ public class UserDAO {
 
 	public UserBean getUserBean(String loginName, final String loginPwd)
 			throws DataAccessException {
-		String sql = "SELECT userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
+		String sql = "SELECT id, userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
 		Object[] params = new Object[] { loginName, loginPwd,
 				UserAccountStatus.success.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
@@ -129,7 +149,10 @@ public class UserDAO {
 			public UserBean mapRow(ResultSet rs, int rowCount)
 					throws SQLException {
 				UserBean user = new UserBean();
+				user.setUserId(rs.getString("id"));
+				user.setUserName(rs.getString("username"));
 				user.setNickName(rs.getString("nickname"));
+				user.setPassword(rs.getString("password"));
 				user.setUserKey(rs.getString("userkey"));
 				return user;
 			}
@@ -139,7 +162,7 @@ public class UserDAO {
 	/**
 	 * record the device info of login user
 	 * 
-	 * @param username
+	 * @param userId
 	 * @param brand
 	 * @param model
 	 * @param release
@@ -147,21 +170,21 @@ public class UserDAO {
 	 * @param width
 	 * @param height
 	 */
-	public void recodeDeviceInfo(String username, String brand, String model,
+	public void recordDeviceInfo(String userId, String brand, String model,
 			String release, String sdk, String width, String height) {
-		log.info("record device info - username:  " + username + " brand: "
+		log.info("record device info - user id:  " + userId + " brand: "
 				+ brand);
 
-		String sql = "SELECT count(username) FROM fy_device_info WHERE username = ?";
-		int count = jdbc.queryForInt(sql, username);
+		String sql = "SELECT count(userId) FROM device_info WHERE userId = ?";
+		int count = jdbc.queryForInt(sql, userId);
 		if (count > 0) {
 			jdbc.update(
-					"UPDATE fy_device_info SET brand=?, model=?, "
-							+ "release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
-					brand, model, release, sdk, width, height, username);
+					"UPDATE device_info SET brand=?, model=?, "
+							+ "release_ver=?, sdk=?, width=?, height=? WHERE userId = ?",
+					brand, model, release, sdk, width, height, userId);
 		} else {
-			jdbc.update("INSERT INTO fy_device_info VALUE(?,?,?,?,?,?,?)",
-					username, brand, model, release, sdk, width, height);
+			jdbc.update("INSERT INTO device_info VALUE(?,?,?,?,?,?,?)",
+					userId, brand, model, release, sdk, width, height);
 		}
 	}
 
@@ -245,12 +268,12 @@ public class UserDAO {
 	/**
 	 * 获得userkey
 	 * 
-	 * @param phone
+	 * @param userId
 	 * @return
 	 */
-	public String getUserKey(String phone) {
-		String sql = "SELECT userkey FROM im_user WHERE username = ?";
-		Object[] params = new Object[] { phone };
+	public String getUserKey(String userId) {
+		String sql = "SELECT userkey FROM im_user WHERE id = ?";
+		Object[] params = new Object[] { userId };
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
@@ -259,7 +282,13 @@ public class UserDAO {
 		Object[] params = new Object[] { username };
 		return jdbc.queryForInt(sql, params);
 	}
-
+	
+	public int getVOSPhoneNumberById(String userId) {
+		String sql = "SELECT vosphone FROM im_user WHERE id = ?";
+		Object[] params = new Object[] { userId };
+		return jdbc.queryForInt(sql, params);
+	}
+	
 	public String saveToken(String userName, String token) {
 		String retCode = "0";
 		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
@@ -279,9 +308,9 @@ public class UserDAO {
 		return jdbc.update(sql, md5Password, userkey, userName);
 	}
 
-	public int updateUserAccountStatus(String userName, UserAccountStatus status) {
-		String sql = "UPDATE im_user SET status = ? WHERE username = ?";
-		return jdbc.update(sql, status.name(), userName);
+	public int updateUserAccountStatus(String userId, UserAccountStatus status) {
+		String sql = "UPDATE im_user SET status = ? WHERE id = ?";
+		return jdbc.update(sql, status.name(), userId);
 	}
 
 	/**
@@ -313,10 +342,44 @@ public class UserDAO {
 		String sql = "UPDATE im_user SET nickname = ? WHERE username = ?";
 		return jdbc.update(sql, nickname, userName);
 	}
-	
+
 	public Map<String, Object> getUser(String userName) {
-		String sql = "SELECT * FROM im_user WHERE username = ? AND status = ?";
-		return jdbc.queryForMap(sql, userName,
-				UserAccountStatus.success.name());
+		String sql = "SELECT * FROM im_user WHERE username = ?";
+		return jdbc.queryForMap(sql, userName);
+	}
+
+	public Map<String, Object> getUserByDeviceId(String deviceId) {
+		String sql = "SELECT * FROM im_user WHERE deviceId = ?";
+		Map<String, Object> user = null;
+		try {
+			user = jdbc.queryForMap(sql, deviceId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		return user;
+	}
+	
+	public Map<String, Object> getUserById(String userId) {
+		String sql = "SELECT * FROM im_user WHERE id = ?";
+		Map<String, Object> user = null;
+		try {
+			user = jdbc.queryForMap(sql, userId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		return user;
+	}
+
+	public String registerDeviceId(String deviceId) {
+		String id = RandomString.genRandomChars(20);
+		String userKey = MD5Util.md5(id);
+		String sql = "INSERT INTO im_user (id, username, deviceId, password, userkey, nickname) VALUES(?,?,?,?,?,?)";
+		String result = "0";
+		try {
+			jdbc.update(sql, id, "", deviceId, "", userKey, "");
+		} catch (Exception e) {
+			result = "1001";
+		}
+		return result;
 	}
 }

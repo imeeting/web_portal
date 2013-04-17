@@ -5,5 +5,7 @@ public enum AttendeeConstants {
 	nickname,
 	online_status,
 	video_status,
-	telephone_status
+	telephone_status,
+	phone,
+	email
 }

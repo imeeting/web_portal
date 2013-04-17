@@ -5,7 +5,7 @@ public enum ConferenceConstants {
 	audioConfId,
 	owner,
 	created_time,
-	schedule_time,
+	scheduled_time,
 	status,
 	title,
 	attendees
