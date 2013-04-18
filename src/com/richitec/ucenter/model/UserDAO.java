@@ -11,10 +11,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -88,8 +85,8 @@ public class UserDAO {
 			}
 
 			if (user == null) {
-				String id = RandomString.genRandomChars(20);
-				String userkey = MD5Util.md5(userName + password);
+				String id = RandomString.genRandomChars(32);
+				String userkey = RandomString.genRandomChars(32);
 				String sql = "INSERT INTO im_user(id, username, deviceId, password, userkey, nickname) VALUES (?,?,?,?,?,?)";
 				Object[] params = new Object[] { id, userName, deviceId,
 						MD5Util.md5(password), userkey, nickname };
@@ -105,43 +102,9 @@ public class UserDAO {
 		return result;
 	}
 
-	/**
-	 * 登录
-	 * 
-	 * @param session
-	 * @param loginName
-	 * @param loginPwd
-	 * @return
-	 * @throws JSONException
-	 */
-	@Deprecated
-	public JSONObject login(String loginName, final String loginPwd)
-			throws DataAccessException, JSONException {
-		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=? AND status = ?";
-		log.info("login pwd: " + loginPwd);
-		Object[] params = new Object[] { loginName, loginPwd,
-				UserAccountStatus.success.name() };
-		String result = null;
-		JSONObject ret = new JSONObject();
-		try {
-			String userkey = jdbc.queryForObject(sql, params, String.class);
-			if (null != userkey) {
-				result = "0";
-				ret.put("result", result);
-				ret.put("userkey", userkey);
-			}
-		} catch (EmptyResultDataAccessException e) {
-			result = "1";
-			ret.put("result", result);
-		} catch (DataAccessException e) {
-			throw e;
-		}
-		return ret;
-	}
-
 	public UserBean getUserBean(String loginName, final String loginPwd)
 			throws DataAccessException {
-		String sql = "SELECT id, userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
+		String sql = "SELECT id, username, password, userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
 		Object[] params = new Object[] { loginName, loginPwd,
 				UserAccountStatus.success.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
@@ -175,15 +138,15 @@ public class UserDAO {
 		log.info("record device info - user id:  " + userId + " brand: "
 				+ brand);
 
-		String sql = "SELECT count(userId) FROM device_info WHERE userId = ?";
+		String sql = "SELECT count(userId) FROM im_device_info WHERE userId = ?";
 		int count = jdbc.queryForInt(sql, userId);
 		if (count > 0) {
 			jdbc.update(
-					"UPDATE device_info SET brand=?, model=?, "
+					"UPDATE im_device_info SET brand=?, model=?, "
 							+ "release_ver=?, sdk=?, width=?, height=? WHERE userId = ?",
 					brand, model, release, sdk, width, height, userId);
 		} else {
-			jdbc.update("INSERT INTO device_info VALUE(?,?,?,?,?,?,?)",
+			jdbc.update("INSERT INTO im_device_info VALUE(?,?,?,?,?,?,?)",
 					userId, brand, model, release, sdk, width, height);
 		}
 	}
@@ -277,18 +240,6 @@ public class UserDAO {
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
-	public int getVOSPhoneNumber(String username) {
-		String sql = "SELECT vosphone FROM im_user WHERE username = ?";
-		Object[] params = new Object[] { username };
-		return jdbc.queryForInt(sql, params);
-	}
-	
-	public int getVOSPhoneNumberById(String userId) {
-		String sql = "SELECT vosphone FROM im_user WHERE id = ?";
-		Object[] params = new Object[] { userId };
-		return jdbc.queryForInt(sql, params);
-	}
-	
 	public String saveToken(String userName, String token) {
 		String retCode = "0";
 		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
@@ -358,7 +309,7 @@ public class UserDAO {
 		}
 		return user;
 	}
-	
+
 	public Map<String, Object> getUserById(String userId) {
 		String sql = "SELECT * FROM im_user WHERE id = ?";
 		Map<String, Object> user = null;

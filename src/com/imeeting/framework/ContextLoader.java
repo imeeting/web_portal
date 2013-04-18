@@ -7,18 +7,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.imeeting.mvc.model.charge.ChargeDAO;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.contact.ContactDAO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.richitec.donkey.client.DonkeyClient;
-import com.richitec.notify.APNSProviderClient;
 import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MailSender;
-import com.richitec.vos.client.VOSClient;
 
 public class ContextLoader extends ContextLoaderListener {
 
@@ -74,19 +71,11 @@ public class ContextLoader extends ContextLoaderListener {
 		return (UserDAO) appContext.getBean("user_dao");
 	}
 
-	public static ChargeDAO getChargeDAO() {
-		return (ChargeDAO) appContext.getBean("charge_dao");
-	}
-	
-	public static ContactDAO getContactDAO(){
+	public static ContactDAO getContactDAO() {
 		return (ContactDAO) appContext.getBean("contact_dao");
 	}
 
-	public static VOSClient getVOSClient() {
-		return (VOSClient) appContext.getBean("vos_client");
-	}
-	
 	public static MailSender getMailSender() {
 		return (MailSender) appContext.getBean("mail_sender");
-	}	
+	}
 }

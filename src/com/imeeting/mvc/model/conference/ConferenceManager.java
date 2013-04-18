@@ -1,9 +1,7 @@
 package com.imeeting.mvc.model.conference;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.dao.DataAccessException;
 
 import com.imeeting.constants.AttendeeConstants;
 import com.imeeting.constants.ConferenceConstants;
@@ -26,7 +23,6 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
-import com.imeeting.mvc.model.conference.attendee.AttendeeModel.OnlineStatus;
 import com.richitec.donkey.client.DonkeyHttpResponse;
 import com.richitec.notify.Notifier;
 
@@ -38,6 +34,7 @@ public class ConferenceManager {
 	private ConferenceDB conferenceDao;
 	private long TIME_INTERVAL = 5 * 60 * 1000;
 	private long LEADING_TIME = 10 * 60 * 1000;
+
 	public ConferenceManager() {
 		conferenceMap = new ConcurrentHashMap<String, ConferenceModel>();
 	}
@@ -60,31 +57,6 @@ public class ConferenceManager {
 	public ConferenceModel removeConference(String conferenceId) {
 		log.info("remove conference " + conferenceId);
 		return conferenceMap.remove(conferenceId);
-	}
-
-	/**
-	 * remove the conference from conference manager if all attendees are
-	 * offline
-	 * 
-	 * @param conferenceId
-	 * @throws SQLException
-	 */
-	public synchronized void removeConferenceIfEmpty(String conferenceId)
-			throws DataAccessException {
-		ConferenceModel conference = getConference(conferenceId);
-		if (conference != null) {
-			Collection<AttendeeModel> attendees = conference.getAllAttendees();
-			boolean isEmpty = true;
-			for (AttendeeModel ab : attendees) {
-				if (ab.getOnlineStatus() == OnlineStatus.online) {
-					isEmpty = false;
-					break;
-				}
-			}
-			if (isEmpty) {
-				closeConference(conferenceId);
-			}
-		}
 	}
 
 	/**
@@ -111,33 +83,6 @@ public class ConferenceManager {
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
 	}
 
-	// /**
-	// * 检查系统中所有会议成员的在线状态，如果30秒未收到心跳消息，则认为该用户不在线。
-	// */
-	// public void checkAllConfAttendeeHeartBeat() {
-	// Long currentTimeMillis = System.currentTimeMillis();
-	// for (ConferenceModel conf : conferenceMap.values()) {
-	// for (AttendeeModel attendee : conf.getAllAttendees()) {
-	// if (!attendee.isJoined() ||
-	// null == attendee.getLastHBTimeMillis()) {
-	// continue;
-	// }
-	//
-	// if (attendee.isOnline()) {
-	// if (currentTimeMillis - attendee.getLastHBTimeMillis() > 30 * 1000) {
-	// attendee.setOnlineStatus(AttendeeModel.OnlineStatus.offline);
-	// conf.broadcastAttendeeStatus(attendee);
-	// }
-	// } else {
-	// if (currentTimeMillis - attendee.getLastHBTimeMillis() <= 30 * 1000) {
-	// attendee.setOnlineStatus(AttendeeModel.OnlineStatus.online);
-	// conf.broadcastAttendeeStatus(attendee);
-	// }
-	// }
-	// }
-	// }
-	// }
-
 	/**
 	 * 每隔5分钟从数据库中查询所有预约会议， 如果会议预约时间和当前系统时间相差是否在5分钟之内，
 	 * 向donkey发送请求开启一个会议，并把会议状态置为OPEN。
@@ -156,12 +101,14 @@ public class ConferenceManager {
 						.get(ConferenceConstants.scheduled_time.name())) * 1000;
 				String owner = (String) conf.get(ConferenceConstants.owner
 						.name());
-				
-				log.info("confid: " + confId + " owner: " + owner );
-				if (Math.abs(System.currentTimeMillis() - (schedTime - LEADING_TIME)) < TIME_INTERVAL) {
+
+				log.info("confid: " + confId + " owner: " + owner);
+				if (Math.abs(System.currentTimeMillis()
+						- (schedTime - LEADING_TIME)) < TIME_INTERVAL) {
 					// open the conference
-					log.info("open conf for " + confId + "owner: " + owner + " sched time: " + new Date(schedTime).toString());
-			
+					log.info("open conf for " + confId + "owner: " + owner
+							+ " sched time: " + new Date(schedTime).toString());
+
 					ConferenceModel conference = creatConference(confId, owner);
 
 					List<String> confIdList = new ArrayList<String>();
@@ -169,20 +116,18 @@ public class ConferenceManager {
 					List<AttendeeBean> attendees = conferenceDao
 							.getConferenceAttendees(confIdList);
 					for (AttendeeBean att : attendees) {
-						if (att.getPhone() != null && !"".equals(att.getPhone())) {
+						if (att.getPhone() != null
+								&& !"".equals(att.getPhone())) {
 							AttendeeModel attModel = new AttendeeModel(
 									att.getPhone());
-							attModel.setPhone(att.getPhone());
 							attModel.setNickname(att.getNickName());
 							conference.addAttendee(attModel);
 						}
 					}
 					conference.setAudioConfId(confId);
-					Integer vosPhoneNumber = ContextLoader.getUserDAO()
-							.getVOSPhoneNumberById(owner);
 					DonkeyHttpResponse donkeyResp = ContextLoader
 							.getDonkeyClient().createNoControlConference(
-									confId, vosPhoneNumber.toString(),
+									confId, "",
 									conference.getAllAttendeeName(), confId);
 					if (null == donkeyResp || !donkeyResp.isAccepted()) {
 						log.info("Create audio conference error : "
@@ -229,9 +174,14 @@ public class ConferenceManager {
 				+ "，到时拨打 0551-62379997 加入会议。";
 
 		try {
-			ContextLoader.getSMSClient().sendTextMessage(allPhone.toString(),
-					content);
-			ContextLoader.getMailSender().sendMail(emailList, subject, content);
+			if (allPhone.length() > 0) {
+				ContextLoader.getSMSClient().sendTextMessage(
+						allPhone.toString(), content);
+			}
+			if (emailList.size() > 0) {
+				ContextLoader.getMailSender().sendMail(emailList, subject,
+						content);
+			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (AddressException e) {

@@ -10,45 +10,28 @@ import com.imeeting.constants.AttendeeConstants;
 public class AttendeeModel {
 	private static Log log = LogFactory.getLog(AttendeeModel.class);
 
-	public enum OnlineStatus {
-		online, offline
+	public enum PhoneCallStatus {
+		CallWait, Established, TermWait, Failed, Terminated
 	}
 
-//	public enum PhoneCallStatus {
-//		CallWait, Established, TermWait, Failed, Terminated
-//	}
-//
-//	public enum VideoStatus {
-//		on, off
-//	}
-	
-	private String username;
 	private String phone;
 	private String nickname;
-	private OnlineStatus onlineStatus;
-//	private Integer joinCount = 0;
-//	private Boolean isKickout = false;
-//	private Long lastestHBTimeMillis;
+	private PhoneCallStatus phoneCallStatus;
 
-	public AttendeeModel(String userName) {
-		this(userName, OnlineStatus.offline);
-	}
-
-	public AttendeeModel(String userName, OnlineStatus status) {
-		this.username = userName;
+	public AttendeeModel(String phone) {
+		this.phone = phone;
 		this.nickname = "";
-		this.phone = "";
-		this.onlineStatus = status;
+		this.phoneCallStatus = PhoneCallStatus.Terminated;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setUsername(String name) {
-		this.username = name;
+	public void setPhone(String name) {
+		this.phone = name;
 	}
-	
+
 	public String getNickname() {
 		return nickname;
 	}
@@ -56,78 +39,93 @@ public class AttendeeModel {
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
-	
-	public String getPhone() {
-		return phone;
-	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getDisplayName(){
-		if (nickname != null && nickname.length()>0){
+	public String getDisplayName() {
+		if (nickname != null && nickname.length() > 0) {
 			return nickname;
 		} else {
-			return username;
+			return phone;
 		}
 	}
 
-//	public boolean isJoined(){
-//		return joinCount > 0;
-//	}
-//	
-//	public int join(){
-//		onlineStatus = OnlineStatus.online;
-//		return ++joinCount;
-//	}
-//	
-//	public int unjoin(){
-//		joinCount -= 1;
-//		if (joinCount <= 0){
-//			onlineStatus = OnlineStatus.offline;
-//		}
-//		return joinCount;
-//	}
-	
-	public boolean isOnline(){
-		return onlineStatus.equals(OnlineStatus.online);
+	public PhoneCallStatus getPhoneCallStatus() {
+		return phoneCallStatus;
 	}
 
-	public OnlineStatus getOnlineStatus() {
-		return onlineStatus;
+	public boolean statusCall() {
+		log.info("statusCall");
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.Terminated.equals(phoneCallStatus)
+					|| PhoneCallStatus.Failed.equals(phoneCallStatus)) {
+				phoneCallStatus = PhoneCallStatus.CallWait;
+				log.info("set " + phone + " status as "
+						+ phoneCallStatus.name());
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
-	public void setOnlineStatus(OnlineStatus onlineStatus) {
-		this.onlineStatus = onlineStatus;
-	}
-	
-//	public void heartBeat(){
-//		this.lastestHBTimeMillis = System.currentTimeMillis();
-//	}
-//	
-//	public Long getLastHBTimeMillis(){	
-//		return lastestHBTimeMillis;
-//	}
-
-	public void statusHangup() {
+	public boolean statusHangup() {
 		log.info("statusHangup");
-		setOnlineStatus(OnlineStatus.offline);
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Established.equals(phoneCallStatus)) {
+				phoneCallStatus = PhoneCallStatus.TermWait;
+				log.info("set " + phone + " status as "
+						+ phoneCallStatus.name());
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
-	public void statusCallEstablished() {
+	public boolean statusCallEstablished() {
 		log.info("statusCallEstablished");
-		setOnlineStatus(OnlineStatus.online);
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Terminated.equals(phoneCallStatus)) {
+				phoneCallStatus = PhoneCallStatus.Established;
+				log.info("set " + phone + " status as "
+						+ phoneCallStatus.name());
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
-	public void statusCallFailed() {
+	public boolean statusCallFailed() {
 		log.info("statusCallFailed");
-		setOnlineStatus(OnlineStatus.online);
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)) {
+				phoneCallStatus = PhoneCallStatus.Failed;
+				log.info("set " + phone + " status as "
+						+ phoneCallStatus.name());
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
-	public void statusCallTerminated() {
+	public boolean statusCallTerminated() {
 		log.info("statusCallTerminated");
-		setOnlineStatus(OnlineStatus.online);
+		synchronized (phoneCallStatus) {
+			if (PhoneCallStatus.CallWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.TermWait.equals(phoneCallStatus)
+					|| PhoneCallStatus.Established.equals(phoneCallStatus)
+					|| PhoneCallStatus.Failed.equals(phoneCallStatus)) {
+				phoneCallStatus = PhoneCallStatus.Terminated;
+				log.info("set " + phone + " status as "
+						+ phoneCallStatus.name());
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	public JSONObject toJson() {
@@ -135,7 +133,8 @@ public class AttendeeModel {
 		try {
 			obj.put(AttendeeConstants.nickname.name(), nickname);
 			obj.put(AttendeeConstants.phone.name(), phone);
-			obj.put(AttendeeConstants.online_status.name(), getOnlineStatus().name());
+			obj.put(AttendeeConstants.telephone_status.name(),
+					phoneCallStatus.name());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

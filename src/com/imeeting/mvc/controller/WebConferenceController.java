@@ -166,9 +166,8 @@ public class WebConferenceController {
 		ConferenceModel conference = conferenceManager.creatConference(
 				conferenceId, user.getUserName());
 		conference.setAudioConfId(conferenceId);
-		Integer vosPhoneNumber = userDao.getVOSPhoneNumber(user.getUserName());
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
-				conferenceId, vosPhoneNumber.toString(),
+				conferenceId, "",
 				conference.getAllAttendeeName(), conferenceId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
 			log.error("Create audio conference error : "

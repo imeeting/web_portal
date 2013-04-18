@@ -92,7 +92,7 @@ $(function() {
 	
 	function onUpdateStatus(event){
 		var attendee = event.attendee;
-		var attendeeId = attendee.username;
+		var attendeeId = attendee.phone;
 		var $div = $("#div" + attendeeId);
 		
 		var $phoneIcon = $div.find(".im-phone-icon");

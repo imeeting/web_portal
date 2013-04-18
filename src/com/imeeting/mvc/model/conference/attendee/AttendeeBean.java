@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.imeeting.constants.AttendeeConstants;
+import com.imeeting.mvc.model.conference.attendee.AttendeeModel.PhoneCallStatus;
 
 public class AttendeeBean {
 
@@ -60,6 +61,9 @@ public class AttendeeBean {
 		try {
 			obj.put(AttendeeConstants.nickname.name(), nickName);
 			obj.put(AttendeeConstants.phone.name(), phone);
+			
+			// 为了和AttendeeModel的JSON格式保持一致
+			obj.put(AttendeeConstants.telephone_status.name(), PhoneCallStatus.Terminated.name()); 
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
