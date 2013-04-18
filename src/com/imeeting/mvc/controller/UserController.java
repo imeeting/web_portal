@@ -300,6 +300,12 @@ public class UserController extends ExceptionController {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			jsonUser.put("result", result);
+			if ("0".equals(result)) {
+				UserBean user = userDao.getUserBean(phone, password);
+				jsonUser.put("userId", user.getUserId());
+				jsonUser.put("username", user.getUserName());
+				jsonUser.put("userkey", user.getUserKey());
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
