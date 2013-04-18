@@ -65,15 +65,24 @@ public class ConferenceController extends ExceptionController {
 		conferenceDao = ContextLoader.getConferenceDAO();
 	}
 
+	@RequestMapping(value = "/generateConfId")
+	public void generateConfId(HttpServletResponse response) throws JSONException, IOException {
+		String conferenceId = RandomString.genRandomNum(6);
+		JSONObject ret = new JSONObject();
+		ret.put("conferenceId", conferenceId);
+		response.getWriter().print(ret.toString());
+	}
+	
 	@RequestMapping(value = "/schedule", method = RequestMethod.POST)
 	public void schedule(
 			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userId,
 			@RequestParam(value = "attendees", required = false) String attendeeList,
 			@RequestParam(value = "scheduleTime", required = true) String scheduleTime)
 			throws JSONException, IOException {
 		// step 1. save conference
-		String conferenceId = RandomString.genRandomNum(6);
+//		String conferenceId = RandomString.genRandomNum(6);
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
 				userId);
 
