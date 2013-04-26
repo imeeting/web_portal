@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.imeeting.constants.AccountBindStatus;
 import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
@@ -72,6 +73,9 @@ public class UserController extends ExceptionController {
 			json.put("username", user.getUserName());
 			json.put("userkey", user.getUserKey());
 			json.put("nickname", user.getNickName());
+			if (user.getUserName() != null && !user.getUserName().equals("")) {
+				json.put("bind_status", AccountBindStatus.bind_phone.name());
+			}
 			session.setAttribute(UserBean.SESSION_BEAN, user);
 			userDao.recordDeviceInfo(user.getUserId(), brand, model, release,
 					sdk, width, height);
@@ -395,9 +399,13 @@ public class UserController extends ExceptionController {
 		if (user != null) {
 			String id = (String) user.get("id");
 			String userKey = (String) user.get("userkey");
+			String userName = (String) user.get("username");
 			String result = "0";
 			ret.put("userId", id);
 			ret.put("userkey", userKey);
+			if (userName != null && !userName.equals("")) {
+				ret.put("bind_status", AccountBindStatus.bind_phone.name());
+			}
 			ret.put("result", result);
 		} else {
 			// register device id
@@ -406,7 +414,11 @@ public class UserController extends ExceptionController {
 				Map<String, Object> userBean = userDao
 						.getUserByDeviceId(deviceId);
 				String id = (String) userBean.get("id");
+				String userName = (String) userBean.get("username");
 
+				if (userName != null && !userName.equals("")) {
+					ret.put("bind_status", AccountBindStatus.bind_phone.name());
+				}
 				ret.put("userId", id);
 				ret.put("userkey", userBean.get("userkey"));
 
