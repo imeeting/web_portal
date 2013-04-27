@@ -43,6 +43,9 @@ public class ExceptionController {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)	
 	public @ResponseBody String handleDataAccessException(DataAccessException e){
 		log.error("\nException : " + e.getMessage());
+		
+		e.printStackTrace();
+		
 		return e.getMessage();
 	}
 }
