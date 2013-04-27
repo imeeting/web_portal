@@ -281,6 +281,7 @@ public class UserController extends ExceptionController {
 	 */
 	@RequestMapping("/regUser")
 	public void regUser(
+			@RequestParam(value = "phone") String phoneNumber,
 			@RequestParam(value = "phonecode") String phoneCode,
 			@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
@@ -302,11 +303,16 @@ public class UserController extends ExceptionController {
 				result = "6"; // session过期
 			} else {
 				phone = (String) session.getAttribute("phonenumber");
-				if (nickname.length() == 0) {
-					nickname = phone;
+				if (phone.equals(phoneNumber)) {
+					if (nickname.length() == 0) {
+						nickname = phone;
+					}
+					result = userDao.regUser(phone, deviceId, nickname, password,
+							password1);
+				} else {
+					result = "7"; // different phone number  
 				}
-				result = userDao.regUser(phone, deviceId, nickname, password,
-						password1);
+				
 			}
 		}
 
