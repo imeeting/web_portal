@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.imeeting.constants.AccountBindStatus;
-import com.imeeting.constants.UserAccountStatus;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
@@ -307,12 +306,12 @@ public class UserController extends ExceptionController {
 					if (nickname.length() == 0) {
 						nickname = phone;
 					}
-					result = userDao.regUser(phone, deviceId, nickname, password,
-							password1);
+					result = userDao.regUser(phone, deviceId, nickname,
+							password, password1);
 				} else {
-					result = "7"; // different phone number  
+					result = "7"; // different phone number
 				}
-				
+
 			}
 		}
 
@@ -320,7 +319,7 @@ public class UserController extends ExceptionController {
 		try {
 			jsonUser.put("result", result);
 			if ("0".equals(result)) {
-				UserBean user = userDao.getUserBean(phone, MD5Util.md5(password));
+				UserBean user = userDao.getUserBean(phone, password);
 				jsonUser.put("userId", user.getUserId());
 				jsonUser.put("username", user.getUserName());
 				jsonUser.put("userkey", user.getUserKey());
