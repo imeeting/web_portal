@@ -319,7 +319,8 @@ public class UserController extends ExceptionController {
 		try {
 			jsonUser.put("result", result);
 			if ("0".equals(result)) {
-				UserBean user = userDao.getUserBean(phone, password);
+				UserBean user = userDao.getUserBean(phone,
+						MD5Util.md5(password));
 				jsonUser.put("userId", user.getUserId());
 				jsonUser.put("username", user.getUserName());
 				jsonUser.put("userkey", user.getUserKey());
