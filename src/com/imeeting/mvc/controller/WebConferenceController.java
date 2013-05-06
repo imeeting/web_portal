@@ -29,6 +29,7 @@ import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.contact.ContactBean;
@@ -144,7 +145,7 @@ public class WebConferenceController {
 		}
 		session.setAttribute(ConferenceConstants.conferenceId.name(),
 				conferenceId);
-
+		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
 

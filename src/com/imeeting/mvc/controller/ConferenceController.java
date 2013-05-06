@@ -30,6 +30,7 @@ import com.imeeting.mvc.model.conference.ConferenceBean;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.richitec.donkey.client.DonkeyClient;
@@ -106,11 +107,12 @@ public class ConferenceController extends ExceptionController {
 	@RequestMapping(value = "/scheduleNow", method = RequestMethod.POST)
 	public void scheduleNow(
 			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userId,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws JSONException, IOException {
 		// save conference
-		String conferenceId = RandomString.genRandomNum(6);
+//		String conferenceId = RandomString.genRandomNum(6);
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		Date now = new Date();
 		String scheduleTime = df.format(now);
@@ -155,7 +157,7 @@ public class ConferenceController extends ExceptionController {
 					"Cannot create audio conference");
 			return;
 		}
-
+		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
 
