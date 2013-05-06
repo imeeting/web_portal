@@ -157,15 +157,21 @@ public class ConferenceManager {
 		LinkedList<String> emailList = new LinkedList<String>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject attendee = jsonArray.getJSONObject(i);
-			String phone = (String) attendee
-					.get(AttendeeConstants.phone.name());
-			if (null != phone && phone.length() > 0) {
-				allPhone.append(phone).append(",");
+			try {
+				String phone = (String) attendee.get(AttendeeConstants.phone
+						.name());
+				if (null != phone && phone.length() > 0) {
+					allPhone.append(phone).append(",");
+				}
+			} catch (JSONException e) {
 			}
-			String email = (String) attendee
-					.get(AttendeeConstants.email.name());
-			if (null != email && email.length() > 0) {
-				emailList.add(email);
+			try {
+				String email = (String) attendee.get(AttendeeConstants.email
+						.name());
+				if (null != email && email.length() > 0) {
+					emailList.add(email);
+				}
+			} catch (JSONException e) {
 			}
 		}
 
