@@ -115,7 +115,7 @@ public class WebConferenceController {
 		Date now = new Date();
 		String scheduleTime = df.format(now);
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
-				user.getUserName());
+				user.getUserId());
 
 		// step 2. save attendees
 		JSONArray jsonArray = new JSONArray(attendeeList);
