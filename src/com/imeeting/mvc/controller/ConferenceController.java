@@ -297,7 +297,9 @@ public class ConferenceController extends ExceptionController {
 		for (int i = 0; i < attendeesJsonArray.length(); i++) {
 			JSONObject attObj = attendeesJsonArray.getJSONObject(i);
 			String phone = attObj.getString(AttendeeConstants.phone.name());
+			String nickName = attObj.getString(AttendeeConstants.nickname.name());
 			AttendeeModel attendee = new AttendeeModel(phone);
+			attendee.setNickname(nickName);
 			if (conference != null) {
 				if (!conference.containsAttendee(phone)) {
 					conference.addAttendee(attendee);
