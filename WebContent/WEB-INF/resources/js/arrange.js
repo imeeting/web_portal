@@ -110,14 +110,14 @@ $(function() {
 	function createRequest(attendeesString){
 		$.ajax({
 			type : "post",
-			url : "/imeeting/webconf/scheduleNow",
+			url : "/imeetings/webconf/scheduleNow",
 			dataType : "json",
 			data : {
 				attendees : attendeesString,
 			},
 			statusCode : {
 				201 : function(result) {
-					window.location = "/imeeting/webconf/ajax?confId=" + result.conferenceId;
+					window.location = "/imeetings/webconf/ajax?confId=" + result.conferenceId;
 				}
 			},
 			error : function(jqXHR) {
@@ -133,7 +133,7 @@ $(function() {
 	function scheduleRequest(attendeesString, scheduleTimeVal){
 		$.ajax({
 			type : "post",
-			url : "/imeeting/webconf/schedule",
+			url : "/imeetings/webconf/schedule",
 			dataType : "json",
 			data : {
 				attendees : attendeesString,
@@ -223,7 +223,7 @@ var ContactSelectionManager = {
 		Util.log("search: " + name);
 		$.ajax({
 			type : "post",
-			url : "/imeeting/contact/search",
+			url : "/imeetings/contact/search",
 			dataType : "json",
 			data : {
 				searchWord : name

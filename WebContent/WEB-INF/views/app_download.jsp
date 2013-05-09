@@ -22,7 +22,7 @@
 				</div>
 			</div>
 		</a> 
-		<a class="btn" style="margin: 5px;" href="/imeeting/downloadAppClient/android">
+		<a class="btn" style="margin: 5px;" href="/imeetings/downloadAppClient/android">
 			<div>
 				<img class="pull-left" alt="app store" src="./img/android.png">
 				<div class="pull-right">

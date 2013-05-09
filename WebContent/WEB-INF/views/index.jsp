@@ -38,7 +38,7 @@
     						</div>
     					</div>
     				</a>
-    				<a class="btn btn-inverse" href="/imeeting/downloadAppClient/android">
+    				<a class="btn btn-inverse" href="/imeetings/downloadAppClient/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">
@@ -72,8 +72,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 	    var $divCtrl = $("#divAlert");
 	    var $spanAlert = $("#spanAlert");
@@ -109,7 +109,7 @@
 				}
 			}, 1000);
 			
-			$.post("/imeeting/getDownloadPageUrl", 
+			$.post("/imeetings/getDownloadPageUrl", 
 				{phoneNumber: phoneNumber},
 				function(data){
 					var result = data.result;

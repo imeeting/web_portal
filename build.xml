@@ -6,7 +6,7 @@
     <property name="source" value="1.6"/>
 	<property name="encoding" value="utf8"/>
 	
-	<property name="war.filename" value="imeeting.war" />
+	<property name="war.filename" value="imeetings.war" />
 	<property name="build.src" value="src"/>
 	<property name="build.bin" value="build/classes"/>
 	<property name="build.webContent" value="WebContent"/>

@@ -14,6 +14,6 @@
 	    	<p>
 	    		<span>© 合肥优云信息技术有限公司</span>
 	    		<span>皖ICP备12016494号</span>
-	    		<span class="pull-right"><a href="/imeeting/contact" target="blank">联系我们</a></span>
+	    		<span class="pull-right"><a href="/imeetings/contact" target="blank">联系我们</a></span>
 	    	</p>
 	    </footer>

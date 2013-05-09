@@ -44,9 +44,9 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
-    <script src="/imeeting/js/lib/md5.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/md5.js"></script>
 	<script type="text/javascript">
 	function isValidUserName(){
 		var $divCtrl = $("#divUserNameAlert");
@@ -88,14 +88,14 @@
 		if (isValidUserName() && isValidPassword()){
 			var username = $("#iptUserName").val();
 		    var pwd = $("#iptPassword").val();
-		    var jqxhr = $.post("/imeeting/user/login",
+		    var jqxhr = $.post("/imeetings/user/login",
 		    	{
 		         loginName: username,
 		         loginPwd: md5(pwd)
 		    	}, 
 		    	function(data){
 		    		if (data.result == "0"){
-		    			location.href = "/imeeting/myconference";
+		    			location.href = "/imeetings/myconference";
 		    		} else {
 		                $divCtrl.addClass("error");
 		                $span.html("登录失败，请仔细检查你输入的用户名和密码。");

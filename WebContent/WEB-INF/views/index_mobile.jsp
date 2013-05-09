@@ -39,7 +39,7 @@
     						</div>
     					</div>
     				</a>
-    				<a class="btn" href="/imeeting/downloadAppClient/android">
+    				<a class="btn" href="/imeetings/downloadAppClient/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">
@@ -57,8 +57,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
 
   </body>
 </html>
