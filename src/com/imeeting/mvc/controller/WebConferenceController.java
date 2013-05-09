@@ -94,7 +94,7 @@ public class WebConferenceController {
 
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
-
+		conferenceManager.notifyUpdateConferenceList(user.getUserId());
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
@@ -129,7 +129,7 @@ public class WebConferenceController {
 
 		// step 3. create audio conference
 		ConferenceModel conference = conferenceManager.creatConference(
-				conferenceId, user.getUserName());
+				conferenceId, user.getUserId());
 		conference.setAudioConfId(conferenceId);
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
 				conferenceId, "",
@@ -148,7 +148,7 @@ public class WebConferenceController {
 		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
-
+		conferenceManager.notifyUpdateConferenceList(user.getUserId());
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);

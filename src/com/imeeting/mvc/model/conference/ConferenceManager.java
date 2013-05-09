@@ -71,7 +71,8 @@ public class ConferenceManager {
 		conferenceDao.close(conferenceId);
 	}
 
-	public void notifyConferenceDestoryed(String conferenceId) {
+	public void notifyConferenceDestoryed(String user, String conferenceId) {
+		// notify to conferenceId
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("conferenceId", conferenceId);
@@ -81,6 +82,21 @@ public class ConferenceManager {
 		}
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
+
+		// notify to user
+		nf.notifyWithHttpPost(user, msg.toString());
+
+	}
+	
+	public void notifyUpdateConferenceList(String user) {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("action", ConferenceAction.update_conf_list.name());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(user, msg.toString());
 	}
 
 	/**
