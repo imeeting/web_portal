@@ -31,14 +31,14 @@
     			<hr>
     			<h3>立刻下载开始你的智会之旅</h3>
     			<div>
-    				<a class="btn" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
+    				<!-- <a class="btn" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/iphone.png">
     						<div class="pull-right">
     							<p><strong>&nbsp;智会 iPhone 版</strong><br>App Store 下载</p>
     						</div>
     					</div>
-    				</a>
+    				</a> -->
     				<a class="btn" href="/imeetings/downloadAppClient/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">

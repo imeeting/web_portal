@@ -25,10 +25,10 @@ import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
 
-
 @Controller
 public class IMeetingWebController {
 	private static Log log = LogFactory.getLog(IMeetingWebController.class);
+
 	@RequestMapping("/")
 	public ModelAndView index(HttpSession session, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView();
@@ -49,12 +49,12 @@ public class IMeetingWebController {
 	public String mobile() {
 		return "index_mobile";
 	}
-	
+
 	@RequestMapping(value = "/help", method = RequestMethod.GET)
 	public String help() {
 		return "help";
 	}
-	
+
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
 	public ModelAndView signup() {
 		ModelAndView view = new ModelAndView();
@@ -86,35 +86,38 @@ public class IMeetingWebController {
 		view.addObject(WebConstants.page_name.name(), "forgetpwd");
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/signout", method = RequestMethod.GET)
 	public String signout(HttpSession session) {
 		session.removeAttribute(UserBean.SESSION_BEAN);
 		return "redirect:/";
 	}
-	
-	@RequestMapping(value="/404")
-	public String page404(){
+
+	@RequestMapping(value = "/404")
+	public String page404() {
 		return "error/404";
 	}
-	
-	@RequestMapping(value="/500")
-	public String page500(){
+
+	@RequestMapping(value = "/500")
+	public String page500() {
 		return "error/500";
-	}	
-	
-    @RequestMapping(value="/contact")
-    public String contact(){
-        return "contact";
-    }	
-	
+	}
+
+	@RequestMapping(value = "/contact")
+	public String contact() {
+		return "contact";
+	}
+
 	@RequestMapping("/getDownloadPageUrl")
-	public void getDownloadPageUrl(HttpServletResponse response, @RequestParam String phoneNumber) throws JSONException, IOException {
+	public void getDownloadPageUrl(HttpServletResponse response,
+			@RequestParam String phoneNumber) throws JSONException, IOException {
 		String url = ContextLoader.getConfiguration().getAppDonwloadPageUrl();
 		String msgContent = "智会客户端下载地址：" + url;
-		SMSHttpResponse resp = ContextLoader.getSMSClient().sendTextMessage(phoneNumber, msgContent);
-		JSONObject ret = new JSONObject();		
-		log.info("status code: " + resp.getStatusCode() + " code: " + resp.getCode());
+		SMSHttpResponse resp = ContextLoader.getSMSClient().sendTextMessage(
+				phoneNumber, msgContent);
+		JSONObject ret = new JSONObject();
+		log.info("status code: " + resp.getStatusCode() + " code: "
+				+ resp.getCode());
 		if (resp.getCode() == 3) {
 			ret.put("result", "ok");
 		} else {
@@ -122,28 +125,30 @@ public class IMeetingWebController {
 		}
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	@RequestMapping("/appdownload")
 	public String appDownloadPage() {
 		return "app_download";
 	}
-	
+
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
-	@RequestMapping("/downloadAppClient/{device}")
-	public void downloadAppClient(HttpServletResponse response, @PathVariable String device) {
+	@RequestMapping("/downloadapp/{appId}/{device}")
+	public void downloadAppClient(HttpServletResponse response,
+			@PathVariable String appId, @PathVariable String device) {
 		Configuration config = ContextLoader.getConfiguration();
 		String downloadUrl = config.getAppDownloadUrl();
-		String appId = config.getAppId();
-		downloadUrl = downloadUrl + "/" + appId + "/" + device; 
+		// String appId = config.getAppId();
+		downloadUrl = downloadUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", downloadUrl);
 	}
-	
+
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
-	@RequestMapping("/appVersion/{device}")
-	public void appVersion(HttpServletResponse response, @PathVariable String device) {
+	@RequestMapping("/version/{appId}/{device}")
+	public void appVersion(HttpServletResponse response,
+			@PathVariable String appId, @PathVariable String device) {
 		Configuration config = ContextLoader.getConfiguration();
 		String versionUrl = config.getAppVersionUrl();
-		String appId = config.getAppId();
+		// String appId = config.getAppId();
 		versionUrl = versionUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", versionUrl);
 	}
