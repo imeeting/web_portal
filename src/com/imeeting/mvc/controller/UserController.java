@@ -329,6 +329,7 @@ public class UserController extends ExceptionController {
 				jsonUser.put("userId", user.getUserId());
 				jsonUser.put("username", user.getUserName());
 				jsonUser.put("userkey", user.getUserKey());
+				jsonUser.put("bind_status", AccountBindStatus.bind_phone.name());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
