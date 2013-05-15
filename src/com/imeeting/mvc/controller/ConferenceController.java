@@ -94,8 +94,8 @@ public class ConferenceController extends ExceptionController {
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 		}
 
-		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
-				jsonArray);
+//		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+//				jsonArray);
 
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
@@ -159,8 +159,8 @@ public class ConferenceController extends ExceptionController {
 			return;
 		}
 		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
-		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
-				jsonArray);
+//		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+//				jsonArray);
 
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
