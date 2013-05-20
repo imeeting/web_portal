@@ -79,7 +79,7 @@ public class UserController extends ExceptionController {
 			json.put("nickname", user.getNickName());
 			if (user.getUserName() != null && !user.getUserName().equals("")) {
 				json.put("bind_status", AccountBindStatus.bind_phone.name());
-				json.put("bind_phone", user.getUserName());
+				json.put(AccountBindStatus.bind_phone.name(), user.getUserName());
 			}
 			session.setAttribute(UserBean.SESSION_BEAN, user);
 			userDao.recordDeviceInfo(user.getUserId(), brand, model, release,
@@ -331,7 +331,7 @@ public class UserController extends ExceptionController {
 				jsonUser.put("username", user.getUserName());
 				jsonUser.put("userkey", user.getUserKey());
 				jsonUser.put("bind_status", AccountBindStatus.bind_phone.name());
-				jsonUser.put("bind_phone", user.getUserName());
+				jsonUser.put(AccountBindStatus.bind_phone.name(), user.getUserName());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -419,7 +419,7 @@ public class UserController extends ExceptionController {
 			ret.put("userkey", userKey);
 			if (userName != null && !userName.equals("")) {
 				ret.put("bind_status", AccountBindStatus.bind_phone.name());
-				ret.put("bind_phone", userName);
+				ret.put(AccountBindStatus.bind_phone.name(), userName);
 			}
 			ret.put("result", result);
 		} else {
@@ -433,7 +433,7 @@ public class UserController extends ExceptionController {
 
 				if (userName != null && !userName.equals("")) {
 					ret.put("bind_status", AccountBindStatus.bind_phone.name());
-					ret.put("bind_phone", userName);
+					ret.put(AccountBindStatus.bind_phone.name(), userName);
 				}
 				ret.put("userId", id);
 				ret.put("userkey", userBean.get("userkey"));
