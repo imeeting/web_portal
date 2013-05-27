@@ -39,7 +39,7 @@
     						</div>
     					</div>
     				</a> -->
-    				<a class="btn" href="/imeetings/downloadAppClient/android">
+    				<a class="btn" href="/imeetings/downloadapp/2/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">

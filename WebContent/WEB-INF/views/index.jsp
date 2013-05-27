@@ -38,7 +38,7 @@
     						</div>
     					</div>
     				</a> -->
-    				<a class="btn btn-inverse" href="/imeetings/downloadAppClient/android">
+    				<a class="btn btn-inverse" href="/imeetings/downloadapp/2/android">
     					<div>
     						<img class="pull-left" alt="app store" src="./img/android.png">
     						<div class="pull-right">
