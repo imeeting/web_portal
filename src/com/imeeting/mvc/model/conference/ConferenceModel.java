@@ -119,8 +119,10 @@ public class ConferenceModel {
 		}
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
+		nf.notifyWithHttpPost(getOwnerName(), msg.toString());
 	}
 
+	@Deprecated
 	public void notifyAttendeeKickOut(String userName) {
 		JSONObject msg = new JSONObject();
 		try {
@@ -144,6 +146,7 @@ public class ConferenceModel {
 		}
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(getConferenceId(), msg.toString());
+		nf.notifyWithHttpPost(getOwnerName(), msg.toString());
 	}
 
 	public void sendSMSToAttendees(JSONArray attendeesJsonArray) {

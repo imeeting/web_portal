@@ -91,10 +91,10 @@
     	<div class="row-fluid im-container">
     	<% if (null != errorCode && HttpServletResponse.SC_OK == errorCode) { %>
     	   <div class="span4 offset4">
-    	       <h2>恭喜你，注册成功！<a href="/imeeting/signin">点此登录</a></h2>
+    	       <h2>恭喜你，注册成功！<a href="/imeetings/signin">点此登录</a></h2>
     	   </div>
     	<% } else { %>
-	    	<form id="formSignup" action="/imeeting/user/websignup" method="post" class="im-form span6 offset3">
+	    	<form id="formSignup" action="/imeetings/user/websignup" method="post" class="im-form span6 offset3">
 			    <h2>使用手机号码注册</h2>
 			    <hr>
 			    <% if (null != errorInfo) { %>
@@ -166,8 +166,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			function disable60Seconds(){
@@ -202,7 +202,7 @@
 				$span.html("");
 				$divCtrl.removeClass("error");
 				$divCtrl.removeClass("success");
-				$.post("/imeeting/user/getPhoneCode", 
+				$.post("/imeetings/user/getPhoneCode", 
 					{ phone: phoneNumber },
 					function(data){
 						if ("0" == data.result){

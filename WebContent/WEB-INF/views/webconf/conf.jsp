@@ -49,9 +49,9 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
     <script src="http://msg.wetalking.net/socket.io/socket.io.js"></script>
-    <script src="/imeeting/js/conference.js"></script>
+    <script src="/imeetings/js/conference.js"></script>
   </body>
 </html>

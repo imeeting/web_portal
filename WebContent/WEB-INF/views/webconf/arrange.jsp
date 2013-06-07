@@ -71,7 +71,7 @@
 					</div>
 				</div>
 				<div class="create-button-region control-group">
-					<a id="cancel_create_conf_bt" href="/imeeting/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
+					<a id="cancel_create_conf_bt" href="/imeetings/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
 					<button id="create_conf_bt" type="submit" class="btn btn-success btn-large">&nbsp;确&nbsp;&nbsp;定&nbsp;</button>
 				</div>
 			</form>
@@ -166,13 +166,13 @@
 		</div>
 		<div class="modal-body">
 			<h5>第一步：在客户端首页中点击设置按钮，进入设置界面</h5>
-			<img alt="首页" src="/imeeting/img/app_main_page.png" title="在客户端首页中点击设置按钮，进入设置界面">
+			<img alt="首页" src="/imeetings/img/app_main_page.png" title="在客户端首页中点击设置按钮，进入设置界面">
 			<hr/>
 			<h5>第二步：在设置界面选择“备份通讯录”</h5>
-			<img alt="设置界面" src="/imeeting/img/app_setting_page.png" title="在设置界面选择“备份通讯录”">
+			<img alt="设置界面" src="/imeetings/img/app_setting_page.png" title="在设置界面选择“备份通讯录”">
 			<hr/>
 			<h5>第三步：在弹出的对话框中选择备份，即可上传手机通讯录</h5>
-			<img alt="备份对话框" src="/imeeting/img/app_addressbook_upload_page.png" title="在弹出的对话框中选择备份，即可上传手机通讯录">
+			<img alt="备份对话框" src="/imeetings/img/app_addressbook_upload_page.png" title="在弹出的对话框中选择备份，即可上传手机通讯录">
 		</div>
 		<div class="modal-footer">
 			<a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-primary">关闭</a>
@@ -182,11 +182,11 @@
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/imeeting/js/lib/bootstrap.js"></script>
-	<script src="/imeeting/js/lib/json2.js"></script>
-	<script src="/imeeting/js/my97/WdatePicker.js"></script>
-	<script src="/imeeting/js/applib/common.js"></script>
-	<script src="/imeeting/js/arrange.js"></script>
+	<script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/imeetings/js/lib/bootstrap.js"></script>
+	<script src="/imeetings/js/lib/json2.js"></script>
+	<script src="/imeetings/js/my97/WdatePicker.js"></script>
+	<script src="/imeetings/js/applib/common.js"></script>
+	<script src="/imeetings/js/arrange.js"></script>
 </body>
 </html>

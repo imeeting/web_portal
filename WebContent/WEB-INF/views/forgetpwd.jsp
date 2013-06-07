@@ -62,8 +62,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 	var $_divCtrl = $("#divPhoneNumberCtrl");
 	
@@ -124,7 +124,7 @@
         var $span = $("#spanPhoneNumberInfo");
         $_divCtrl.removeClass("error");
         $_divCtrl.removeClass("success");
-        $.post("/imeeting/user/validatePhoneNumber", 
+        $.post("/imeetings/user/validatePhoneNumber", 
             { phone: phoneNumber },
             function(data){
                 if ("200" == data){

@@ -38,7 +38,7 @@ public class MyConferenceController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView index(HttpSession session) {
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
-		int confCount = confDao.getAllConferenceCount(user.getUserName());
+		int confCount = confDao.getAllConferenceCount(user.getUserId());
 		
 		ModelAndView view = new ModelAndView();
 		view.setViewName("myconference");
@@ -53,7 +53,7 @@ public class MyConferenceController {
 			@RequestParam(value="offset", defaultValue="1") int offset){
 		UserBean user = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
 		List<ConferenceBean> confList = 
-			confDao.getConferenceList(user.getUserName(), offset, PageSize);
+			confDao.getConferenceList(user.getUserId(), offset, PageSize);
 		
 		if (confList.size() > 0){
 			List<String> confIdList = new ArrayList<String>();
@@ -73,7 +73,7 @@ public class MyConferenceController {
 			}
 		}
 		
-		int count = confDao.getAllConferenceCount(user.getUserName());
+		int count = confDao.getAllConferenceCount(user.getUserId());
 		Pager pager = new Pager(offset, PageSize, count, "myconference/list?");
 		
 		ModelAndView mv = new ModelAndView();

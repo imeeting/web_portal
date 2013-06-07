@@ -58,21 +58,21 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
     <script type="text/javascript">
     	$("#divConfListContainer").load("myconference/list");
     	$("#formJoinConference").submit(function(){
     		var spanInfo = $("#spanInfo");
     		spanInfo.html("处理中，请稍后。。。");
     		var strConfId = $("#iptConfId").val();
-    		$.post("/imeeting/webconf/ajax", {confId: strConfId}, 
+    		$.post("/imeetings/webconf/ajax", {confId: strConfId}, 
     			function(data){
 	    			var result = data.result;
 	    			switch(result){
 	    			case "success":
 	    				spanInfo.html("加入会议成功！");
-	    				window.location.href = "/imeeting/webconf/ajax?confId="+strConfId;
+	    				window.location.href = "/imeetings/webconf/ajax?confId="+strConfId;
 	    				break;
 	    			case "noconference":
 	    				spanInfo.html("会议不存在！");

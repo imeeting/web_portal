@@ -76,7 +76,7 @@ $(function() {
 	};
 	
 	function onUpdateAttendeeList(event){
-		$_divAttendeeList.load("/imeeting/webconf/attendeeList", 
+		$_divAttendeeList.load("/imeetings/webconf/attendeeList", 
 				{conferenceId: _confId}, 
 				function() {
 					//

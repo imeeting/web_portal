@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.imeeting.constants.UserAccountStatus;
+import com.imeeting.constants.AccountBindStatus;
 import com.imeeting.framework.Configuration;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.web.user.UserBean;
@@ -64,7 +64,12 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
 			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
 			HttpServletResponse response, HttpSession session) throws Exception {
-		UserBean user = userDao.getUserBean(loginName, loginPwd);
+		UserBean user = null;
+		try {
+			user = userDao.getUserBean(loginName, loginPwd);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
 		JSONObject json = new JSONObject();
 		if (null != user) {
 			json.put("result", "0");
@@ -72,6 +77,10 @@ public class UserController extends ExceptionController {
 			json.put("username", user.getUserName());
 			json.put("userkey", user.getUserKey());
 			json.put("nickname", user.getNickName());
+			if (user.getUserName() != null && !user.getUserName().equals("")) {
+				json.put("bind_status", AccountBindStatus.bind_phone.name());
+				json.put(AccountBindStatus.bind_phone.name(), user.getUserName());
+			}
 			session.setAttribute(UserBean.SESSION_BEAN, user);
 			userDao.recordDeviceInfo(user.getUserId(), brand, model, release,
 					sdk, width, height);
@@ -277,6 +286,8 @@ public class UserController extends ExceptionController {
 	 */
 	@RequestMapping("/regUser")
 	public void regUser(
+			@RequestParam(value = "phone") String phoneNumber,
+			@RequestParam(value = "phonecode") String phoneCode,
 			@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
 			@RequestParam(value = "deviceId") String deviceId,
@@ -286,20 +297,42 @@ public class UserController extends ExceptionController {
 
 		String result = "";
 		String phone = "";
-		if (null == session.getAttribute("phonenumber")) {
-			result = "6"; // session过期
+
+		if (session.getAttribute("phonecode") != null) {
+			result = userDao.checkPhoneCode(session, phoneCode);
 		} else {
-			phone = (String) session.getAttribute("phonenumber");
-			if (nickname.length() == 0) {
-				nickname = phone;
+			result = "6"; // session timeout
+		}
+		if (result.equals("0")) {
+			if (null == session.getAttribute("phonenumber")) {
+				result = "6"; // session过期
+			} else {
+				phone = (String) session.getAttribute("phonenumber");
+				if (phone.equals(phoneNumber)) {
+					if (nickname.length() == 0) {
+						nickname = phone;
+					}
+					result = userDao.regUser(phone, deviceId, nickname,
+							password, password1);
+				} else {
+					result = "7"; // different phone number
+				}
+
 			}
-			result = userDao.regUser(phone, deviceId, nickname, password,
-					password1);
 		}
 
 		JSONObject jsonUser = new JSONObject();
 		try {
 			jsonUser.put("result", result);
+			if ("0".equals(result)) {
+				UserBean user = userDao.getUserBean(phone,
+						MD5Util.md5(password));
+				jsonUser.put("userId", user.getUserId());
+				jsonUser.put("username", user.getUserName());
+				jsonUser.put("userkey", user.getUserKey());
+				jsonUser.put("bind_status", AccountBindStatus.bind_phone.name());
+				jsonUser.put(AccountBindStatus.bind_phone.name(), user.getUserName());
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -380,9 +413,14 @@ public class UserController extends ExceptionController {
 		if (user != null) {
 			String id = (String) user.get("id");
 			String userKey = (String) user.get("userkey");
+			String userName = (String) user.get("username");
 			String result = "0";
 			ret.put("userId", id);
 			ret.put("userkey", userKey);
+			if (userName != null && !userName.equals("")) {
+				ret.put("bind_status", AccountBindStatus.bind_phone.name());
+				ret.put(AccountBindStatus.bind_phone.name(), userName);
+			}
 			ret.put("result", result);
 		} else {
 			// register device id
@@ -391,7 +429,12 @@ public class UserController extends ExceptionController {
 				Map<String, Object> userBean = userDao
 						.getUserByDeviceId(deviceId);
 				String id = (String) userBean.get("id");
+				String userName = (String) userBean.get("username");
 
+				if (userName != null && !userName.equals("")) {
+					ret.put("bind_status", AccountBindStatus.bind_phone.name());
+					ret.put(AccountBindStatus.bind_phone.name(), userName);
+				}
 				ret.put("userId", id);
 				ret.put("userkey", userBean.get("userkey"));
 

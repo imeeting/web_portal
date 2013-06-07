@@ -30,6 +30,7 @@ import com.imeeting.mvc.model.conference.ConferenceBean;
 import com.imeeting.mvc.model.conference.ConferenceDB;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
+import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.attendee.AttendeeBean;
 import com.imeeting.mvc.model.conference.attendee.AttendeeModel;
 import com.richitec.donkey.client.DonkeyClient;
@@ -65,15 +66,25 @@ public class ConferenceController extends ExceptionController {
 		conferenceDao = ContextLoader.getConferenceDAO();
 	}
 
+	@RequestMapping(value = "/generateConfId")
+	public void generateConfId(HttpServletResponse response)
+			throws JSONException, IOException {
+		String conferenceId = RandomString.genRandomNum(6);
+		JSONObject ret = new JSONObject();
+		ret.put("conferenceId", conferenceId);
+		response.getWriter().print(ret.toString());
+	}
+
 	@RequestMapping(value = "/schedule", method = RequestMethod.POST)
 	public void schedule(
 			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userId,
 			@RequestParam(value = "attendees", required = false) String attendeeList,
 			@RequestParam(value = "scheduleTime", required = true) String scheduleTime)
 			throws JSONException, IOException {
 		// step 1. save conference
-		String conferenceId = RandomString.genRandomNum(6);
+		// String conferenceId = RandomString.genRandomNum(6);
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
 				userId);
 
@@ -83,8 +94,8 @@ public class ConferenceController extends ExceptionController {
 			conferenceDao.saveJSONAttendee(conferenceId, jsonArray);
 		}
 
-		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
-				jsonArray);
+//		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+//				jsonArray);
 
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
@@ -97,11 +108,12 @@ public class ConferenceController extends ExceptionController {
 	@RequestMapping(value = "/scheduleNow", method = RequestMethod.POST)
 	public void scheduleNow(
 			HttpServletResponse response,
+			@RequestParam(value = "conferenceId") String conferenceId,
 			@RequestParam(value = "username") String userId,
 			@RequestParam(value = "attendees", required = false) String attendeeList)
 			throws JSONException, IOException {
 		// save conference
-		String conferenceId = RandomString.genRandomNum(6);
+		// String conferenceId = RandomString.genRandomNum(6);
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		Date now = new Date();
 		String scheduleTime = df.format(now);
@@ -134,9 +146,9 @@ public class ConferenceController extends ExceptionController {
 		}
 
 		conference.setAudioConfId(conferenceId);
-		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
-				conferenceId, "",
-				conference.getAllAttendeeName(), conferenceId);
+		DonkeyHttpResponse donkeyResp = donkeyClient
+				.createNoControlConference(conferenceId, "",
+						conference.getAllAttendeeName(), conferenceId);
 		if (null == donkeyResp || !donkeyResp.isAccepted()) {
 			log.error("Create audio conference error : "
 					+ (null == donkeyResp ? "NULL Response" : donkeyResp
@@ -146,9 +158,9 @@ public class ConferenceController extends ExceptionController {
 					"Cannot create audio conference");
 			return;
 		}
-
-		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
-				jsonArray);
+		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
+//		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
+//				jsonArray);
 
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
@@ -285,7 +297,9 @@ public class ConferenceController extends ExceptionController {
 		for (int i = 0; i < attendeesJsonArray.length(); i++) {
 			JSONObject attObj = attendeesJsonArray.getJSONObject(i);
 			String phone = attObj.getString(AttendeeConstants.phone.name());
+			String nickName = attObj.getString(AttendeeConstants.nickname.name());
 			AttendeeModel attendee = new AttendeeModel(phone);
+			attendee.setNickname(nickName);
 			if (conference != null) {
 				if (!conference.containsAttendee(phone)) {
 					conference.addAttendee(attendee);
@@ -299,13 +313,15 @@ public class ConferenceController extends ExceptionController {
 		if (conference != null) {
 			conference.fillNicknameForEachAttendee();
 		}
-		
+
 		if (addedAttendeeList.size() > 0) {
 			conferenceDao.saveAttendees(conferenceId, addedAttendeeList);
 		}
 
 		// notify all attendees to update attendee list
-		conference.notifyAttendeesToUpdateMemberList();
+		if (conference != null) {
+			conference.notifyAttendeesToUpdateMemberList();
+		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

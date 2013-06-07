@@ -71,7 +71,8 @@ public class ConferenceManager {
 		conferenceDao.close(conferenceId);
 	}
 
-	public void notifyConferenceDestoryed(String conferenceId) {
+	public void notifyConferenceDestoryed(String user, String conferenceId) {
+		// notify to conferenceId
 		JSONObject msg = new JSONObject();
 		try {
 			msg.put("conferenceId", conferenceId);
@@ -81,6 +82,21 @@ public class ConferenceManager {
 		}
 		Notifier nf = ContextLoader.getNotifier();
 		nf.notifyWithHttpPost(conferenceId, msg.toString());
+
+		// notify to user
+		nf.notifyWithHttpPost(user, msg.toString());
+
+	}
+	
+	public void notifyUpdateConferenceList(String user) {
+		JSONObject msg = new JSONObject();
+		try {
+			msg.put("action", ConferenceAction.update_conf_list.name());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Notifier nf = ContextLoader.getNotifier();
+		nf.notifyWithHttpPost(user, msg.toString());
 	}
 
 	/**
@@ -157,15 +173,21 @@ public class ConferenceManager {
 		LinkedList<String> emailList = new LinkedList<String>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject attendee = jsonArray.getJSONObject(i);
-			String phone = (String) attendee
-					.get(AttendeeConstants.phone.name());
-			if (null != phone && phone.length() > 0) {
-				allPhone.append(phone).append(",");
+			try {
+				String phone = (String) attendee.get(AttendeeConstants.phone
+						.name());
+				if (null != phone && phone.length() > 0) {
+					allPhone.append(phone).append(",");
+				}
+			} catch (JSONException e) {
 			}
-			String email = (String) attendee
-					.get(AttendeeConstants.email.name());
-			if (null != email && email.length() > 0) {
-				emailList.add(email);
+			try {
+				String email = (String) attendee.get(AttendeeConstants.email
+						.name());
+				if (null != email && email.length() > 0) {
+					emailList.add(email);
+				}
+			} catch (JSONException e) {
 			}
 		}
 

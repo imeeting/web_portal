@@ -29,6 +29,7 @@ import com.imeeting.constants.ConferenceConstants;
 import com.imeeting.constants.WebConstants;
 import com.imeeting.framework.ContextLoader;
 import com.imeeting.mvc.model.conference.ConferenceDB;
+import com.imeeting.mvc.model.conference.ConferenceDB.ConferenceStatus;
 import com.imeeting.mvc.model.conference.ConferenceManager;
 import com.imeeting.mvc.model.conference.ConferenceModel;
 import com.imeeting.mvc.model.contact.ContactBean;
@@ -129,7 +130,7 @@ public class WebConferenceController {
 
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
-
+		conferenceManager.notifyUpdateConferenceList(user.getUserId());
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);
@@ -151,7 +152,7 @@ public class WebConferenceController {
 		Date now = new Date();
 		String scheduleTime = df.format(now);
 		conferenceDao.saveScheduledConference(conferenceId, scheduleTime,
-				user.getUserName());
+				user.getUserId());
 
 		// step 2. save attendees
 		JSONArray jsonArray = new JSONArray(attendeeList);
@@ -164,7 +165,7 @@ public class WebConferenceController {
 
 		// step 3. create audio conference
 		ConferenceModel conference = conferenceManager.creatConference(
-				conferenceId, user.getUserName());
+				conferenceId, user.getUserId());
 		conference.setAudioConfId(conferenceId);
 		DonkeyHttpResponse donkeyResp = donkeyClient.createNoControlConference(
 				conferenceId, "",
@@ -180,10 +181,10 @@ public class WebConferenceController {
 		}
 		session.setAttribute(ConferenceConstants.conferenceId.name(),
 				conferenceId);
-
+		conferenceDao.updateStatus(conferenceId, ConferenceStatus.OPEN);
 		conferenceManager.sendSMSEmailNotice(conferenceId, scheduleTime,
 				jsonArray);
-
+		conferenceManager.notifyUpdateConferenceList(user.getUserId());
 		// step 3. response to user
 		JSONObject ret = new JSONObject();
 		ret.put(ConferenceConstants.conferenceId.name(), conferenceId);

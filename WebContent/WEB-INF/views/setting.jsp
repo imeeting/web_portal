@@ -54,7 +54,7 @@ if (nicknameRetCode != null) {
                     <div class="tab-pane active" id="pane-user-info">
                         <h3>基本信息</h3>
                         <hr>
-                        <form method="post" action="/imeeting/setting/changeNickname" class="im-form">
+                        <form method="post" action="/imeetings/setting/changeNickname" class="im-form">
                             <div class="control-group info">
                                 <label class="control-label">登录名</label>
                                 <div class="controls">
@@ -80,7 +80,7 @@ if (nicknameRetCode != null) {
 					<div class="tab-pane" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="/imeeting/setting/changepassword" method="post" id="formChangePwd" class="im-form" >
+						<form action="/imeetings/setting/changepassword" method="post" id="formChangePwd" class="im-form" >
 						  <div id="divOldPwd" class="control-group">
 							<label class="control-label">输入当前使用的密码</label>
 							<input type="password" name="oldPwd" id="iptOldPwd" />
@@ -112,9 +112,9 @@ if (nicknameRetCode != null) {
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/imeeting/js/lib/md5.js"></script>
+    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/imeetings/js/lib/md5.js"></script>
 	<script type="text/javascript">
 		function isValidPassword($div, val){
 			var $span = $div.find(".help-inline");
