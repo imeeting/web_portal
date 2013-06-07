@@ -15,10 +15,6 @@
 		padding: 0;
 	}
 	
-	body {
-	  
-	}
-	
 	.header {
 	 	width: 1024px;
 	 	height: 525px;
