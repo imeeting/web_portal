@@ -18,7 +18,7 @@
 	.header {
 	 	width: 1024px;
 	 	height: 525px;
-	   	background: url(img/simple/header.jpg);
+	   	background: url(/imeetings/img/simple/header.jpg);
 	   	margin: 0 auto;
 	   	position: relative;
 	 }
@@ -27,7 +27,7 @@
 	 	display: block;
 	 	width: 234px;
 	 	height: 68px;
-	 	background: url(img/simple/android_download.png);
+	 	background: url(/imeetings/img/simple/android_download.png);
 	 	position: absolute;
 	 	top: 300px;
 	 	left: 300px;
@@ -37,7 +37,7 @@
 	 	display: block;
 	 	width: 234px;
 	 	height: 68px;
-	 	background: url(img/simple/iphone_download.png);
+	 	background: url(/imeetings/img/simple/iphone_download.png);
 	 	position: absolute;
 	 	top: 300px;
 	 	left: 50px;	 	
@@ -60,14 +60,14 @@
 	 .content {
 	 	width: 1024px;
 	 	height: 600px;
-	 	background: url(img/simple/body_line.jpg);
+	 	background: url(/imeetings/img/simple/body_line.jpg);
 	 	margin: 0 auto;
 	 }
 	 
 	 .arrow {
 	 	width: 16px;
 	 	height: 16px;
-	 	background: url(img/simple/right_arrow.png);
+	 	background: url(/imeetings/img/simple/right_arrow.png);
 	 	display: inline-block;
 	 }
 	 
@@ -80,7 +80,7 @@
 	 	display: block;
 	 	width: 204px;
 	 	height: 535px;
-	 	background: url(img/simple/gray_bg.png);
+	 	background: url(/imeetings/img/simple/gray_bg.png);
 	 	float: left;
 	 	margin: 0 10px;
 	 }
@@ -91,25 +91,25 @@
 	 }
 	 
 	 #divSnapShot1 {
-	 	background: url(img/simple/snapshot_01.png);
+	 	background: url(/imeetings/img/simple/snapshot_01.png);
 	 }
 	 
 	 #divSnapShot2 {
-	 	background: url(img/simple/snapshot_02.png);
+	 	background: url(/imeetings/img/simple/snapshot_02.png);
 	 }
 	 
 	 #divSnapShot3 {
-	 	background: url(img/simple/snapshot_03.png);
+	 	background: url(/imeetings/img/simple/snapshot_03.png);
 	 }	
 	 
 	 #divSnapShot4 {
-	 	background: url(img/simple/snapshot_04.png);
+	 	background: url(/imeetings/img/simple/snapshot_04.png);
 	 }
 	 
 	 .button {
 	 	width: 160px;
 	 	height: 37px;
-	 	background: url(img/simple/yellow_bt.png);
+	 	background: url(/imeetings/img/simple/yellow_bt.png);
 	 	margin: 0 22px;
 	 }
 	 
@@ -135,6 +135,10 @@
 	 .footer p {
 	 	color: #999;
 	 	padding: 10px;
+	 }
+	 
+	 body {
+	 	background-color: #e0ded9;
 	 }
 </style>
 </head>
