@@ -1,9 +1,13 @@
 @CHARSET "UTF-8";
 
 body {
-	font-family: 微软雅黑;
+	/*font-family: 微软雅黑;*/
     background: url(../img/bg-face.jpg);
     background-color: #91673F;  
+}
+
+i {
+	margin-right: 3px;
 }
 
 .navbar-inner {
@@ -94,14 +98,15 @@ footer span {
 	margin-bottom: 10px;
 }
 
-.im-attendee-name {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 .im-attendee-conf,
 .im-attendee-history {
 	background-color: #D9EDF7;
 	border: solid 1px #BCE8F1;
+}
+
+#divSelectTime label {
+	font-size: 20px;
+	line-height: 30px;
 }
 
 #rdoSchedule {
@@ -109,7 +114,7 @@ footer span {
 }
 
 #iptScheduleTime {
-	margin-left: 10px;
+	margin: 0 0 0 10px;
 }
 
 #divConfTitle, 
@@ -246,19 +251,10 @@ footer span {
     border-radius: 4px 4px 4px 4px;
 }
 
-.name,
-.email,
-.phone {
-	margin-left: 5px;	
+#add_new_contact_dlg label {
+	margin: 5px 5px 0 0;
 }
 
-/*
-#add_new_contact_dlg {
-	width: 360px;
-	left: 55%;
-	margin-left: -245px;
-}
-*/
 #dlg_join_conf form {
     margin: 0;
 }

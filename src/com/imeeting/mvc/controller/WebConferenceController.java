@@ -71,8 +71,44 @@ public class WebConferenceController {
 		mv.setViewName("webconf/arrange");
 		return mv;
 	}
-
-	@RequestMapping(value = "schedule", method = RequestMethod.POST)
+	
+	private void sendSMSEmailNotice(String confId, String scheduleTime, JSONArray jsonArray) throws JSONException{
+		StringBuffer allPhone = new StringBuffer();
+		LinkedList<String> emailList = new LinkedList<String>();
+		for(int i=0; i< jsonArray.length(); i++){
+			JSONObject attendee = jsonArray.getJSONObject(i);
+			String phone = (String)attendee.get("phone");
+			if (null != phone && phone.length()>0){
+				allPhone.append(phone).append(",");
+			}
+			String email = (String)attendee.get("email");
+			if (null != email && email.length()>0){
+				emailList.add(email);
+			}
+		}
+		
+		String subject = "电话会议通知";
+		String content = "您在" + scheduleTime + "有电话会议，会议密码：" + confId
+		+ "，到时拨打 0551-62379997 加入会议。";
+		
+		try {
+			if(allPhone.length()>0){
+				ContextLoader.getSMSClient().sendTextMessage(
+						allPhone.toString(), content);
+			}
+			if (emailList.size()>0){
+				ContextLoader.getMailSender().sendMail(emailList, subject, content);
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (AddressException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value="schedule", method=RequestMethod.POST)
 	public void schedule(
 			HttpSession session,
 			HttpServletResponse response,

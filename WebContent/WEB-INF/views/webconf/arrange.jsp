@@ -23,13 +23,13 @@
 				<div class="control-group clearfix">
 					<div class="selection-list pull-left">
 					    <label class="control-label">常用联系人</label>
-						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="请输入名称或号码来搜索" /></div>
+						<div class="input-prepend"><span class="add-on"><i class="icon-search"></i></span><input id="ab_search_input" size="16" type="text" placeholder="姓名/手机/Email" /></div>
 						<ul id="addressbook" class="well unstyled">
 						<% 
 							if (abContacts != null) {
 								for (ContactBean contact : abContacts) {
 						%>
-									<li class="ab_contact im-attendee-name">
+									<li class="ab_contact">
 										<div>
 											<i class="icon-user"></i>
 											<span class="name"><%=contact.getNickName() %></span>
@@ -54,7 +54,7 @@
 					<div class="selection-list pull-right">
 					    <label class="control-label">已选中参与者</label>
 					    <div class="blank">
-					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">添加新成员</button>
+					    	<button id="add_new_contact_bt" data-toggle="modal" data-target="#add_new_contact_dlg" class="btn btn-info">手动输入参会者</button>
 					    </div>
 						<ul id="selected_contacts" class="well unstyled">
 						</ul>
@@ -64,8 +64,11 @@
 					<input id="rdoNow" name="isScheduled" type="radio" value="now" class="pull-left"/>
 					<label for="rdoNow" class="pull-left">&nbsp;马上开始</label>
 					<input id="rdoSchedule" name="isScheduled" type="radio" value="schedule" checked="checked" class="pull-left"/>
-					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>	
-					<input id="iptScheduleTime" type="text" class="pull-left"/>					
+					<label for="rdoSchedule" class="pull-left">&nbsp;预约时间</label>
+					<div id="divScheduleTime" class="input-append pull-left">
+						<input id="iptScheduleTime" type="text"/>					
+						<span class="add-on"><i class="icon-calendar"></i></span>
+					</div>
 				</div>
 				<div class="create-button-region control-group">
 					<a id="cancel_create_conf_bt" href="/imeetings/myconference" class="btn btn-large">&nbsp;取&nbsp;&nbsp;消&nbsp;</a>
@@ -81,7 +84,7 @@
 	<!-- template region  -->
 	<div id="template" class="hidden">
 		<ul>
-			<li class="ab_contact im-attendee-name">
+			<li class="ab_contact">
 				<div>
 					<i class="icon-user"></i>
 					<span class="name"></span>
@@ -96,7 +99,7 @@
 					<span class="phone"></span>
 				</div>
 			</li>
-			<li class="selected_contact im-attendee-name">
+			<li class="selected_contact">
 				<div>
 					<i class="icon-user"></i><span class="name"></span>
 					<a class="remove_contact_bt" href="#"><i class="icon-remove"></i></a>
@@ -115,13 +118,22 @@
 			<h4>添加新成员</h4>
 		</div>
 		<div class="modal-body">
-			<div class="">
-				<label for="newContactName">姓名：</label>
-				<input id="newContactName" type="text" class="span3" />
-				<label for="newContactEmail">电邮：</label>
-				<input id="newContactEmail" type="text" class="span3" />
-				<label for="newContactPhoneNumber">手机：</label>
-				<input id="newContactPhoneNumber" type="text" class="span3" />
+			<div class="pull-left">
+				<div class="clearfix">
+					<label for="newContactName" class="pull-left">姓名</label>
+					<input id="newContactName" type="text" class="span3 pull-left" />
+				</div>
+				<div>
+					<label for="newContactEmail" class="pull-left">电邮</label>
+					<input id="newContactEmail" type="text" class="span3 pull-left" />
+				</div>
+				<div>
+					<label for="newContactPhoneNumber" class="pull-left">手机</label>
+					<input id="newContactPhoneNumber" type="text" class="span3 pull-left" />
+				</div>
+			</div>
+			<div class="span2 pull-right">
+				提示：系统会自动保存该联系人信息，以后可以直接从常用联系人中查找。
 			</div>
 		</div>
 		<div class="modal-footer">
@@ -137,8 +149,8 @@
 			<h4>安排会议成功！</h4>
 		</div>
 		<div class="modal-body">
-			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
 			<p><span>接入号码：</span><strong id="">0551-62379997</strong></p>
+			<p><span>会议密码：</span><strong id="schedule_conf_id"></strong></p>
 			<p><span>会议时间：</span><strong id="schedule_conf_time"></strong></p>
 		</div>
 		<div class="modal-footer">

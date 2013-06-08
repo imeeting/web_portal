@@ -21,9 +21,11 @@
 			</a> <a class="brand" href="/imeetings/home">智会</a>
 			<ul class="nav">
 				<li><a id="username" class="im-attendee-name" title="<%=userBean.getUserName()%>">
-				    <i class="icon-user"></i>&nbsp;<%=userBean.getDisplayName()%></a>
+				    <i class="icon-user"></i><%=userBean.getDisplayName()%></a>
 				</li>
-				<li><a id="logout" href="/imeetings/signout">退出登录</a></li>
+				<li>
+					<a id="logout" href="/imeeting/signout"><i class="icon-off"></i>退出登录</a>
+				</li>
 			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">

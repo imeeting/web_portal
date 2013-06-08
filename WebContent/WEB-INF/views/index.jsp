@@ -3,130 +3,196 @@
     pageEncoding="utf-8"%>
 <!DOCTYPE html>
 <html lang="zh">
-  <head>
-    <title>智会</title>
-	<jsp:include page="common/_head.jsp"></jsp:include>
-  </head>
-
-  <body>
-	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
-
-    <div class="container">
-    	<div class="row-fluid im-container">
-    		<div class="span4 offset2">
- 			    <div class="app_demo_view">
-   				 <img alt="iphone" src="./img/app_screen.png"/>
-  				</div>
-    		</div>
-    		<div class="span4">
-    			<h1>智会&nbsp;<small>高效能人士的智慧选择</small></h1>
-    			<ul>
-    				<li><h2><small>多人同时通话</small></h2></li>
-	    			<li><h2><small>高清语音质量</small></h2></li>
-	    			<li><h2><small>多路视频随意切换</small></h2></li>
-	    			<li><h2><small>操作快捷方便</small></h2></li>
-    			</ul>
-    			<hr>
-    			<!-- <h3>现在注册就送<strong>100元</strong>话费<br>&nbsp;</h3>-->
-    			<!-- <h3>立刻下载开始你的智会之旅<br>&nbsp;</h3> -->
-    			<div>
-    				<!-- <a class="btn btn-inverse" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
-    					<div>
-    						<img class="pull-left" alt="app store" src="./img/iphone.png">
-    						<div class="pull-right">
-    							<p><strong>&nbsp;智会 iPhone 版</strong><br>App Store 下载</p>
-    						</div>
-    					</div>
-    				</a> -->
-    				<a class="btn btn-inverse" href="/imeetings/downloadapp/2/android">
-    					<div>
-    						<img class="pull-left" alt="app store" src="./img/android.png">
-    						<div class="pull-right">
-    							<p><strong>&nbsp;智会 Android 版</strong><br>下载 apk 文件</p>
-    						</div>
-    					</div>
-    				</a>    				
-    			</div>
-    			<hr>
-    			<form id="formGetDownlaodUrl" action="#">
-                    <div id="divControlGroup" class="control-group">
-	    				<label class="control-label" for="iptPhoneNumber">输入手机号码，短信获取下载地址</label>
-	    				<div class="controls input-prepend input-append">
-		    				<span class="add-on">+86</span><input type="text" 
-		    				class="input-medium" name="phoneNumber" id="iptPhoneNumber" 
-		    				pattern="[0-9]{11}" maxlength="11" 
-		    				placeholder="仅限中国大陆手机号码"/><button type="submit" 
-		    				class="btn" id="btnGetDownloadURL" >获取下载地址</button>
-	    				</div>
-                    </div>
-                    <div id="divAlert" class="control-group">
-	    				<span id="spanAlert" class="help-inline"></span>
-                    </div>
-    			</form>    			
-    		</div>
-    	</div>
-    	
-    	<jsp:include page="common/_footer.jsp"></jsp:include>
-    </div> <!-- /container -->
-    
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeetings/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeetings/js/lib/bootstrap.min.js"></script>
-	<script type="text/javascript">
-	    var $divCtrl = $("#divAlert");
-	    var $spanAlert = $("#spanAlert");
-    
-        function info(level, msg){
-            $divCtrl.removeClass("success");
-            $divCtrl.removeClass("error");
-            if (level){
-	            $divCtrl.addClass(level);
-            }
-            $spanAlert.html(msg);
-        }
+<head>
+<title>智会</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
 	
-		$("#formGetDownlaodUrl").submit(function(){
-			var phoneNumber = $("#iptPhoneNumber").val();
-			if (phoneNumber == null || phoneNumber == "") {
-				info("error", "还没有输入手机号码呢！");
-				return false;
-			}
-			
-			var $btn = $("#btnGetDownloadURL");
-			var btnTitle = $btn.html();
-			$btn.attr("disabled", true);
-			var seconds = 60;
-			var itvl = setInterval(function(){
-				$btn.html(seconds + "秒后可重试");
-				seconds -= 1;
-				if (seconds < 0){
-				    info(null, "");					
-					$btn.html(btnTitle);
-					$btn.attr("disabled", false);
-					clearInterval(itvl);
-				}
-			}, 1000);
-			
-			$.post("/imeetings/getDownloadPageUrl", 
-				{phoneNumber: phoneNumber},
-				function(data){
-					var result = data.result;
-					switch (result) {
-					case "ok":
-						info("success", "短信已发送，注意查看手机");
-						break;
-					case "fail":
-						info("error", "短信发送失败，检查一下手机号码吧，或者直接点击图标下载。");
-						break;
-					}
-				}, "json")
-				.error(function() {
-					info("error", "额。。网络正忙，请稍后再试吧！");
-				});
-			return false;
-		});
-	</script>
-  </body>
+	.header {
+	 	width: 1024px;
+	 	height: 525px;
+	   	background: url(img/simple/header.jpg);
+	   	margin: 0 auto;
+	   	position: relative;
+	 }
+	 
+	 .android {
+	 	display: block;
+	 	width: 234px;
+	 	height: 68px;
+	 	background: url(img/simple/android_download.png);
+	 	position: absolute;
+	 	top: 300px;
+	 	left: 300px;
+	 }
+	 
+	 .iphone {
+	 	display: block;
+	 	width: 234px;
+	 	height: 68px;
+	 	background: url(img/simple/iphone_download.png);
+	 	position: absolute;
+	 	top: 300px;
+	 	left: 50px;	 	
+	 }	 
+	 
+	 .headinfo {
+	 	position: absolute;
+	 	top: 420px; 	
+	 }
+	 
+	 .info {
+	 	margin: 0 60px;
+	 }
+	 
+	 .info h1 {
+	 	font-size: 16px;
+	 	margin-bottom: 10px;
+	 }	 
+	 
+	 .content {
+	 	width: 1024px;
+	 	height: 600px;
+	 	background: url(img/simple/body_line.jpg);
+	 	margin: 0 auto;
+	 }
+	 
+	 .arrow {
+	 	width: 16px;
+	 	height: 16px;
+	 	background: url(img/simple/right_arrow.png);
+	 	display: inline-block;
+	 }
+	 
+	 .content ul {
+	 	list-style-type: none;
+	 	margin: 0 60px;
+	 }
+	 
+	 .content ul li {
+	 	display: block;
+	 	width: 204px;
+	 	height: 535px;
+	 	background: url(img/simple/gray_bg.png);
+	 	float: left;
+	 	margin: 0 10px;
+	 }
+	 
+	 .snapshot {
+	 	width: 204px;
+	 	height: 369px;
+	 }
+	 
+	 #divSnapShot1 {
+	 	background: url(img/simple/snapshot_01.png);
+	 }
+	 
+	 #divSnapShot2 {
+	 	background: url(img/simple/snapshot_02.png);
+	 }
+	 
+	 #divSnapShot3 {
+	 	background: url(img/simple/snapshot_03.png);
+	 }	
+	 
+	 #divSnapShot4 {
+	 	background: url(img/simple/snapshot_04.png);
+	 }
+	 
+	 .button {
+	 	width: 160px;
+	 	height: 37px;
+	 	background: url(img/simple/yellow_bt.png);
+	 	margin: 0 22px;
+	 }
+	 
+	 .button span {
+		display: block;
+		padding-top: 9px;
+		text-align: center;
+		font-weight: bold;
+		color: white;
+	 }
+	 
+	 .description p {
+	 	padding: 10px;
+	 }
+	 
+	 .footer {
+	 	width: 1024px;
+	 	height: 100px;
+	 	background: #914511;
+	 	margin: 0 auto;
+	 }
+	 
+	 .footer p {
+	 	color: #999;
+	 	padding: 10px;
+	 }
+</style>
+</head>
+
+<body>
+<div class="header">
+	<a class="iphone" href="#">
+	</a>
+	<a class="android" href="http://www.wetalking.net/imeetings/downloadapp/2/android">
+	</a>
+	<div class="headinfo info">
+		<h1>智会说明<i class="arrow"></i></h1>
+		<p>智会是基于Android和iPhone的会议办公应用。通过独创技术，可以使用手机方便发起多方通话。智会应用旨在为您带来
+		随时随地安排开启电话会议的体验。智会支持绑定手机号码或者邮箱，可以在多个设备上同步，查看和安排会议。无论您身在
+		何方，智会为您打造手机上的移动会议室。
+		</p>
+	</div>	
+</div>
+<div class="content">
+	<div class="info">
+		<h1>操作使用<i class="arrow"></i></h1>
+	</div>
+	<ul>
+		<li>
+			<div class="snapshot" id="divSnapShot1"></div>
+			<div class="button"><span>第一步</span></div>
+			<div class="description">
+				<p>在通讯录中选择联系人，选中联系人会出现在屏幕右侧的列表中，选好联系人以后点击右侧列表下方的【邀请】按钮。</p>
+			</div>
+		</li>
+		<li>
+			<div class="snapshot" id="divSnapShot2"></div>
+			<div class="button"><span>第二步</span></div>
+			<div class="description">
+				<p>在弹出的时间设置界面上选择开会时间，选好后点击【确定】按钮。</p>
+			</div>		
+		</li>
+		<li>
+			<div class="snapshot" id="divSnapShot3"></div>
+			<div class="button"><span>第三步</span></div>
+			<div class="description">
+				<p>智会软件会自动调用手机发送短信界面，向所有参会者发送短信通知会议时间。</p>
+			</div>			
+		</li>
+		<li>
+			<div class="snapshot" id="divSnapShot4"></div>
+			<div class="button"><span>第四步</span></div>
+			<div class="description">
+				<p>操作完成以后，会在会议列表界面中看到自己安排好的会议。</p>
+			</div>			
+		</li>
+	</ul>
+</div>
+<div class="footer">
+	<p>
+		<span>© 合肥优云信息技术有限公司</span>
+		<span>皖ICP备12016494号</span>
+	</p>
+</div>
+</body>
 </html>
